@@ -8,7 +8,7 @@ module
 public import ABCCofibrations.Coproducts
 
 /-!
-# Brown factorization
+# Factorization lemmas
 
 Lemma 1.3.1(1) and Remark 1.3.2 of Rădulescu-Banu,
 *Cofibrations in Homotopy Theory*. A map between cofibrant objects factors
@@ -18,6 +18,10 @@ coproduct of the source and target, for use in relative constructions.
 
 Only CF1–CF4 are assumed. The factorizations are existential, with no
 functorial choice imposed.
+
+`exists_relative_factorization` proves Lemma 1.3.3(1), extending a specified
+factorization across a commutative square. Its witnesses retain the comparison
+map from the pushout and both of its defining equations.
 -/
 
 public section
@@ -80,5 +84,47 @@ theorem exists_brown_factorization (f : A ⟶ B) :
   obtain ⟨Z, i, p, s, hZ, hi, hp, hs, hsw, _, hip, hsp⟩ :=
     exists_brown_factorization_with_coprod f
   exact ⟨Z, i, p, s, hZ, hi, hp, hs, hsw, hip, hsp⟩
+
+/-- Relative factorization (Lemma 1.3.3(1)). Extend a specified factorization
+`i₁ ≫ p₁ = f₁` across a square with cofibrant left-hand objects. No cofibrancy
+of the right-hand objects, or cofibration property of `a`, is required.
+
+The comparison map `k` is a cofibration. Its two defining equations identify it
+with the canonical map from `pushout i₁ a` to the new factorization object. -/
+theorem exists_relative_factorization
+    {A₁ A₂ B₁ B₂ Z₁ : C} [IsCofibrant A₁] [IsCofibrant A₂]
+    (f₁ : A₁ ⟶ B₁) (f₂ : A₂ ⟶ B₂) (a : A₁ ⟶ A₂) (b : B₁ ⟶ B₂)
+    (h : f₁ ≫ b = a ≫ f₂)
+    (i₁ : A₁ ⟶ Z₁) (p₁ : Z₁ ⟶ B₁) [Cofibration i₁] [WeakEquivalence p₁]
+    (h₁ : i₁ ≫ p₁ = f₁) :
+    ∃ (Z₂ : C) (i₂ : A₂ ⟶ Z₂) (p₂ : Z₂ ⟶ B₂) (a' : Z₁ ⟶ Z₂)
+      (k : pushout i₁ a ⟶ Z₂),
+      IsCofibrant Z₂ ∧ Cofibration i₂ ∧ WeakEquivalence p₂ ∧ Cofibration k ∧
+      i₂ ≫ p₂ = f₂ ∧ i₁ ≫ a' = a ≫ i₂ ∧ a' ≫ p₂ = p₁ ≫ b ∧
+      pushout.inl i₁ a ≫ k = a' ∧ pushout.inr i₁ a ≫ k = i₂ := by
+  have hsq : i₁ ≫ (p₁ ≫ b) = a ≫ f₂ := by
+    rw [← Category.assoc, h₁, h]
+  let q := pushout.desc (p₁ ≫ b) f₂ hsq
+  have hinr : Cofibration (pushout.inr i₁ a) :=
+    cofibration_of_isPushout (IsPushout.of_hasPushout i₁ a)
+  let := hinr
+  let := cofibrant_target (pushout.inr i₁ a)
+  obtain ⟨Z₂, k, p₂, hk, hp₂, hkp⟩ := factorization q
+  let := hk
+  let i₂ := pushout.inr i₁ a ≫ k
+  let a' := pushout.inl i₁ a ≫ k
+  have hi₂ : Cofibration i₂ := by
+    dsimp [i₂]
+    infer_instance
+  have hi₂p₂ : i₂ ≫ p₂ = f₂ := by
+    simp [i₂, Category.assoc, hkp, q]
+  have hleft : i₁ ≫ a' = a ≫ i₂ := by
+    dsimp [a', i₂]
+    rw [← Category.assoc, pushout.condition, Category.assoc]
+  have hright : a' ≫ p₂ = p₁ ≫ b := by
+    simp [a', Category.assoc, hkp, q]
+  let := hi₂
+  exact ⟨Z₂, i₂, p₂, a', k, cofibrant_target i₂, hi₂, hp₂, hk,
+    hi₂p₂, hleft, hright, rfl, rfl⟩
 
 end ABCCofibrations.ABCPrecofibrationCategory

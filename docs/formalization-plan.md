@@ -198,7 +198,7 @@ Completion criterion: cover the cofibration side of Lemma 1.2.1, including the
 empty family, without strengthening the category assumptions. Do not mark the
 whole finite-coproduct milestone complete after only the binary case.
 
-### E. First factorization increment — Brown factorization implemented
+### E. Factorization increments — basic Brown and relative factorization implemented
 
 `Factorization.lean` now proves `exists_brown_factorization` (Lemma 1.3.1(1))
 and `exists_brown_factorization_with_coprod` (Remark 1.3.2). Both expose the
@@ -219,10 +219,24 @@ Completed implementation tasks:
 4. Decide whether a data structure improves actual downstream use only after
    writing the existential theorem; avoid choosing factorizations globally.
 
-Next, treat Lemma 1.3.3(1) as a separate increment. Expose the comparison map
-from the relevant pushout and its cofibration property in the result. Then
-transcribe all compatibility equations for Lemma 1.3.4(1) before proving it.
-Do not combine these three results into one implementation task.
+The next separate increment, Lemma 1.3.3(1), is also implemented as
+`exists_relative_factorization`. Its input is a commutative square and a
+specified cofibration/weak-equivalence factorization of its top map. Only the
+two left-hand objects are required to be cofibrant. Its output includes:
+
+- The new cofibrant factorization object, its cofibration and weak-equivalence
+  factors, and their factorization equation.
+- A map between the factorization objects making both squares commute.
+- A cofibration `k` from `pushout i₁ a`, with both equations identifying it as
+  the canonical pushout comparison map.
+
+The proof uses restricted CF3 to make the pushout cofibrant and CF4 to factor
+the induced map out of it. It makes no functorial choices and imposes no
+cofibration hypothesis on the left vertical map.
+
+Next, transcribe all compatibility equations for Lemma 1.3.4(1), the relative
+Brown factorization, before proving it. Retain both comparison-map properties
+in that statement. Keep this as a separate implementation increment.
 
 ### F. Extension and cylinder entry point
 
@@ -292,11 +306,11 @@ statements.
 
 ## Immediate next increment
 
-Continue with Lemma 1.3.3(1), the relative factorization construction described
-in package E. Keep its comparison map from the pushout explicit. Complete the
-foundation correspondence note before treating the axioms as audited.
-The finite-coproduct portion of Milestone 1 and the basic Brown factorization
-increment are complete; the elementary API review remains open.
+Continue with Lemma 1.3.4(1), relative Brown factorization, as described in
+package E. Complete the foundation correspondence note before treating the
+axioms as audited. The finite-coproduct portion of Milestone 1, basic Brown
+factorization, and relative factorization are complete; the elementary API
+review remains open.
 
 ## Progress log
 
@@ -308,3 +322,4 @@ increment are complete; the elementary API review remains open.
 | 2026-11-07 | Binary maps and finite existence | Four binary-map declarations and two `Fin n` coproduct declarations; `lake build` passed (1822 jobs), without warnings |
 | 2026-11-07 | Complete Lemma 1.2.1(1) | Finite-family map properties and four results for arbitrary finite indexing types; `lake build` passed (1822 jobs), without warnings |
 | 2026-11-07 | Brown factorization | Lemma 1.3.1(1) and Remark 1.3.2 in `Factorization.lean`, exported by the library root; `lake build` passed (1824 jobs), without warnings |
+| 2026-11-07 | Relative factorization | Lemma 1.3.3(1), with the pushout comparison cofibration and all square equations; `lake build` passed (1824 jobs), without warnings |

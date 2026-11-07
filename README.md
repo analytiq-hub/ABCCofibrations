@@ -22,6 +22,9 @@ Import `ABCCofibrations.Factorization` for `exists_brown_factorization`
 For a map between cofibrant objects, these supply a cofibration followed by a
 weak equivalence with a trivial cofibration section. The stronger theorem also
 retains the cofibration from the source–target coproduct.
+The same module provides `exists_relative_factorization` (Lemma 1.3.3(1)),
+extending a specified factorization across a commutative square and retaining
+the cofibration from its pushout to the new factorization object.
 
 The incremental roadmap is in [docs/formalization-plan.md](docs/formalization-plan.md).
 

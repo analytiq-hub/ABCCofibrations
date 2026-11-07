@@ -135,7 +135,14 @@ Reused categorical infrastructure:
 - `IsPushout.of_coprod_inl_with_id` supplies the square for a map with a fixed
   summand; its flipped orientation matches the CF3 interface.
 
-### C. Finish the binary map API — next
+### C. Finish the binary map API — implemented
+
+Completed declarations: `cofibration_coprod_id_map`,
+`weakEquivalence_coprod_id_map`, `cofibration_coprod_map`, and
+`weakEquivalence_coprod_map`. A private universal-property proof supplies the
+fixed-left-summand pushout square. The general results construct the intermediate
+coproduct locally and derive its target summand's cofibrancy from the input map.
+The following steps describe the completed construction.
 
 1. Obtain the fixed-left-summand analogues of the two map lemmas. Compare a
    direct universal-property proof of the square with transport by coproduct
@@ -152,6 +159,13 @@ pushout stability. Handle targets by deriving their cofibrancy from the input
 cofibrations, rather than requiring redundant assumptions.
 
 ### D. Pass from binary to finite families
+
+Existence and cofibrancy are implemented for `Fin n` via `hasCoproduct_fin`
+and `coproduct_fin_cofibrant`. Their shared induction uses mathlib's
+`extendCofanIsColimit`, with the initial object as the empty case. Cofibrancy
+is transported to the caller's chosen coproduct by the unique colimit
+isomorphism. Finite-family map properties and arbitrary finite indexing types
+remain open.
 
 1. Start with `Fin n`-indexed families. Check mathlib's existing decomposition
    of a coproduct indexed by `Fin (n + 1)` before introducing recursion.
@@ -256,9 +270,10 @@ statements.
 
 ## Immediate next increment
 
-Continue with package C (the two-map binary coproduct API), and complete the
+Continue with package D: prove the finite-family map properties for `Fin n`,
+then transport the results to arbitrary finite indexing types. Complete the
 foundation correspondence note before treating the axioms as audited. Package E
-is also available once the binary foundation is in place.
+is also available now that the binary foundation is in place.
 
 ## Progress log
 
@@ -267,3 +282,4 @@ is also available once the binary foundation is in place.
 | 2026-11-07 | Inspect existing modules and create this roadmap | Plan created; foundation audit and build pending |
 | 2026-11-07 | Baseline validation | `lake build` passed (1808 jobs) |
 | 2026-11-07 | Binary coproduct foundation | Six declarations in `Coproducts.lean`; exported by the library root; `lake build` passed (1810 jobs), without warnings |
+| 2026-11-07 | Binary maps and finite existence | Four binary-map declarations and two `Fin n` coproduct declarations; `lake build` passed (1822 jobs), without warnings |

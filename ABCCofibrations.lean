@@ -1,2 +1,3 @@
 import ABCCofibrations.Basic
+import ABCCofibrations.Coproducts
 import ABCCofibrations.Examples

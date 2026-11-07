@@ -29,8 +29,8 @@ As inspected on 2026-11-07:
   both distinguished classes.
 - The project pins Lean and mathlib to `v4.36.0-rc2`.
 
-These are existing implementations, not yet a completed audit of correspondence
-with the paper. This documentation change does not establish a fresh build result.
+The baseline `lake build` passed on 2026-11-07. The definitions still need a
+completed audit of correspondence with the paper.
 
 ## Working method
 
@@ -66,6 +66,9 @@ Change the current definitions only when this review identifies a concrete issue
 
 ## Milestone 1 — Elementary API and finite coproducts
 
+Implementation has begun in `ABCCofibrations/Coproducts.lean`; see the detailed
+work packages below. The general finite-family statement remains open.
+
 - [ ] Add convenient lemmas for identities, composition, isomorphisms, and
   two-out-of-three where existing mathlib interfaces do not already suffice.
 - [ ] Expose pushout constructions and their cofibration/trivial-cofibration
@@ -77,6 +80,127 @@ Change the current definitions only when this review identifies a concrete issue
 
 Suggested module: `ABCCofibrations/Coproducts.lean`. Keep genuinely foundational
 lemmas in `Basic.lean`; avoid splitting files until there is a coherent API.
+
+## Early work packages
+
+Each row is intended to be a separate, reviewable increment. Proposed declaration
+names may change to fit mathlib conventions. Completed declarations below are in
+the `ABCCofibrations.ABCPrecofibrationCategory` namespace.
+
+### A. Foundation audit and interface decisions
+
+- [x] Run the baseline build: `lake build` passed on 2026-11-07.
+- [ ] Create `docs/axiom-correspondence.md`, mapping every field to Definition
+  1.1.1 and explaining the separately supplied category structures and initial
+  object. For clauses represented by derived results, cite those declarations.
+- [ ] Check that the converse presentation of CF5 follows using identities,
+  and document how target cofibrancy is derived from composition.
+- [ ] Check universe behavior on empty, finite, and countable indexing types.
+  Distinguish the natural-number diagram category from the coproduct universe.
+- [ ] Review transport to another chosen initial object and to isomorphic
+  representatives of the colimits used in the axioms.
+
+Interface decision already established by inspection: mathlib's coproduct
+inclusion instances in `ModelCategory/IsCofibrant.lean` require unrestricted
+`IsStableUnderCobaseChange`. Our CF3 has cofibrancy hypotheses, so use its
+restricted square lemmas directly. Do not install the stronger instance.
+Likewise, do not assert unrestricted `ContainsIdentities` or `RespectsIso` for
+cofibrations without a separate justification covering noncofibrant sources.
+
+Completion criterion: every axiom clause has a recorded correspondence, with
+any discrepancy fixed and checked by a build. Until then the audit remains open.
+
+### B. Binary coproduct foundation — implemented
+
+Source target: the binary construction used in Lemma 1.2.1(1).
+
+| Declaration | Interface provided |
+| --- | --- |
+| `hasBinaryCoproduct` | Existence for two cofibrant objects |
+| `cofibration_coprod_inl` | Left inclusion |
+| `cofibration_coprod_inr` | Right inclusion |
+| `coprod_cofibrant` | Cofibrancy of the chosen coproduct |
+| `cofibration_coprod_map_id` | Cofibration after adding a fixed cofibrant summand |
+| `weakEquivalence_coprod_map_id` | Weak equivalence for the corresponding trivial cofibration |
+
+All six results use CF1–CF4 only. Existence is an explicit theorem: callers can
+install it locally with `let := hasBinaryCoproduct A B`. The remaining results
+accept existing coproduct instances, so they apply to the caller's chosen
+coproduct. No global existence or cofibration instances are introduced.
+
+Reused categorical infrastructure:
+
+- `isCoproductOfIsInitialIsPushout` converts a pushout cocone to a binary cofan.
+- `IsPushout.of_hasBinaryCoproduct'` supplies the inclusion square.
+- `IsPushout.of_coprod_inl_with_id` supplies the square for a map with a fixed
+  summand; its flipped orientation matches the CF3 interface.
+
+### C. Finish the binary map API — next
+
+1. Obtain the fixed-left-summand analogues of the two map lemmas. Compare a
+   direct universal-property proof of the square with transport by coproduct
+   symmetry; choose the shorter proof that preserves the hypotheses.
+2. Factor `coprod.map f g` through the intermediate coproduct with one target
+   summand. Supply its existence and cofibrancy locally.
+3. Prove `cofibration_coprod_map`, then `weakEquivalence_coprod_map` when both
+   component maps are trivial cofibrations. Use mathlib's existing composition
+   and weak-equivalence API rather than adding duplicate lemmas.
+
+Completion criterion: the two-map results compile under
+`ABCPrecofibrationCategory`, without CF5, general coproducts, or unrestricted
+pushout stability. Handle targets by deriving their cofibrancy from the input
+cofibrations, rather than requiring redundant assumptions.
+
+### D. Pass from binary to finite families
+
+1. Start with `Fin n`-indexed families. Check mathlib's existing decomposition
+   of a coproduct indexed by `Fin (n + 1)` before introducing recursion.
+2. Treat `n = 0` using the initial object. Record how the unique map between
+   empty coproducts is identified with an isomorphism.
+3. Prove existence and cofibrancy by induction, then prove preservation of
+   cofibrations and trivial cofibrations using package C.
+4. Transport to an arbitrary finite indexing type through an equivalence with
+   `Fin n`, reusing mathlib reindexing isomorphisms.
+
+Completion criterion: cover the cofibration side of Lemma 1.2.1, including the
+empty family, without strengthening the category assumptions. Do not mark the
+whole finite-coproduct milestone complete after only the binary case.
+
+### E. First factorization increment
+
+After package B, the next independent mathematical target is Lemma 1.3.1(1)
+with the extra coproduct-map condition of Remark 1.3.2 retained. Proposed result:
+`exists_brown_factorization` in `Factorization.lean`.
+
+Implementation tasks:
+
+1. Write an existential statement exposing the intermediate object, the three
+   maps, and all equations in Lean composition order.
+2. Apply the existing CF4 field to `coprod.desc f (𝟙 B)`.
+3. Derive the properties of its restrictions using package B and mathlib's
+   two-out-of-three lemmas. Keep the stronger coproduct-map property available
+   for the later relative construction.
+4. Decide whether a data structure improves actual downstream use only after
+   writing the existential theorem; avoid choosing factorizations globally.
+
+Next, treat Lemma 1.3.3(1) as a separate increment. Expose the comparison map
+from the relevant pushout and its cofibration property in the result. Then
+transcribe all compatibility equations for Lemma 1.3.4(1) before proving it.
+Do not combine these three results into one implementation task.
+
+### F. Extension and cylinder entry point
+
+Before starting §1.4, make a statement-by-statement dependency list and select
+its first cofibration-side lemma. Keep that work separate from the basic Brown
+factorization increment.
+
+For §1.5, inspect the existing `HomotopicalAlgebra.Precylinder`, `Cylinder`, and
+`Cylinder.IsGood` interfaces in mathlib's `ModelCategory/Cylinder.lean` before
+defining a project-specific structure. These interfaces already exist; their
+existence theorems may require stronger assumptions. First attempt to construct
+a good cylinder using our factorization field and package B. Prove the endpoint
+properties under the ABC assumptions. Defer the broader homotopy relation API
+until its required extension results have been established.
 
 ## Milestone 2 — Factorization and extension lemmas
 
@@ -132,12 +256,14 @@ statements.
 
 ## Immediate next increment
 
-Start with Milestone 0: audit Definition 1.1.1 and run the baseline build.
-Then select the smallest missing finite-coproduct result from §1.2. Record its
-exact paper number and Lean declaration here before moving to the next result.
+Continue with package C (the two-map binary coproduct API), and complete the
+foundation correspondence note before treating the axioms as audited. Package E
+is also available once the binary foundation is in place.
 
 ## Progress log
 
 | Date | Increment | Status / evidence |
 | --- | --- | --- |
 | 2026-11-07 | Inspect existing modules and create this roadmap | Plan created; foundation audit and build pending |
+| 2026-11-07 | Baseline validation | `lake build` passed (1808 jobs) |
+| 2026-11-07 | Binary coproduct foundation | Six declarations in `Coproducts.lean`; exported by the library root; `lake build` passed (1810 jobs), without warnings |

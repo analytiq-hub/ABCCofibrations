@@ -11,6 +11,12 @@ Import `ABCCofibrations.Basic` for:
 - `ABCCofibrations.ABCCofibrationCategory.{w} C`: CF1–CF6, with coproducts indexed
   by `Type w`.
 
+Import `ABCCofibrations.Coproducts` for binary coproducts of cofibrant objects
+and their inclusions, together with preservation of (trivial) cofibrations when
+adding a fixed cofibrant summand. These results require only CF1–CF4.
+
+The incremental roadmap is in [docs/formalization-plan.md](docs/formalization-plan.md).
+
 Both use mathlib's `CategoryWithCofibrations`, `CategoryWithWeakEquivalences`,
 and `IsCofibrant`. Supply `[Category C]`, the two morphism-class instances,
 and `[HasInitial C]` separately. The axiom classes are propositions about those

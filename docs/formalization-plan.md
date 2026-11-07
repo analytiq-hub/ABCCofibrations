@@ -198,13 +198,17 @@ Completion criterion: cover the cofibration side of Lemma 1.2.1, including the
 empty family, without strengthening the category assumptions. Do not mark the
 whole finite-coproduct milestone complete after only the binary case.
 
-### E. First factorization increment
+### E. First factorization increment — Brown factorization implemented
 
-After package B, the next independent mathematical target is Lemma 1.3.1(1)
-with the extra coproduct-map condition of Remark 1.3.2 retained. Proposed result:
-`exists_brown_factorization` in `Factorization.lean`.
+`Factorization.lean` now proves `exists_brown_factorization` (Lemma 1.3.1(1))
+and `exists_brown_factorization_with_coprod` (Remark 1.3.2). Both expose the
+intermediate cofibrant object, the three maps, their morphism properties, and
+the two factorization/section equations. The basic theorem constructs a
+coproduct instance locally; the stronger theorem works with the caller's
+chosen coproduct and retains its combined map as a cofibration.
+No factorization data structure or global choice was needed.
 
-Implementation tasks:
+Completed implementation tasks:
 
 1. Write an existential statement exposing the intermediate object, the three
    maps, and all equations in Lean composition order.
@@ -288,10 +292,11 @@ statements.
 
 ## Immediate next increment
 
-Continue with package E: Brown factorization, retaining the stronger
-coproduct-map condition from Remark 1.3.2. Complete the foundation correspondence
-note before treating the axioms as audited. The finite-coproduct portion of
-Milestone 1 is complete; the elementary API review remains open.
+Continue with Lemma 1.3.3(1), the relative factorization construction described
+in package E. Keep its comparison map from the pushout explicit. Complete the
+foundation correspondence note before treating the axioms as audited.
+The finite-coproduct portion of Milestone 1 and the basic Brown factorization
+increment are complete; the elementary API review remains open.
 
 ## Progress log
 
@@ -302,3 +307,4 @@ Milestone 1 is complete; the elementary API review remains open.
 | 2026-11-07 | Binary coproduct foundation | Six declarations in `Coproducts.lean`; exported by the library root; `lake build` passed (1810 jobs), without warnings |
 | 2026-11-07 | Binary maps and finite existence | Four binary-map declarations and two `Fin n` coproduct declarations; `lake build` passed (1822 jobs), without warnings |
 | 2026-11-07 | Complete Lemma 1.2.1(1) | Finite-family map properties and four results for arbitrary finite indexing types; `lake build` passed (1822 jobs), without warnings |
+| 2026-11-07 | Brown factorization | Lemma 1.3.1(1) and Remark 1.3.2 in `Factorization.lean`, exported by the library root; `lake build` passed (1824 jobs), without warnings |

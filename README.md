@@ -17,6 +17,12 @@ and preservation of (trivial) cofibrations by finite coproduct maps
 including the empty family, and require only CF1–CF4. Binary coproduct inclusion
 and map lemmas are also provided.
 
+Import `ABCCofibrations.Factorization` for `exists_brown_factorization`
+(Lemma 1.3.1(1)) and `exists_brown_factorization_with_coprod` (Remark 1.3.2).
+For a map between cofibrant objects, these supply a cofibration followed by a
+weak equivalence with a trivial cofibration section. The stronger theorem also
+retains the cofibration from the source–target coproduct.
+
 The incremental roadmap is in [docs/formalization-plan.md](docs/formalization-plan.md).
 
 Both use mathlib's `CategoryWithCofibrations`, `CategoryWithWeakEquivalences`,

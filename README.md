@@ -25,6 +25,11 @@ retains the cofibration from the source–target coproduct.
 The same module provides `exists_relative_factorization` (Lemma 1.3.3(1)),
 extending a specified factorization across a commutative square and retaining
 the cofibration from its pushout to the new factorization object.
+`exists_compatible_brown_factorization` extends Brown factorizations compatibly,
+with a cofibration from the combined relative pushout. The separate comparison
+claims of Lemma 1.3.4(1) remain unresolved; see the
+[obstruction note](docs/relative-brown-factorization.md) and its checked
+set-theoretic core in `ABCCofibrations.RelativeBrownObstruction`.
 
 The incremental roadmap is in [docs/formalization-plan.md](docs/formalization-plan.md).
 

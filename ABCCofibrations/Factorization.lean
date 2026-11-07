@@ -22,6 +22,11 @@ functorial choice imposed.
 `exists_relative_factorization` proves Lemma 1.3.3(1), extending a specified
 factorization across a commutative square. Its witnesses retain the comparison
 map from the pushout and both of its defining equations.
+
+`exists_compatible_brown_factorization` extends strengthened Brown
+factorizations across squares. It retains a combined relative comparison
+cofibration. The separate comparison claims of Lemma 1.3.4(1) remain unresolved;
+see `docs/relative-brown-factorization.md`.
 -/
 
 public section
@@ -126,5 +131,72 @@ theorem exists_relative_factorization
   let := hi₂
   exact ⟨Z₂, i₂, p₂, a', k, cofibrant_target i₂, hi₂, hp₂, hk,
     hi₂p₂, hleft, hright, rfl, rfl⟩
+
+/-- Extend a strengthened Brown factorization across a commutative square.
+The new combined coproduct map is a cofibration and the section is compatible
+with the original section. The combined relative comparison map is also a
+cofibration; no assertion about the two separate pushout comparisons is made.
+
+This is a partial version of the intended relative Brown factorization target;
+see `docs/relative-brown-factorization.md` for the obstruction to the additional
+claims in Lemma 1.3.4(1). -/
+theorem exists_compatible_brown_factorization
+    {A₁ A₂ B₁ B₂ Z₁ : C} [IsCofibrant A₁] [IsCofibrant A₂]
+    [IsCofibrant B₁] [IsCofibrant B₂]
+    [HasBinaryCoproduct A₁ B₁] [HasBinaryCoproduct A₂ B₂]
+    (f₁ : A₁ ⟶ B₁) (f₂ : A₂ ⟶ B₂) (a : A₁ ⟶ A₂) (b : B₁ ⟶ B₂)
+    (h : f₁ ≫ b = a ≫ f₂)
+    (i₁ : A₁ ⟶ Z₁) (p₁ : Z₁ ⟶ B₁) (s₁ : B₁ ⟶ Z₁)
+    [Cofibration (coprod.desc i₁ s₁)] [WeakEquivalence p₁]
+    [HasPushout (coprod.desc i₁ s₁) (coprod.map a b)]
+    (h₁ : i₁ ≫ p₁ = f₁) (hs₁ : s₁ ≫ p₁ = 𝟙 B₁) :
+    ∃ (Z₂ : C) (i₂ : A₂ ⟶ Z₂) (p₂ : Z₂ ⟶ B₂) (s₂ : B₂ ⟶ Z₂)
+      (c : Z₁ ⟶ Z₂)
+      (k : pushout (coprod.desc i₁ s₁) (coprod.map a b) ⟶ Z₂),
+      IsCofibrant Z₂ ∧ Cofibration i₂ ∧ WeakEquivalence p₂ ∧
+      Cofibration s₂ ∧ WeakEquivalence s₂ ∧ Cofibration (coprod.desc i₂ s₂) ∧
+      Cofibration k ∧ i₂ ≫ p₂ = f₂ ∧ s₂ ≫ p₂ = 𝟙 B₂ ∧
+      i₁ ≫ c = a ≫ i₂ ∧ c ≫ p₂ = p₁ ≫ b ∧ s₁ ≫ c = b ≫ s₂ ∧
+      pushout.inl (coprod.desc i₁ s₁) (coprod.map a b) ≫ k = c ∧
+      pushout.inr (coprod.desc i₁ s₁) (coprod.map a b) ≫ k = coprod.desc i₂ s₂ := by
+  let := coprod_cofibrant (A := A₁) (B := B₁)
+  let := coprod_cofibrant (A := A₂) (B := B₂)
+  have htop : coprod.desc i₁ s₁ ≫ p₁ = coprod.desc f₁ (𝟙 B₁) := by
+    ext <;> simp [h₁, hs₁]
+  have hsq : coprod.desc f₁ (𝟙 B₁) ≫ b =
+      coprod.map a b ≫ coprod.desc f₂ (𝟙 B₂) := by
+    ext <;> simp [h]
+  obtain ⟨Z₂, j₂, p₂, c, k, hZ₂, hj₂, hp₂, hk, hjp, hleft, hright, hkinl, hkinr⟩ :=
+    exists_relative_factorization (coprod.desc f₁ (𝟙 B₁)) (coprod.desc f₂ (𝟙 B₂))
+      (coprod.map a b) b hsq (coprod.desc i₁ s₁) p₁ htop
+  let := hj₂
+  let := hp₂
+  let i₂ := (coprod.inl : A₂ ⟶ A₂ ⨿ B₂) ≫ j₂
+  let s₂ := (coprod.inr : B₂ ⟶ A₂ ⨿ B₂) ≫ j₂
+  have hi₂ : Cofibration i₂ := by
+    let := cofibration_coprod_inl (A := A₂) (B := B₂)
+    dsimp [i₂]
+    infer_instance
+  have hs₂ : Cofibration s₂ := by
+    let := cofibration_coprod_inr (A := A₂) (B := B₂)
+    dsimp [s₂]
+    infer_instance
+  have hip : i₂ ≫ p₂ = f₂ := by simp [i₂, Category.assoc, hjp]
+  have hsp : s₂ ≫ p₂ = 𝟙 B₂ := by simp [s₂, Category.assoc, hjp]
+  have hsw : WeakEquivalence s₂ := by
+    let := weakEquivalence_of_isIso (𝟙 B₂)
+    exact weakEquivalence_of_postcomp_of_fac hsp
+  have hc : coprod.desc i₂ s₂ = j₂ := by ext <;> simp [i₂, s₂]
+  have hi : i₁ ≫ c = a ≫ i₂ := by
+    simpa [i₂, Category.assoc] using congrArg
+      (fun t ↦ (coprod.inl : A₁ ⟶ A₁ ⨿ B₁) ≫ t) hleft
+  have hs : s₁ ≫ c = b ≫ s₂ := by
+    simpa [s₂, Category.assoc] using congrArg
+      (fun t ↦ (coprod.inr : B₁ ⟶ A₁ ⨿ B₁) ≫ t) hleft
+  have hcombined : Cofibration (coprod.desc i₂ s₂) := by rw [hc]; exact hj₂
+  refine ⟨Z₂, i₂, p₂, s₂, c, k, hZ₂, hi₂, hp₂, hs₂, hsw, hcombined,
+    hk, hip, hsp, hi, hright, hs, hkinl, ?_⟩
+  rw [hc]
+  exact hkinr
 
 end ABCCofibrations.ABCPrecofibrationCategory

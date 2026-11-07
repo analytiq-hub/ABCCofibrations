@@ -234,15 +234,24 @@ The proof uses restricted CF3 to make the pushout cofibrant and CF4 to factor
 the induced map out of it. It makes no functorial choices and imposes no
 cofibration hypothesis on the left vertical map.
 
-Next, transcribe all compatibility equations for Lemma 1.3.4(1), the relative
-Brown factorization, before proving it. Retain both comparison-map properties
-in that statement. Keep this as a separate implementation increment.
+The attempt at Lemma 1.3.4(1) identified an obstruction to its separate
+pushout-comparison claims for arbitrary vertical maps. See
+[relative-brown-factorization.md](relative-brown-factorization.md) for the
+explicit finite-set example, its checked injectivity contradiction, and the
+precise scope of the formal verification.
+
+`exists_compatible_brown_factorization` now proves compatibility of the two
+Brown factorizations and a cofibration for the combined relative pushout
+comparison. This is a weaker replacement; the full lemma remains unresolved.
+The strengthened original statement must be corrected or clarified before
+using its separate-comparison claims in §1.4.
 
 ### F. Extension and cylinder entry point
 
 Before starting §1.4, make a statement-by-statement dependency list and select
 its first cofibration-side lemma. Keep that work separate from the basic Brown
-factorization increment.
+factorization increment. In particular, audit the uses of Lemma 1.3.4 in the
+gluing argument against the obstruction recorded in package E.
 
 For §1.5, inspect the existing `HomotopicalAlgebra.Precylinder`, `Cylinder`, and
 `Cylinder.IsGood` interfaces in mathlib's `ModelCategory/Cylinder.lean` before
@@ -306,11 +315,12 @@ statements.
 
 ## Immediate next increment
 
-Continue with Lemma 1.3.4(1), relative Brown factorization, as described in
-package E. Complete the foundation correspondence note before treating the
-axioms as audited. The finite-coproduct portion of Milestone 1, basic Brown
-factorization, and relative factorization are complete; the elementary API
-review remains open.
+Resolve the intended separate-comparison statement of Lemma 1.3.4(1) before
+relying on it for the gluing argument. Independent work can continue with the
+foundation correspondence audit and cylinder existence. The finite-coproduct
+portion of Milestone 1, basic Brown factorization, relative factorization, and
+the weaker compatible Brown construction are complete. The full Lemma 1.3.4(1)
+and the elementary API review remain open.
 
 ## Progress log
 
@@ -323,3 +333,4 @@ review remains open.
 | 2026-11-07 | Complete Lemma 1.2.1(1) | Finite-family map properties and four results for arbitrary finite indexing types; `lake build` passed (1822 jobs), without warnings |
 | 2026-11-07 | Brown factorization | Lemma 1.3.1(1) and Remark 1.3.2 in `Factorization.lean`, exported by the library root; `lake build` passed (1824 jobs), without warnings |
 | 2026-11-07 | Relative factorization | Lemma 1.3.3(1), with the pushout comparison cofibration and all square equations; `lake build` passed (1824 jobs), without warnings |
+| 2026-11-07 | Compatible Brown factorization and obstruction | Weaker combined-comparison theorem plus a checked injectivity obstruction to the separate target-side claim; full Lemma 1.3.4(1) unresolved; `lake build` passed (1826 jobs), without warnings |

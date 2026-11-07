@@ -11,10 +11,11 @@ Import `ABCCofibrations.Basic` for:
 - `ABCCofibrations.ABCCofibrationCategory.{w} C`: CF1–CF6, with coproducts indexed
   by `Type w`.
 
-Import `ABCCofibrations.Coproducts` for binary coproducts of cofibrant objects,
-their inclusions, and preservation of (trivial) cofibrations by binary coproduct
-maps. It also provides existence and cofibrancy for `Fin n`-indexed coproducts,
-including the empty family. These results require only CF1–CF4.
+Import `ABCCofibrations.Coproducts` for finite coproducts of cofibrant objects
+and preservation of (trivial) cofibrations by finite coproduct maps
+(Lemma 1.2.1(1)). The results support any finite indexing type in any universe,
+including the empty family, and require only CF1–CF4. Binary coproduct inclusion
+and map lemmas are also provided.
 
 The incremental roadmap is in [docs/formalization-plan.md](docs/formalization-plan.md).
 

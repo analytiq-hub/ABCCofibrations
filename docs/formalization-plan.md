@@ -66,16 +66,17 @@ Change the current definitions only when this review identifies a concrete issue
 
 ## Milestone 1 — Elementary API and finite coproducts
 
-Implementation has begun in `ABCCofibrations/Coproducts.lean`; see the detailed
-work packages below. The general finite-family statement remains open.
+The finite-family results of Lemma 1.2.1(1) are implemented in
+`ABCCofibrations/Coproducts.lean`; see the detailed work packages below.
+The broader elementary API review remains open.
 
 - [ ] Add convenient lemmas for identities, composition, isomorphisms, and
   two-out-of-three where existing mathlib interfaces do not already suffice.
 - [ ] Expose pushout constructions and their cofibration/trivial-cofibration
   properties without requiring callers to invoke class fields repeatedly.
-- [ ] Develop finite coproducts of cofibrant objects from CF1–CF4, using the
+- [x] Develop finite coproducts of cofibrant objects from CF1–CF4, using the
   relevant results in §1.2 rather than assuming CF5.
-- [ ] Prove the corresponding elementary properties of coproduct inclusions
+- [x] Prove the corresponding elementary properties of coproduct inclusions
   and maps, with the paper's hypotheses checked individually.
 
 Suggested module: `ABCCofibrations/Coproducts.lean`. Keep genuinely foundational
@@ -158,14 +159,31 @@ Completion criterion: the two-map results compile under
 pushout stability. Handle targets by deriving their cofibrancy from the input
 cofibrations, rather than requiring redundant assumptions.
 
-### D. Pass from binary to finite families
+### D. Pass from binary to finite families — implemented
 
 Existence and cofibrancy are implemented for `Fin n` via `hasCoproduct_fin`
 and `coproduct_fin_cofibrant`. Their shared induction uses mathlib's
 `extendCofanIsColimit`, with the initial object as the empty case. Cofibrancy
 is transported to the caller's chosen coproduct by the unique colimit
-isomorphism. Finite-family map properties and arbitrary finite indexing types
-remain open.
+isomorphism. The map properties are implemented as
+`cofibration_coproduct_map_fin` and `weakEquivalence_coproduct_map_fin`.
+Their shared induction handles the empty map as an isomorphism, and compares
+each successor coproduct with the binary coproduct of its head and tail.
+
+The public results for an arbitrary `[Finite ι]` are:
+
+| Declaration | Conclusion |
+| --- | --- |
+| `hasCoproduct_finite` | Existence for a cofibrant family |
+| `coproduct_finite_cofibrant` | Cofibrancy of any chosen coproduct |
+| `cofibration_coproduct_map_finite` | Preservation of cofibrations |
+| `weakEquivalence_coproduct_map_finite` | Preservation of trivial cofibrations |
+
+These use a locally chosen equivalence with `Fin n` and mathlib's
+`Sigma.reindex`. No enumeration is exposed in the statement. The indexing
+universe is independent of the object and morphism universes. Together these
+results cover Lemma 1.2.1(1); they introduce no global instances.
+The following steps describe the completed construction.
 
 1. Start with `Fin n`-indexed families. Check mathlib's existing decomposition
    of a coproduct indexed by `Fin (n + 1)` before introducing recursion.
@@ -270,10 +288,10 @@ statements.
 
 ## Immediate next increment
 
-Continue with package D: prove the finite-family map properties for `Fin n`,
-then transport the results to arbitrary finite indexing types. Complete the
-foundation correspondence note before treating the axioms as audited. Package E
-is also available now that the binary foundation is in place.
+Continue with package E: Brown factorization, retaining the stronger
+coproduct-map condition from Remark 1.3.2. Complete the foundation correspondence
+note before treating the axioms as audited. The finite-coproduct portion of
+Milestone 1 is complete; the elementary API review remains open.
 
 ## Progress log
 
@@ -283,3 +301,4 @@ is also available now that the binary foundation is in place.
 | 2026-11-07 | Baseline validation | `lake build` passed (1808 jobs) |
 | 2026-11-07 | Binary coproduct foundation | Six declarations in `Coproducts.lean`; exported by the library root; `lake build` passed (1810 jobs), without warnings |
 | 2026-11-07 | Binary maps and finite existence | Four binary-map declarations and two `Fin n` coproduct declarations; `lake build` passed (1822 jobs), without warnings |
+| 2026-11-07 | Complete Lemma 1.2.1(1) | Finite-family map properties and four results for arbitrary finite indexing types; `lake build` passed (1822 jobs), without warnings |

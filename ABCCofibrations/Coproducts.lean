@@ -12,15 +12,16 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 /-!
 # Coproducts of cofibrant objects
 
-The binary case of Lemma 1.2.1(1) of Rădulescu-Banu,
-*Cofibrations in Homotopy Theory*, together with existence and cofibrancy
-of `Fin n`-indexed coproducts. Only CF1–CF4 are assumed.
+Lemma 1.2.1(1) of Rădulescu-Banu, *Cofibrations in Homotopy Theory*:
+finite coproducts of cofibrant objects exist and are cofibrant, and finite
+coproducts preserve cofibrations and trivial cofibrations with cofibrant sources.
+The indexing type may lie in any universe. Only CF1–CF4 are assumed.
 The pushout arguments retain the cofibrancy hypotheses of CF3.
 -/
 
 public section
 
-universe v u
+universe w v u
 
 open CategoryTheory Limits HomotopicalAlgebra
 
@@ -176,5 +177,191 @@ theorem coproduct_fin_cofibrant {n : ℕ} (A : Fin n → C)
   let e := hc.coconePointUniqueUpToIso (colimit.isColimit _)
   let := cofibration_of_isIso e.hom
   exact cofibrant_target e.hom
+
+/-- Decompose a chosen finite coproduct into its head and tail. -/
+private noncomputable def coproductFinSuccIso {n : ℕ} (A : Fin (n + 1) → C)
+    [HasCoproduct A] [HasCoproduct (fun i : Fin n ↦ A i.succ)]
+    [HasBinaryCoproduct (A 0) (∐ fun i : Fin n ↦ A i.succ)] :
+    (A 0 ⨿ ∐ fun i : Fin n ↦ A i.succ) ≅ ∐ A :=
+  (extendCofanIsColimit A (colimit.isColimit _)
+    (colimit.isColimit (pair (A 0) (∐ fun i : Fin n ↦ A i.succ)))).coconePointUniqueUpToIso
+      (colimit.isColimit _)
+
+omit [CategoryWithCofibrations C] [CategoryWithWeakEquivalences C]
+  [HasInitial C] [ABCPrecofibrationCategory C] in
+@[reassoc (attr := simp)]
+private theorem coproductFinSuccIso_zero {n : ℕ} (A : Fin (n + 1) → C)
+    [HasCoproduct A] [HasCoproduct (fun i : Fin n ↦ A i.succ)]
+    [HasBinaryCoproduct (A 0) (∐ fun i : Fin n ↦ A i.succ)] :
+    coprod.inl ≫ (coproductFinSuccIso A).hom = Sigma.ι A 0 := by
+  simpa [coproductFinSuccIso, extendCofan, BinaryCofan.inl, coprod.inl, Sigma.ι] using
+    (IsColimit.comp_coconePointUniqueUpToIso_hom
+      (extendCofanIsColimit A (colimit.isColimit _)
+        (colimit.isColimit (pair (A 0) (∐ fun i : Fin n ↦ A i.succ))))
+      (colimit.isColimit _) ⟨0⟩)
+
+omit [CategoryWithCofibrations C] [CategoryWithWeakEquivalences C]
+  [HasInitial C] [ABCPrecofibrationCategory C] in
+@[reassoc (attr := simp)]
+private theorem coproductFinSuccIso_succ {n : ℕ} (A : Fin (n + 1) → C)
+    [HasCoproduct A] [HasCoproduct (fun i : Fin n ↦ A i.succ)]
+    [HasBinaryCoproduct (A 0) (∐ fun i : Fin n ↦ A i.succ)] (i : Fin n) :
+    Sigma.ι (fun j : Fin n ↦ A j.succ) i ≫ coprod.inr ≫
+      (coproductFinSuccIso A).hom = Sigma.ι A i.succ := by
+  simpa [coproductFinSuccIso, extendCofan, Category.assoc,
+    BinaryCofan.inr, coprod.inr, Sigma.ι] using
+    (IsColimit.comp_coconePointUniqueUpToIso_hom
+      (extendCofanIsColimit A (colimit.isColimit _)
+        (colimit.isColimit (pair (A 0) (∐ fun i : Fin n ↦ A i.succ))))
+      (colimit.isColimit _) ⟨i.succ⟩)
+
+/-- Simultaneous induction keeps the cofibration and trivial-cofibration
+statements on the same coproduct decomposition. -/
+private theorem coproduct_map_fin_properties : ∀ (n : ℕ) {A B : Fin n → C}
+    (f : ∀ i, A i ⟶ B i) (_hA : ∀ i, IsCofibrant (A i))
+    (_hf : ∀ i, Cofibration (f i)) [HasCoproduct A] [HasCoproduct B],
+    Cofibration (Limits.Sigma.map f) ∧
+      ((∀ i, WeakEquivalence (f i)) → WeakEquivalence (Limits.Sigma.map f))
+  | 0, A, B, f, hA, _, _, _ => by
+    let := coproduct_fin_cofibrant A hA
+    let e : (∐ A) ≅ ∐ B :=
+      { hom := Limits.Sigma.map f
+        inv := Sigma.desc (fun i ↦ Fin.elim0 i)
+        hom_inv_id := by ext i; exact Fin.elim0 i
+        inv_hom_id := by ext i; exact Fin.elim0 i }
+    let : IsIso (Limits.Sigma.map f) := e.isIso_hom
+    exact ⟨cofibration_of_isIso e.hom, fun _ ↦ weakEquivalence_of_isIso e.hom⟩
+  | n + 1, A, B, f, hA, hf, _, _ => by
+    have hB (i) : IsCofibrant (B i) := by
+      let := hA i
+      let := hf i
+      exact cofibrant_target (f i)
+    let := hasCoproduct_fin (fun i : Fin n ↦ A i.succ) (fun i ↦ hA i.succ)
+    let := hasCoproduct_fin (fun i : Fin n ↦ B i.succ) (fun i ↦ hB i.succ)
+    let := coproduct_fin_cofibrant (fun i : Fin n ↦ A i.succ) (fun i ↦ hA i.succ)
+    let := coproduct_fin_cofibrant (fun i : Fin n ↦ B i.succ) (fun i ↦ hB i.succ)
+    let := hA 0
+    let := hB 0
+    let := hf 0
+    let := hasBinaryCoproduct (A 0) (∐ fun i : Fin n ↦ A i.succ)
+    let := hasBinaryCoproduct (B 0) (∐ fun i : Fin n ↦ B i.succ)
+    obtain ⟨hc, hw⟩ := coproduct_map_fin_properties n (fun i ↦ f i.succ)
+      (fun i ↦ hA i.succ) (fun i ↦ hf i.succ)
+    let := hc
+    let eA := coproductFinSuccIso A
+    let eB := coproductFinSuccIso B
+    let g := coprod.map (f 0) (Limits.Sigma.map (fun i : Fin n ↦ f i.succ))
+    have fac : Limits.Sigma.map f = eA.inv ≫ g ≫ eB.hom := by
+      apply (cancel_epi eA.hom).1
+      simp only [Iso.hom_inv_id_assoc]
+      apply coprod.hom_ext
+      · simp [eA, eB, g]
+      · apply Sigma.hom_ext
+        intro i
+        simp [eA, eB, g]
+    let := coproduct_fin_cofibrant A hA
+    let := cofibration_of_isIso eA.inv
+    let := coprod_cofibrant (A := B 0) (B := ∐ fun i : Fin n ↦ B i.succ)
+    let := cofibration_of_isIso eB.hom
+    let := cofibration_coprod_map (f 0) (Limits.Sigma.map (fun i : Fin n ↦ f i.succ))
+    refine ⟨?_, ?_⟩
+    · rw [fac]
+      infer_instance
+    · intro hwe
+      let := hwe 0
+      let := hw (fun i ↦ hwe i.succ)
+      let := weakEquivalence_coprod_map (f 0) (Limits.Sigma.map (fun i : Fin n ↦ f i.succ))
+      let := weakEquivalence_of_isIso eA.inv
+      let := weakEquivalence_of_isIso eB.hom
+      rw [fac]
+      infer_instance
+
+/-- Finite coproducts preserve cofibrations with cofibrant sources. -/
+theorem cofibration_coproduct_map_fin {n : ℕ} {A B : Fin n → C}
+    (f : ∀ i, A i ⟶ B i) (hA : ∀ i, IsCofibrant (A i))
+    (hf : ∀ i, Cofibration (f i)) [HasCoproduct A] [HasCoproduct B] :
+    Cofibration (Limits.Sigma.map f) :=
+  (coproduct_map_fin_properties n f hA hf).1
+
+/-- Finite coproducts preserve trivial cofibrations with cofibrant sources. -/
+theorem weakEquivalence_coproduct_map_fin {n : ℕ} {A B : Fin n → C}
+    (f : ∀ i, A i ⟶ B i) (hA : ∀ i, IsCofibrant (A i))
+    (hf : ∀ i, Cofibration (f i)) (hw : ∀ i, WeakEquivalence (f i))
+    [HasCoproduct A] [HasCoproduct B] : WeakEquivalence (Limits.Sigma.map f) :=
+  (coproduct_map_fin_properties n f hA hf).2 hw
+
+/-- A coproduct of any finite family of cofibrant objects exists using CF1–CF4. -/
+theorem hasCoproduct_finite {ι : Type w} [Finite ι] (A : ι → C)
+    (hA : ∀ i, IsCofibrant (A i)) : HasCoproduct A := by
+  let := Fintype.ofFinite ι
+  let e := (Fintype.equivFin ι).symm
+  let := hasCoproduct_fin (A ∘ e) (fun i ↦ hA (e i))
+  exact hasCoproduct_of_equiv_of_iso (A ∘ e) A e.symm (fun i ↦ eqToIso (by simp))
+
+/-- Every chosen coproduct of a finite cofibrant family is cofibrant. -/
+theorem coproduct_finite_cofibrant {ι : Type w} [Finite ι] (A : ι → C)
+    (hA : ∀ i, IsCofibrant (A i)) [HasCoproduct A] : IsCofibrant (∐ A) := by
+  let := Fintype.ofFinite ι
+  let e := (Fintype.equivFin ι).symm
+  let := hasCoproduct_fin (A ∘ e) (fun i ↦ hA (e i))
+  let := coproduct_fin_cofibrant (A ∘ e) (fun i ↦ hA (e i))
+  let := cofibration_of_isIso (Sigma.reindex e A).hom
+  exact cofibrant_target (Sigma.reindex e A).hom
+
+/-- The cofibration assertion in Lemma 1.2.1(1), for any finite indexing type. -/
+theorem cofibration_coproduct_map_finite {ι : Type w} [Finite ι] {A B : ι → C}
+    (f : ∀ i, A i ⟶ B i) (hA : ∀ i, IsCofibrant (A i))
+    (hf : ∀ i, Cofibration (f i)) [HasCoproduct A] [HasCoproduct B] :
+    Cofibration (Limits.Sigma.map f) := by
+  let := Fintype.ofFinite ι
+  let e := (Fintype.equivFin ι).symm
+  have hB (i) : IsCofibrant (B i) := by
+    let := hA i
+    let := hf i
+    exact cofibrant_target (f i)
+  let := hasCoproduct_fin (A ∘ e) (fun i ↦ hA (e i))
+  let := hasCoproduct_fin (B ∘ e) (fun i ↦ hB (e i))
+  let := coproduct_finite_cofibrant A hA
+  let := coproduct_fin_cofibrant (B ∘ e) (fun i ↦ hB (e i))
+  let := cofibration_of_isIso (Sigma.reindex e A).inv
+  let := cofibration_of_isIso (Sigma.reindex e B).hom
+  let := cofibration_coproduct_map_fin (A := A ∘ e) (B := B ∘ e) (fun i ↦ f (e i))
+    (fun i ↦ hA (e i)) (fun i ↦ hf (e i))
+  have fac : Limits.Sigma.map f = (Sigma.reindex e A).inv ≫
+      Limits.Sigma.map (f := B ∘ e) (g := A ∘ e) (fun i ↦ f (e i)) ≫ (Sigma.reindex e B).hom := by
+    apply (cancel_epi (Sigma.reindex e A).hom).1
+    simp only [Iso.hom_inv_id_assoc]
+    apply Sigma.hom_ext
+    intro i
+    simp
+  rw [fac]
+  infer_instance
+
+/-- The trivial-cofibration assertion in Lemma 1.2.1(1), for any finite indexing type. -/
+theorem weakEquivalence_coproduct_map_finite {ι : Type w} [Finite ι] {A B : ι → C}
+    (f : ∀ i, A i ⟶ B i) (hA : ∀ i, IsCofibrant (A i))
+    (hf : ∀ i, Cofibration (f i)) (hw : ∀ i, WeakEquivalence (f i))
+    [HasCoproduct A] [HasCoproduct B] : WeakEquivalence (Limits.Sigma.map f) := by
+  let := Fintype.ofFinite ι
+  let e := (Fintype.equivFin ι).symm
+  have hB (i) : IsCofibrant (B i) := by
+    let := hA i
+    let := hf i
+    exact cofibrant_target (f i)
+  let := hasCoproduct_fin (A ∘ e) (fun i ↦ hA (e i))
+  let := hasCoproduct_fin (B ∘ e) (fun i ↦ hB (e i))
+  let := weakEquivalence_of_isIso (Sigma.reindex e A).inv
+  let := weakEquivalence_of_isIso (Sigma.reindex e B).hom
+  let := weakEquivalence_coproduct_map_fin (A := A ∘ e) (B := B ∘ e) (fun i ↦ f (e i))
+    (fun i ↦ hA (e i)) (fun i ↦ hf (e i)) (fun i ↦ hw (e i))
+  have fac : Limits.Sigma.map f = (Sigma.reindex e A).inv ≫
+      Limits.Sigma.map (f := B ∘ e) (g := A ∘ e) (fun i ↦ f (e i)) ≫ (Sigma.reindex e B).hom := by
+    apply (cancel_epi (Sigma.reindex e A).hom).1
+    simp only [Iso.hom_inv_id_assoc]
+    apply Sigma.hom_ext
+    intro i
+    simp
+  rw [fac]
+  infer_instance
 
 end ABCCofibrations.ABCPrecofibrationCategory

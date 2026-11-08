@@ -5,14 +5,16 @@ Authors: ABCCofibrations contributors
 -/
 module
 
+public import ABCCofibrations.Extension
 public import ABCCofibrations.HomotopyCategory
 
 /-!
 # Cancellation of weak equivalences up to left homotopy
 
-Postcomposition by a weak equivalence between cofibrant objects reflects
-left homotopy (Theorem 6.4.3(1)(b)(ii)). The proof uses a pushout of the
-cylinder boundary and CF4, without a calculus of fractions or localization.
+Postcomposition and precomposition by a weak equivalence between cofibrant
+objects reflect left homotopy (Theorem 6.4.3(1)(b)). Postcomposition uses a
+pushout of the cylinder boundary and CF4. Precomposition extends that cylinder
+along the weak equivalence and cancels the resulting trivial cofibration.
 -/
 
 public section
@@ -74,6 +76,69 @@ theorem postcomp_weakEquivalence_iff {f g : A ⟶ B}
     {D : C} [IsCofibrant D] (b : B ⟶ D) [WeakEquivalence b] :
     LeftHomotopyRel (f ≫ b) (g ≫ b) ↔ LeftHomotopyRel f g :=
   ⟨of_postcomp_weakEquivalence b, fun h ↦ h.postcomp b⟩
+
+/-- A weak equivalence before the source can be cancelled from a left homotopy
+(Theorem 6.4.3(1)(b)(i)). -/
+theorem of_precomp_weakEquivalence {A' : C} [IsCofibrant A']
+    [HasBinaryCoproduct A' A'] (a : A' ⟶ A) [WeakEquivalence a] {f g : A ⟶ B}
+    (h : LeftHomotopyRel (a ≫ f) (a ≫ g)) : LeftHomotopyRel f g := by
+  obtain ⟨P, hP⟩ := exists_good_cylinder A'
+  let := hP
+  let := coprod_cofibrant (A := A') (B := A')
+  let := coprod_cofibrant (A := A) (B := A)
+  let := weakEquivalence_coprod_map_of_weakEquivalence a a
+  obtain ⟨Q, c, k, hQ, _, hk, _, _, hπ, hkinl, hkinr⟩ :=
+    exists_relative_good_cylinder P a
+  let := hQ
+  let := hk
+  obtain ⟨B'', b'', hb'', hbw, ⟨H⟩⟩ := h.exists_on_cylinder P
+  let := hb''
+  let := hbw
+  let := cofibrant_target b''
+  have hsq : P.i ≫ H.h =
+      coprod.map a a ≫ coprod.desc (f ≫ b'') (g ≫ b'') := by
+    ext <;> simp [Precylinder.i, H.h₀, H.h₁]
+  let u := pushout.desc H.h (coprod.desc (f ≫ b'') (g ≫ b'')) hsq
+  let := weakEquivalence_pushout_inl P.i (coprod.map a a)
+  have hc : WeakEquivalence c :=
+    weakEquivalence_of_postcomp_of_fac (g := Q.π) (fg := P.π ≫ a) hπ
+  let := hc
+  have hkw : WeakEquivalence k :=
+    weakEquivalence_of_precomp_of_fac (f := pushout.inl P.i (coprod.map a a)) hkinl
+  let := hkw
+  let := cofibration_of_isPushout (IsPushout.of_hasPushout P.i (coprod.map a a))
+  let := cofibrant_target (pushout.inr P.i (coprod.map a a))
+  let b' := pushout.inr k u
+  have hb' : Cofibration b' :=
+    cofibration_of_isPushout (IsPushout.of_hasPushout k u)
+  have hb'w : WeakEquivalence b' :=
+    weakEquivalence_of_isPushout (IsPushout.of_hasPushout k u)
+  let := hb'
+  let := hb'w
+  let := cofibrant_target b'
+  have hhom : LeftHomotopyRel (f ≫ b'' ≫ b') (g ≫ b'' ≫ b') := by
+    refine of_strict ⟨Q, hQ, ⟨?_⟩⟩
+    exact
+      { h := pushout.inl k u
+        h₀ := by
+          rw [← Precylinder.inl_i (P := Q.toPrecylinder), ← hkinr, Category.assoc,
+            Category.assoc,
+            pushout.condition,
+            ← Category.assoc (pushout.inr P.i (coprod.map a a)) u b',
+            pushout.inr_desc, ← Category.assoc, coprod.inl_desc, Category.assoc]
+        h₁ := by
+          rw [← Precylinder.inr_i (P := Q.toPrecylinder), ← hkinr, Category.assoc,
+            Category.assoc,
+            pushout.condition,
+            ← Category.assoc (pushout.inr P.i (coprod.map a a)) u b',
+            pushout.inr_desc, ← Category.assoc, coprod.inr_desc, Category.assoc] }
+  exact of_postcomp_weakEquivalence (b'' ≫ b') hhom
+
+/-- Precomposition by a weak equivalence preserves and reflects left homotopy. -/
+theorem precomp_weakEquivalence_iff {A' : C} [IsCofibrant A']
+    [HasBinaryCoproduct A' A'] (a : A' ⟶ A) [WeakEquivalence a] {f g : A ⟶ B} :
+    LeftHomotopyRel (a ≫ f) (a ≫ g) ↔ LeftHomotopyRel f g :=
+  ⟨of_precomp_weakEquivalence a, fun h ↦ h.precomp a⟩
 
 end LeftHomotopyRel
 

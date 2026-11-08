@@ -90,6 +90,45 @@ theorem exists_brown_factorization (f : A ⟶ B) :
     exists_brown_factorization_with_coprod f
   exact ⟨Z, i, p, s, hZ, hi, hp, hs, hsw, hip, hsp⟩
 
+/-- Binary coproducts preserve weak equivalences between cofibrant objects.
+The maps need not be cofibrations: Brown factorization reduces the claim to
+Lemma 1.2.1(1). -/
+theorem weakEquivalence_coprod_map_of_weakEquivalence
+    {A₀ A₁ B₀ B₁ : C} (f : A₀ ⟶ B₀) (g : A₁ ⟶ B₁)
+    [IsCofibrant A₀] [IsCofibrant A₁] [IsCofibrant B₀] [IsCofibrant B₁]
+    [WeakEquivalence f] [WeakEquivalence g]
+    [HasBinaryCoproduct A₀ A₁] [HasBinaryCoproduct B₀ B₁] :
+    WeakEquivalence (coprod.map f g) := by
+  obtain ⟨Z₀, i₀, p₀, s₀, hZ₀, hi₀, hp₀, hs₀, hsw₀, hip₀, hsp₀⟩ :=
+    exists_brown_factorization f
+  obtain ⟨Z₁, i₁, p₁, s₁, hZ₁, hi₁, hp₁, hs₁, hsw₁, hip₁, hsp₁⟩ :=
+    exists_brown_factorization g
+  let := hZ₀
+  let := hZ₁
+  let := hi₀
+  let := hi₁
+  let := hp₀
+  let := hp₁
+  let := hs₀
+  let := hs₁
+  let := hsw₀
+  let := hsw₁
+  have hi₀w : WeakEquivalence i₀ := weakEquivalence_of_postcomp_of_fac hip₀
+  have hi₁w : WeakEquivalence i₁ := weakEquivalence_of_postcomp_of_fac hip₁
+  let := hi₀w
+  let := hi₁w
+  let := hasBinaryCoproduct Z₀ Z₁
+  have hfac : coprod.map f g = coprod.map i₀ i₁ ≫ coprod.map p₀ p₁ := by
+    ext <;> simp [← hip₀, ← hip₁]
+  have hsec : coprod.map s₀ s₁ ≫ coprod.map p₀ p₁ = 𝟙 (B₀ ⨿ B₁) := by
+    ext <;> simp [hsp₀, hsp₁]
+  let := weakEquivalence_coprod_map i₀ i₁
+  let := weakEquivalence_coprod_map s₀ s₁
+  let := weakEquivalence_of_isIso (𝟙 (B₀ ⨿ B₁))
+  let := weakEquivalence_of_precomp_of_fac hsec
+  rw [hfac]
+  infer_instance
+
 /-- Relative factorization (Lemma 1.3.3(1)). Extend a specified factorization
 `i₁ ≫ p₁ = f₁` across a square with cofibrant left-hand objects. No cofibrancy
 of the right-hand objects, or cofibration property of `a`, is required.

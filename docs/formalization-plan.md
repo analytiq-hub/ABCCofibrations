@@ -402,9 +402,12 @@ Completed localization infrastructure:
   endpoint coproduct map can also be a cofibration.
 - `HomotopyFractions.lean`: sufficient equality criteria using common extensions
   with left-homotopic numerators and denominators.
-- `HomotopyCancellation.lean`: postcomposition by a weak equivalence preserves
-  and reflects left homotopy. Consequently every weak equivalence in
-  `LeftHomotopyCategory C` is a monomorphism.
+- `HomotopyCancellation.lean`: precomposition and postcomposition by a weak
+  equivalence preserve and reflect left homotopy. Consequently every weak
+  equivalence in `LeftHomotopyCategory C` is a monomorphism. The precomposition
+  argument uses `weakEquivalence_coprod_map_of_weakEquivalence` in
+  `Factorization.lean`: binary coproducts preserve weak equivalences between
+  cofibrant objects.
 
 These results concern localization of `CofibrantObject C`. They do not yet
 identify it with localization of the entire ambient category (Theorem 6.1.6).
@@ -417,11 +420,11 @@ argument or existing mathlib API whenever it establishes the same statement
 under the intended hypotheses. Reassess the remaining dependencies after each
 substantial result.
 
-1. Postcomposition cancellation (Theorem 6.4.3(1)(b)(ii)) is complete as
-   `LeftHomotopyRel.of_postcomp_weakEquivalence` and
-   `LeftHomotopyRel.postcomp_weakEquivalence_iff`. Next investigate
-   precomposition cancellation (b)(i) and whether the quotient's new
-   monomorphism instances simplify the localization faithfulness argument.
+1. Cancellation (Theorem 6.4.3(1)(b)) is complete in both directions:
+   `LeftHomotopyRel.of_postcomp_weakEquivalence`,
+   `LeftHomotopyRel.of_precomp_weakEquivalence`, and the corresponding
+   `iff` statements. The quotient's monomorphism instances remain available
+   for the localization faithfulness argument.
 2. Prove the homotopy Ore condition (Theorem 6.4.3(1)(a)), and install the
    left calculus of fractions on the homotopy quotient using mathlib.
 3. Deduce the converse equality criterion for localization of cofibrant objects:
@@ -530,3 +533,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-07 | Localization comparison and Brown functor lemma | Comparison functors and their universal properties; equivalence of localization at weak equivalences and at trivial cofibrations on cofibrant objects |
 | 2026-11-07 | Fraction representations and operations | Cofibrant-subcategory fraction existence, composition, common denominators, finite families, cofibration numerators, and sufficient homotopy equality criteria; `lake build ABCCofibrations` passed (1888 jobs), without warnings |
 | 2026-11-07 | Postcomposition cancellation | `HomotopyCancellation.lean` proves reflection of left homotopy by weak equivalences and monomorphism instances in the homotopy quotient; `lake build ABCCofibrations` passed (1890 jobs), without warnings |
+| 2026-11-07 | Precomposition cancellation | Theorem 6.4.3(1)(b)(i) and preservation of weak equivalences by binary coproducts of cofibrant objects; `lake build ABCCofibrations` passed (1890 jobs), without warnings |

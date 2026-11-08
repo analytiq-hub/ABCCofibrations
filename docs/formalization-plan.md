@@ -381,16 +381,62 @@ statements.
 
 ## Immediate next increment
 
-Construct the comparison functor from `LeftHomotopyCategory C` to the
-localization of the full subcategory of cofibrant objects, by showing that
-localization identifies left-homotopic maps. Its faithfulness or equivalence
-requires further work; do not infer either from construction of the quotient.
-Complete the foundation audit as a separate outstanding task. Gluing, excision,
-relative cylinders, elementary homotopy, and the homotopy quotient with its
-well-defined weak equivalences are complete.
+The comparison functor is implemented. Current proof development is in the
+localization project (Chapters 5–7), beyond the completed elementary homotopy
+work of Milestone 3. Milestones 0, 1, 2, and 4 retain their unchecked items.
+
+Completed localization infrastructure:
+
+- `BrownFunctor.lean`: Brown's functor lemma; inverting trivial cofibrations
+  between cofibrant objects suffices to invert their weak equivalences.
+- `HomotopyWeakEquivalences.lean`: identities, composition, and two out of three
+  for weak equivalences of the homotopy quotient.
+- `TrivialCofibrationLocalization.lean`: equivalence of localization at trivial
+  cofibrations and at weak equivalences, with compatible canonical functors.
+- `HomotopyLocalization.lean`: functors inverting weak equivalences identify
+  left-homotopic maps; the homotopy quotient maps to localization and this
+  comparison is itself a localization at the quotient's weak equivalences.
+- `TrivialCofibrationFractions.lean`: fraction existence, pushout composition,
+  common denominators, and finite families over one denominator. Numerators
+  can be chosen to be cofibrations, and for a single arrow the combined
+  endpoint coproduct map can also be a cofibration.
+- `HomotopyFractions.lean`: sufficient equality criteria using common extensions
+  with left-homotopic numerators and denominators.
+- `HomotopyCancellation.lean`: postcomposition by a weak equivalence preserves
+  and reflects left homotopy. Consequently every weak equivalence in
+  `LeftHomotopyCategory C` is a monomorphism.
+
+These results concern localization of `CofibrantObject C`. They do not yet
+identify it with localization of the entire ambient category (Theorem 6.1.6).
+In particular, the existence results establish the cofibrant-subcategory versions
+of Theorems 6.4.4(1)(a) and 6.4.5(1)(a), not their full ambient statements.
+
+The following is a provisional route, checked against §§6.3–6.4, rather than
+a required reproduction of the paper's proof order. Prefer a shorter direct
+argument or existing mathlib API whenever it establishes the same statement
+under the intended hypotheses. Reassess the remaining dependencies after each
+substantial result.
+
+1. Postcomposition cancellation (Theorem 6.4.3(1)(b)(ii)) is complete as
+   `LeftHomotopyRel.of_postcomp_weakEquivalence` and
+   `LeftHomotopyRel.postcomp_weakEquivalence_iff`. Next investigate
+   precomposition cancellation (b)(i) and whether the quotient's new
+   monomorphism instances simplify the localization faithfulness argument.
+2. Prove the homotopy Ore condition (Theorem 6.4.3(1)(a)), and install the
+   left calculus of fractions on the homotopy quotient using mathlib.
+3. Deduce the converse equality criterion for localization of cofibrant objects:
+   equal localized maps are left homotopic. This completes the corresponding
+   subcategory version of Theorem 6.4.4(1)(c).
+4. Prove the ambient comparison (Theorem 6.1.6) to obtain the full
+   Theorem 6.3.1(1), and finish the converse fraction equality criteria of
+   Theorems 6.4.4(1)(b) and 6.4.5(1)(b).
+
+Do not infer faithfulness or equivalence of the homotopy quotient's comparison
+merely from its localization property. The foundation audit and elementary API
+review remain separate outstanding tasks.
 The original unrestricted separate-comparison claims of Lemma 1.3.4(1) have
 been replaced by the correction note; they must not be assumed in subsequent
-proofs. The elementary API review remains open.
+proofs.
 
 ## Parallel workstream — mathematical exposition
 
@@ -481,3 +527,6 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-07 | Cylinder operations | Goodness under endpoint reversal and concatenation in `Cylinder.lean`, using CF1–CF4; `lake build` passed (1836 jobs), without warnings |
 | 2026-11-07 | Left homotopy | Common cylinder refinements, strict and enlarged-target relations, Lemma 6.3.2(1), and Theorem 6.3.3(1); `lake build` passed (1864 jobs), without warnings |
 | 2026-11-07 | Homotopy quotient category | Congruence on cofibrant objects, exact quotient equality criterion, and descent of weak equivalences in `HomotopyCategory.lean`; `lake build` passed (1870 jobs), without warnings |
+| 2026-11-07 | Localization comparison and Brown functor lemma | Comparison functors and their universal properties; equivalence of localization at weak equivalences and at trivial cofibrations on cofibrant objects |
+| 2026-11-07 | Fraction representations and operations | Cofibrant-subcategory fraction existence, composition, common denominators, finite families, cofibration numerators, and sufficient homotopy equality criteria; `lake build ABCCofibrations` passed (1888 jobs), without warnings |
+| 2026-11-07 | Postcomposition cancellation | `HomotopyCancellation.lean` proves reflection of left homotopy by weak equivalences and monomorphism instances in the homotopy quotient; `lake build ABCCofibrations` passed (1890 jobs), without warnings |

@@ -5,6 +5,7 @@ import ABCCofibrations.Gluing
 import ABCCofibrations.Extension
 import ABCCofibrations.Cylinder
 import ABCCofibrations.LeftHomotopy
+import ABCCofibrations.HomotopyCancellation
 import ABCCofibrations.HomotopyCategory
 import ABCCofibrations.BrownFunctor
 import ABCCofibrations.HomotopyWeakEquivalences

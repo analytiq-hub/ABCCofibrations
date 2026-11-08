@@ -7,6 +7,7 @@ module
 
 public import ABCCofibrations.TrivialCofibrationLocalization
 public import Mathlib.CategoryTheory.Localization.StructuredArrow
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Left-fraction representations
@@ -17,7 +18,7 @@ trivial-cofibration denominator. No cancellation axiom is needed here.
 
 public section
 
-universe v u v' u'
+universe v u v' u' w
 
 open CategoryTheory Limits HomotopicalAlgebra
 
@@ -262,5 +263,191 @@ theorem exists_common_fraction_of_weakEquivalence_localization
   obtain ⟨P, f, g, s, hs, h⟩ := exists_parallel_trivialCofibration_fractions (D := D) φ ψ
   refine ⟨P, f, g, s, hs, ?_⟩
   simpa only [hφ, hψ] using h L (Localization.inverts L _)
+
+/-- Every finite family of parallel localized arrows can be represented
+over one trivial-cofibration denominator. -/
+theorem exists_finite_common_fraction_of_weakEquivalence_localization
+    (L : CofibrantObject C ⥤ D)
+    [L.IsLocalization (weakEquivalences (CofibrantObject C))]
+    {X Y : CofibrantObject C} (n : ℕ) (α : Fin n → (L.obj X ⟶ L.obj Y)) :
+    ∃ (P : CofibrantObject C) (f : Fin n → (X ⟶ P)) (s : Y ⟶ P),
+      cofibrantTrivialCofibrations s ∧ ∀ a, α a ≫ L.map s = L.map (f a) := by
+  induction n with
+  | zero =>
+    refine ⟨Y, Fin.elim0, 𝟙 Y, ?_, fun a ↦ Fin.elim0 a⟩
+    apply (mem_cofibrantTrivialCofibrations_iff _).2
+    exact ⟨cofibration_of_isIso (𝟙 Y.obj), weakEquivalence_of_isIso (𝟙 Y.obj)⟩
+  | succ n ih =>
+    obtain ⟨P, f, s, hs, hf⟩ := ih (fun a ↦ α a.succ)
+    obtain ⟨Q, g, t, ht, hg⟩ :=
+      exists_trivialCofibration_fraction_of_weakEquivalence_localization L (α 0)
+    obtain ⟨R, i, j, hi, hj, sq⟩ :=
+      exists_common_trivialCofibration_denominator s t hs ht
+    obtain ⟨hcs, hws⟩ := (mem_cofibrantTrivialCofibrations_iff s).1 hs
+    obtain ⟨hci, hwi⟩ := (mem_cofibrantTrivialCofibrations_iff i).1 hi
+    let := hcs
+    let := hws
+    let := hci
+    let := hwi
+    have hsi : cofibrantTrivialCofibrations (s ≫ i) := by
+      apply (mem_cofibrantTrivialCofibrations_iff _).2
+      change Cofibration (s.hom ≫ i.hom) ∧ WeakEquivalence (s.hom ≫ i.hom)
+      exact ⟨inferInstance, inferInstance⟩
+    refine ⟨R, Fin.cases (g ≫ j) (fun a ↦ f a ≫ i), s ≫ i, hsi, ?_⟩
+    intro a
+    refine Fin.cases ?_ (fun b ↦ ?_) a
+    · simp only [Fin.cases_zero]
+      rw [sq]
+      simp only [L.map_comp]
+      rw [← Category.assoc, hg]
+    · simp only [Fin.cases_succ, L.map_comp]
+      rw [← Category.assoc, hf b]
+
+/-- The finite common-denominator theorem for any finite indexing type. -/
+theorem exists_common_fraction_of_finite_family
+    (L : CofibrantObject C ⥤ D)
+    [L.IsLocalization (weakEquivalences (CofibrantObject C))]
+    {X Y : CofibrantObject C} {ι : Type w} [Finite ι]
+    (α : ι → (L.obj X ⟶ L.obj Y)) :
+    ∃ (P : CofibrantObject C) (f : ι → (X ⟶ P)) (s : Y ⟶ P),
+      cofibrantTrivialCofibrations s ∧ ∀ a, α a ≫ L.map s = L.map (f a) := by
+  let := Fintype.ofFinite ι
+  let e := Fintype.equivFin ι
+  obtain ⟨P, f, s, hs, hf⟩ :=
+    exists_finite_common_fraction_of_weakEquivalence_localization L
+      (Fintype.card ι) (fun a ↦ α (e.symm a))
+  refine ⟨P, fun a ↦ f (e a), s, hs, fun a ↦ ?_⟩
+  simpa only [e.symm_apply_apply] using hf (e a)
+
+/-- A localized arrow admits a cospan whose combined map from the
+coproduct of its endpoints is a cofibration, with trivial denominator. -/
+theorem exists_cofibration_fraction_with_coprod
+    (L : CofibrantObject C ⥤ D)
+    [L.IsLocalization (weakEquivalences (CofibrantObject C))]
+    {X Y : CofibrantObject C} [HasBinaryCoproduct X.obj Y.obj]
+    (α : L.obj X ⟶ L.obj Y) :
+    ∃ (Z : CofibrantObject C) (i : X ⟶ Z) (s : Y ⟶ Z),
+      Cofibration i.hom ∧ cofibrantTrivialCofibrations s ∧
+        Cofibration (coprod.desc i.hom s.hom) ∧
+        α ≫ L.map s = L.map i := by
+  obtain ⟨P, f, s, hs, hf⟩ :=
+    exists_trivialCofibration_fraction_of_weakEquivalence_localization L α
+  let := hasBinaryCoproduct X.obj P.obj
+  obtain ⟨Z, i, p, r, hZ, hi, hp, hr, hrw, hir, hip, hrp⟩ :=
+    exists_brown_factorization_with_coprod f.hom
+  let := hZ
+  let i' : X ⟶ CofibrantObject.mk Z := CofibrantObject.homMk i
+  let p' : CofibrantObject.mk Z ⟶ P := CofibrantObject.homMk p
+  let r' : P ⟶ CofibrantObject.mk Z := CofibrantObject.homMk r
+  have hip' : i' ≫ p' = f := by ext; exact hip
+  have hrp' : r' ≫ p' = 𝟙 P := by ext; exact hrp
+  obtain ⟨hcs, hws⟩ := (mem_cofibrantTrivialCofibrations_iff s).1 hs
+  let := hcs
+  let := hws
+  let := hr
+  let := hrw
+  have hsr : cofibrantTrivialCofibrations (s ≫ r') := by
+    apply (mem_cofibrantTrivialCofibrations_iff _).2
+    change Cofibration (s.hom ≫ r) ∧ WeakEquivalence (s.hom ≫ r)
+    exact ⟨inferInstance, inferInstance⟩
+  have hp' : weakEquivalences (CofibrantObject C) p' := hp.mem
+  let := Localization.inverts L (weakEquivalences (CofibrantObject C)) p' hp'
+  have hcombined : Cofibration (coprod.desc i (s.hom ≫ r)) := by
+    let := hir
+    let := cofibration_coprod_id_map s.hom X.obj
+    have hcomp : coprod.map (𝟙 X.obj) s.hom ≫ coprod.desc i r =
+        coprod.desc i (s.hom ≫ r) := by ext <;> simp
+    rw [← hcomp]
+    infer_instance
+  refine ⟨CofibrantObject.mk Z, i', s ≫ r', hi, hsr, hcombined, ?_⟩
+  apply (cancel_mono (L.map p')).1
+  calc
+    (α ≫ L.map (s ≫ r')) ≫ L.map p' = α ≫ L.map s := by
+      simp only [L.map_comp, Category.assoc]
+      rw [← L.map_comp r' p', hrp', L.map_id, Category.comp_id]
+    _ = L.map f := hf
+    _ = L.map i' ≫ L.map p' := by rw [← L.map_comp, hip']
+
+/-- Every localized arrow admits a cospan with a cofibration numerator
+and a trivial-cofibration denominator. -/
+theorem exists_cofibration_fraction_of_weakEquivalence_localization
+    (L : CofibrantObject C ⥤ D)
+    [L.IsLocalization (weakEquivalences (CofibrantObject C))]
+    {X Y : CofibrantObject C} (α : L.obj X ⟶ L.obj Y) :
+    ∃ (Z : CofibrantObject C) (i : X ⟶ Z) (s : Y ⟶ Z),
+      Cofibration i.hom ∧ cofibrantTrivialCofibrations s ∧
+        α ≫ L.map s = L.map i := by
+  let := hasBinaryCoproduct X.obj Y.obj
+  obtain ⟨Z, i, s, hi, hs, _, h⟩ := exists_cofibration_fraction_with_coprod L α
+  exact ⟨Z, i, s, hi, hs, h⟩
+
+/-- A finite family of parallel localized arrows has a common trivial
+denominator and can simultaneously be represented by cofibration numerators. -/
+theorem exists_finite_common_cofibration_fraction
+    (L : CofibrantObject C ⥤ D)
+    [L.IsLocalization (weakEquivalences (CofibrantObject C))]
+    {X Y : CofibrantObject C} (n : ℕ) (α : Fin n → (L.obj X ⟶ L.obj Y)) :
+    ∃ (P : CofibrantObject C) (f : Fin n → (X ⟶ P)) (s : Y ⟶ P),
+      cofibrantTrivialCofibrations s ∧
+        ∀ a, Cofibration (f a).hom ∧ α a ≫ L.map s = L.map (f a) := by
+  induction n with
+  | zero =>
+    refine ⟨Y, Fin.elim0, 𝟙 Y, ?_, fun a ↦ Fin.elim0 a⟩
+    apply (mem_cofibrantTrivialCofibrations_iff _).2
+    exact ⟨cofibration_of_isIso (𝟙 Y.obj), weakEquivalence_of_isIso (𝟙 Y.obj)⟩
+  | succ n ih =>
+    obtain ⟨P, f, s, hs, hf⟩ := ih (fun a ↦ α a.succ)
+    obtain ⟨Q, g, t, hg, ht, hα⟩ :=
+      exists_cofibration_fraction_of_weakEquivalence_localization L (α 0)
+    obtain ⟨R, i, j, hi, hj, sq⟩ :=
+      exists_common_trivialCofibration_denominator s t hs ht
+    obtain ⟨hcs, hws⟩ := (mem_cofibrantTrivialCofibrations_iff s).1 hs
+    obtain ⟨hci, hwi⟩ := (mem_cofibrantTrivialCofibrations_iff i).1 hi
+    obtain ⟨hcj, _⟩ := (mem_cofibrantTrivialCofibrations_iff j).1 hj
+    let := hcs
+    let := hws
+    let := hci
+    let := hwi
+    let := hcj
+    let := hg
+    have hsi : cofibrantTrivialCofibrations (s ≫ i) := by
+      apply (mem_cofibrantTrivialCofibrations_iff _).2
+      change Cofibration (s.hom ≫ i.hom) ∧ WeakEquivalence (s.hom ≫ i.hom)
+      exact ⟨inferInstance, inferInstance⟩
+    refine ⟨R, Fin.cases (g ≫ j) (fun a ↦ f a ≫ i), s ≫ i, hsi, ?_⟩
+    intro a
+    refine Fin.cases ?_ (fun b ↦ ?_) a
+    · simp only [Fin.cases_zero]
+      refine ⟨?_, ?_⟩
+      · change Cofibration (g.hom ≫ j.hom)
+        infer_instance
+      · rw [sq]
+        simp only [L.map_comp]
+        rw [← Category.assoc, hα]
+    · simp only [Fin.cases_succ]
+      obtain ⟨hfb, hβ⟩ := hf b
+      let := hfb
+      refine ⟨?_, ?_⟩
+      · change Cofibration ((f b).hom ≫ i.hom)
+        infer_instance
+      · simp only [L.map_comp]
+        rw [← Category.assoc, hβ]
+
+/-- Simultaneous cofibration numerators for a family indexed by any
+finite type, over a single trivial-cofibration denominator. -/
+theorem exists_common_cofibration_fraction_of_finite_family
+    (L : CofibrantObject C ⥤ D)
+    [L.IsLocalization (weakEquivalences (CofibrantObject C))]
+    {X Y : CofibrantObject C} {ι : Type w} [Finite ι]
+    (α : ι → (L.obj X ⟶ L.obj Y)) :
+    ∃ (P : CofibrantObject C) (f : ι → (X ⟶ P)) (s : Y ⟶ P),
+      cofibrantTrivialCofibrations s ∧
+        ∀ a, Cofibration (f a).hom ∧ α a ≫ L.map s = L.map (f a) := by
+  let := Fintype.ofFinite ι
+  let e := Fintype.equivFin ι
+  obtain ⟨P, f, s, hs, hf⟩ := exists_finite_common_cofibration_fraction L
+    (Fintype.card ι) (fun a ↦ α (e.symm a))
+  refine ⟨P, fun a ↦ f (e a), s, hs, fun a ↦ ?_⟩
+  simpa only [e.symm_apply_apply] using hf (e a)
 
 end ABCCofibrations.ABCPrecofibrationCategory

@@ -176,8 +176,10 @@ all the corrected conclusions. $\square$
 
 ## Counterexample to the original separate-comparison claim
 
-Work in sets, with injections as cofibrations and every map as a weak
-equivalence. This is a precofibration category: the empty set is cofibrant,
+The ambient cofibration category is the standard category of sets with
+injections as cofibrations and every map as a weak equivalence; see the
+references in the appendix. This is a precofibration category: the empty set
+is cofibrant,
 injections compose, isomorphisms are injections, and pushouts of injections
 are injections. Two-out-of-three is automatic. For CF4, any function
 $f:X\to Y$ factors as
@@ -321,3 +323,41 @@ above; it has not been constructed in Lean in this repository.
 Subsequent uses of the original lemma, including in the gluing argument, must
 be checked against this corrected conclusion. The combined comparison does
 not supply either omitted separate-comparison cofibration claim.
+
+## Appendix: historical note and references
+
+### Historical note
+
+Andrei Rădulescu-Banu was alerted to this error long ago, but did not update
+the document. This historical account was supplied for the present note;
+it is not an assertion established by the references below.
+
+### The ambient cofibration category
+
+The ambient category used in the counterexample is standard. In fact, it is
+the cofibration-category part of a model structure on sets with
+
+$$
+\text{cofibrations}=\text{injections},\qquad
+\text{fibrations}=\text{surjections},\qquad
+\text{weak equivalences}=\text{all functions}.
+$$
+
+The following references document this ambient structure, rather than the
+specific counterexample to Lemma 1.3.4(1):
+
+1. **The CRing Project (2011), Chapter 19, Exercise 19.1**, printed page 5
+   (PDF page 5), explicitly asks for this model structure on sets.
+   [Chapter 19: Homotopical algebra](https://math.uchicago.edu/~amathew/chhomotopical.pdf).
+2. **Omar Antolín-Camarena and Tobias Barthel (2025),
+   *The nine model category structures on the category of sets*, Theorem 4.3**,
+   includes this structure in its classification. The authors describe the
+   classification as folklore and attribute it to Tom Goodwillie.
+   [arXiv:2508.15731](https://arxiv.org/abs/2508.15731);
+   [Theorem 4.3](https://arxiv.org/html/2508.15731v1#S4).
+
+The literature search for this note did not locate an arXiv or published
+correction to Lemma 1.3.4(1), or an earlier use of this specific counterexample.
+That search result does not establish priority for either the correction or
+the counterexample, and does not negate the historical notification recorded
+above.

@@ -15,6 +15,10 @@ Any functor on cofibrant objects which inverts weak equivalences identifies
 left-homotopic maps. Consequently it factors through `LeftHomotopyCategory`,
 and the quotient category has a canonical comparison functor to localization.
 
+The quotient functor induces an equivalence after both categories are localized
+at their weak equivalences. Thus taking left-homotopy classes does not change
+the localization. Weak equivalences in the quotient still need to be inverted.
+
 This construction does not assert that the comparison is faithful or an
 equivalence, or that the quotient functor itself is a localization.
 -/
@@ -104,5 +108,59 @@ theorem leftHomotopyCategoryToLocalization_fac :
     toLeftHomotopyCategory ⋙ leftHomotopyCategoryToLocalization (C := C) =
       (weakEquivalences (CofibrantObject C)).Q :=
   liftFromLeftHomotopyCategory_fac _ _
+
+/-- Left homotopy is killed by localization at weak equivalences, expressed in
+mathlib's relation-level interface. -/
+theorem cofibrantLeftHomotopyRel_factorsThroughLocalization :
+    (cofibrantLeftHomotopyRel (C := C)).FactorsThroughLocalization
+      (weakEquivalences (CofibrantObject C)) := by
+  intro X Y f g h
+  rw [areEqualizedByLocalization_iff (weakEquivalences (CofibrantObject C)).Q]
+  exact map_eq_of_cofibrant_leftHomotopy _
+    (weakEquivalences (CofibrantObject C)).Q_inverts h
+
+/-- The quotient functor, with its preservation of weak equivalences recorded
+as a localizer morphism. Its inverse image of the quotient weak equivalences
+is exactly the original weak-equivalence class. -/
+def leftHomotopyQuotientLocalizerMorphism :
+    LocalizerMorphism (weakEquivalences (CofibrantObject C))
+      (weakEquivalences (LeftHomotopyCategory C)) :=
+  LocalizerMorphism.ofEq
+    (MorphismProperty.eq_inverseImage_quotientFunctor
+      (weakEquivalences (CofibrantObject C)) (cofibrantLeftHomotopyRel (C := C)))
+
+/-- Passing to left-homotopy classes induces an equivalence on localizations.
+This is weaker than identifying the quotient itself with the localization. -/
+instance : (leftHomotopyQuotientLocalizerMorphism (C := C)).IsLocalizedEquivalence := by
+  apply (cofibrantLeftHomotopyRel_factorsThroughLocalization (C := C)).isLocalizedEquivalence
+
+/-- Following the quotient functor by a localization of the quotient gives a
+localization of the original category of cofibrant objects. -/
+instance localization_after_leftHomotopyQuotient (L : LeftHomotopyCategory C ⥤ D)
+    [L.IsLocalization (weakEquivalences (LeftHomotopyCategory C))] :
+    (toLeftHomotopyCategory ⋙ L).IsLocalization (weakEquivalences (CofibrantObject C)) :=
+  inferInstanceAs
+    (((leftHomotopyQuotientLocalizerMorphism (C := C)).functor ⋙ L).IsLocalization _)
+
+/-- The induced functor between the canonical localizations. -/
+noncomputable def localizedLeftHomotopyQuotient :
+    (weakEquivalences (CofibrantObject C)).Localization ⥤
+      (weakEquivalences (LeftHomotopyCategory C)).Localization :=
+  (leftHomotopyQuotientLocalizerMorphism (C := C)).localizedFunctor
+    (weakEquivalences (CofibrantObject C)).Q
+    (weakEquivalences (LeftHomotopyCategory C)).Q
+
+instance : (localizedLeftHomotopyQuotient (C := C)).IsEquivalence :=
+  inferInstanceAs
+    ((leftHomotopyQuotientLocalizerMorphism (C := C)).localizedFunctor
+      (weakEquivalences (CofibrantObject C)).Q
+      (weakEquivalences (LeftHomotopyCategory C)).Q).IsEquivalence
+
+/-- Localizing before or after passing to left-homotopy classes gives
+equivalent categories. -/
+noncomputable def leftHomotopyLocalizationEquivalence :
+    (weakEquivalences (CofibrantObject C)).Localization ≌
+      (weakEquivalences (LeftHomotopyCategory C)).Localization :=
+  (localizedLeftHomotopyQuotient (C := C)).asEquivalence
 
 end ABCCofibrations.ABCPrecofibrationCategory

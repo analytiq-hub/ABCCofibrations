@@ -5,5 +5,6 @@ import ABCCofibrations.Gluing
 import ABCCofibrations.Extension
 import ABCCofibrations.Cylinder
 import ABCCofibrations.LeftHomotopy
+import ABCCofibrations.HomotopyCategory
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

@@ -42,6 +42,10 @@ Import `ABCCofibrations.LeftHomotopy` for strict left homotopy and the paper's
 left homotopy after a trivial cofibration of the target. It proves the
 equivalence-relation properties, change of cylinder (Lemma 6.3.2(1)), and
 compatibility with composition (Theorem 6.3.3(1)) under CF1–CF4.
+Import `ABCCofibrations.HomotopyCategory` for `LeftHomotopyCategory C`, the
+category of cofibrant objects modulo left homotopy, and its quotient functor.
+Equality of quotient maps is exactly left homotopy, and weak equivalences
+descend to the quotient. Its identification with the localization is deferred.
 
 Import `ABCCofibrations.Gluing` for both parts of the gluing lemma
 (Lemma 1.4.1(1)): `gluing_cofibration` and `gluing_weakEquivalence`.

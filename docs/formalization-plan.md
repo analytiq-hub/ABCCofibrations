@@ -306,6 +306,19 @@ and a pushout of the homotopy map. Relative cylinders then give precomposition
 compatibility. Postcomposition and horizontal composition are also proved,
 covering Theorem 6.3.3(1). No strict-homotopy precomposition claim is assumed.
 
+`HomotopyCategory.lean` constructs the category `πₗ Mcof` described after
+Theorem 6.3.3, as `LeftHomotopyCategory C`. It reuses mathlib's
+`CofibrantObject C` and `CategoryTheory.Quotient`. The relation on the full
+subcategory is proved to be a congruence. The quotient functor
+`toLeftHomotopyCategory` is full, and `toLeftHomotopyCategory_map_eq_iff`
+identifies equality of its images with left homotopy.
+
+`StrictLeftHomotopyRel.weakEquivalence_iff` and
+`LeftHomotopyRel.weakEquivalence_iff` prove invariance of weak equivalence.
+This provides the quotient's `CategoryWithWeakEquivalences` instance, with
+`weakEquivalence_toLeftHomotopyCategory_map_iff` checking it on representatives.
+No model-category assumptions or general coproduct assumptions are introduced.
+
 ## Milestone 2 — Factorization and extension lemmas
 
 - [ ] Translate the cofibration-side statements of §1.3 into a dependency list.
@@ -368,11 +381,13 @@ statements.
 
 ## Immediate next increment
 
-Construct the category of cofibrant objects modulo left homotopy, using the
-congruence just proved. Establish that weak equivalence is invariant under
-left homotopy before descending it to homotopy classes. Complete the foundation
-audit as a separate outstanding task. Gluing, excision, relative cylinders,
-and the elementary homotopy properties are complete.
+Construct the comparison functor from `LeftHomotopyCategory C` to the
+localization of the full subcategory of cofibrant objects, by showing that
+localization identifies left-homotopic maps. Its faithfulness or equivalence
+requires further work; do not infer either from construction of the quotient.
+Complete the foundation audit as a separate outstanding task. Gluing, excision,
+relative cylinders, elementary homotopy, and the homotopy quotient with its
+well-defined weak equivalences are complete.
 The original unrestricted separate-comparison claims of Lemma 1.3.4(1) have
 been replaced by the correction note; they must not be assumed in subsequent
 proofs. The elementary API review remains open.
@@ -394,3 +409,4 @@ proofs. The elementary API review remains open.
 | 2026-11-07 | Excision and relative cylinders | Lemma 1.4.2(1) in `Extension.lean` and Lemma 1.5.3(1) in `Cylinder.lean`; `lake build` passed (1836 jobs), without warnings |
 | 2026-11-07 | Cylinder operations | Goodness under endpoint reversal and concatenation in `Cylinder.lean`, using CF1–CF4; `lake build` passed (1836 jobs), without warnings |
 | 2026-11-07 | Left homotopy | Common cylinder refinements, strict and enlarged-target relations, Lemma 6.3.2(1), and Theorem 6.3.3(1); `lake build` passed (1864 jobs), without warnings |
+| 2026-11-07 | Homotopy quotient category | Congruence on cofibrant objects, exact quotient equality criterion, and descent of weak equivalences in `HomotopyCategory.lean`; `lake build` passed (1870 jobs), without warnings |

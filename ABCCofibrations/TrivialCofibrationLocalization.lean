@@ -129,4 +129,15 @@ noncomputable def trivialCofibrationLocalizationEquivalence_fac :
   Localization.compUniqFunctor (cofibrantTrivialCofibrations (C := C)).Q
     (weakEquivalences (CofibrantObject C)).Q (weakEquivalences (CofibrantObject C))
 
+/-- Any localization at weak equivalences is also a localization at
+trivial cofibrations, by Brown's lemma and uniqueness of localization. -/
+theorem isLocalization_trivialCofibrations_of_weakEquivalences
+    (L : CofibrantObject C ⥤ D)
+    [L.IsLocalization (weakEquivalences (CofibrantObject C))] :
+    L.IsLocalization (cofibrantTrivialCofibrations (C := C)) := by
+  let T := cofibrantTrivialCofibrations (C := C)
+  let W := weakEquivalences (CofibrantObject C)
+  exact Functor.IsLocalization.of_equivalence_target T.Q T L
+    (Localization.uniq T.Q L W) (Localization.compUniqFunctor T.Q L W)
+
 end ABCCofibrations.ABCPrecofibrationCategory

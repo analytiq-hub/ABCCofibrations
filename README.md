@@ -65,6 +65,13 @@ cofibration-side statements of Theorems 6.4.4 and 6.4.5: fraction
 representations with cofibration numerator and coproduct boundary, and equality
 criteria for arbitrary weak-equivalence or trivial-cofibration denominators.
 
+Import `ABCCofibrations.DerivedFunctor` for Theorem 6.2.1(1): a functor sending
+trivial cofibrations between cofibrant objects to weak equivalences admits a
+total left derived functor, with invertible counit on cofibrant objects.
+The proof uses mathlib's left derivability structures; the
+[mathematical note](docs/mathematics/derived-functors.md) records the universal
+property and differences from the paper.
+
 Import `ABCCofibrations.Gluing` for both parts of the gluing lemma
 (Lemma 1.4.1(1)): `gluing_cofibration` and `gluing_weakEquivalence`.
 The proof uses relative Brown comparisons only along cofibration edges,

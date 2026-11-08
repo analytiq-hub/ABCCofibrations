@@ -397,6 +397,13 @@ equality criterion of Theorem 6.4.4(1)(c).
 and equality criteria. `HomotopyFractions.lean` now also proves the general
 weak-equivalence-denominator criterion, using the quotient's calculus of
 fractions. The ambient equality iff left homotopy result also supplies 6.3.1(1).
+**Theorem 6.2.1(1) is now complete:** `DerivedFunctor.lean` proves that
+inclusion of cofibrant objects is a left derivability structure, then obtains
+pointwise derived-functor existence and invertibility of any derived counit
+at cofibrant objects. Composing the original functor with target localization
+gives the paper's total left derived functor under the stated preservation
+hypothesis. See [the derived-functor note](mathematics/derived-functors.md),
+including its explicit comparison of universal-property conventions.
 
 Suggested next construction:
 
@@ -413,19 +420,21 @@ Suggested next construction:
    establish the equivalence, with no functorial replacement assumption.
 4. **Complete:** ambient fraction existence, both denominator equality criteria,
    and their correspondence with Theorems 6.3.1(1), 6.4.4(1), and 6.4.5(1).
-5. **Next:** begin total left derived-functor theory in §6.2. Inspect mathlib's
-   `Localization/DerivabilityStructure/Constructor.lean` and
-   `LocalizerMorphism.IsLeftDerivabilityStructure.mk'`: the localized equivalence,
-   connected replacement categories, and arrow resolutions are already proved.
-   Package inclusion as a left derivability structure, then use mathlib's
-   derived-functor interface toward Theorem 6.2.1(1). The general cofibrant
-   approximation version remains separate. Foundation audits and Chapter 1
-   backlog items remain open.
+5. **Complete:** mathlib's left derivability structure for the cofibrant
+   inclusion, pointwise left derived-functor existence, invertible counit on
+   cofibrant objects, and Theorem 6.2.1(1).
+6. **Next:** give an explicit computation isomorphism using any cofibrant
+   replacement $Q A\xrightarrow{\sim}A$, for an arbitrary total left derived
+   functor with its counit. Check naturality for a commutative square between
+   replacements. This will connect the abstract universal-property construction
+   to calculations before treating derived equivalences (6.2.3) or adjunctions.
+   General cofibrant approximations and 6.2.2 remain separate. Foundation audits
+   and Chapter 1 backlog items remain open.
 
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 All current proofs use CF1–CF4. The latest full check is
-`lake build ABCCofibrations`: 1906 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 1942 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.2.
@@ -445,6 +454,9 @@ work of Milestone 3. Milestones 0, 1, 2, and 4 retain their unchecked items.
 
 Completed localization infrastructure:
 
+- `DerivedFunctor.lean`: cofibrant inclusion is a left derivability structure;
+  existence of pointwise left derived functors and invertibility of the counit
+  on cofibrant objects; Theorem 6.2.1(1) after target localization.
 - `AmbientHomotopyFractions.lean`: ambient representations and equality criteria
   of Theorems 6.4.4(1) and 6.4.5(1), for arbitrary weak-equivalence denominators
   and the sharper trivial-cofibration case.
@@ -645,3 +657,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-08 | Left-inverse comparison and ambient faithfulness | `replacementFunctorRestrictionIso`, `cofibrantLocalizationReplacementIso`, and `cofibrantLocalizationToAmbient_faithful`; the other inverse comparison and fullness remain open. Documentation now explicitly records differences from the paper. `lake build ABCCofibrations` passed (1904 jobs), without warnings. |
 | 2026-11-08 | Ambient localization equivalence | Both inverse comparisons prove Theorem 6.1.6; restriction of any ambient localization is a localization of cofibrant objects, and `ambient_map_eq_iff_cofibrant_leftHomotopy` proves Theorem 6.4.4(1)(c). `lake build ABCCofibrations` passed (1904 jobs), without warnings. |
 | 2026-11-08 | Ambient homotopy fractions | The cofibration-side statements of 6.4.4 and 6.4.5: strong fraction representations and both general and trivial-cofibration denominator equality criteria. `HomotopyFractions.lean` supplies the general converse via the quotient calculus. `lake build ABCCofibrations` passed (1906 jobs), without warnings. |
+| 2026-11-08 | Total left derived functors | `DerivedFunctor.lean` uses the left derivability structure of cofibrant inclusion to prove Theorem 6.2.1(1), with pointwise existence and counit invertible on cofibrant objects. `lake build ABCCofibrations` passed (1942 jobs), without warnings. |

@@ -6,5 +6,9 @@ import ABCCofibrations.Extension
 import ABCCofibrations.Cylinder
 import ABCCofibrations.LeftHomotopy
 import ABCCofibrations.HomotopyCategory
+import ABCCofibrations.BrownFunctor
+import ABCCofibrations.HomotopyWeakEquivalences
+import ABCCofibrations.TrivialCofibrationLocalization
+import ABCCofibrations.HomotopyLocalization
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

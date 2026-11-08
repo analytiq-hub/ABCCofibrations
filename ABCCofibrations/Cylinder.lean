@@ -235,4 +235,50 @@ theorem good_cylinder_trans (Q : Cylinder A) [Q.IsGood]
   rw [h]
   exact (cofibration_iff _).2 ((cofibrations C).comp_mem _ _ hm.mem hψ.mem)
 
+/-- The pushout of the second cylinder endpoint along a map from a cofibrant
+object exists, used in the homotopy Ore construction (Theorem 6.4.3(1)(a)). -/
+theorem cylinder_ore_hasPushout_i₁ (P : Cylinder A) [P.IsGood] {B : C} [IsCofibrant B]
+    (f : A ⟶ B) : HasPushout P.i₁ f := by
+  let := cofibration_cylinder_i₁ P
+  infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The first cylinder endpoint induces a cofibration into the pushout along
+the second endpoint of a cylinder and a map from a cofibrant object. -/
+theorem cofibration_cylinder_pushout_inl_i₁ (P : Cylinder A) [P.IsGood] {B : C}
+    [IsCofibrant B] (f : A ⟶ B) [HasPushout P.i₁ f] :
+    Cofibration (P.i₀ ≫ pushout.inl P.i₁ f) := by
+  let := hasBinaryCoproduct A B
+  let := coprod_cofibrant (A := A) (B := A)
+  let := coprod_cofibrant (A := A) (B := B)
+  let F := pushout.inl P.i₁ f
+  let ψ : A ⨿ B ⟶ pushout P.i₁ f :=
+    coprod.desc (P.i₀ ≫ F) (pushout.inr P.i₁ f)
+  have sq : IsPushout P.i (coprod.map (𝟙 A) f) F ψ := by
+    refine ⟨⟨?_⟩, ⟨PushoutCocone.isColimitAux' _ (fun s ↦ ?_)⟩⟩
+    · ext <;> simp [Precylinder.i, ψ, F, pushout.condition]
+    · have h₁ : P.i₁ ≫ s.inl = f ≫ (coprod.inr ≫ s.inr) := by
+        simpa [Precylinder.i, Category.assoc] using
+          congrArg (fun t ↦ (coprod.inr : A ⟶ A ⨿ A) ≫ t) s.condition
+      refine ⟨pushout.desc s.inl (coprod.inr ≫ s.inr) h₁, ?_, ?_, ?_⟩
+      · simp [F]
+      · change ψ ≫ pushout.desc s.inl (coprod.inr ≫ s.inr) h₁ = s.inr
+        apply coprod.hom_ext
+        · simpa [ψ, F, Precylinder.i, Category.assoc] using
+            congrArg (fun t ↦ (coprod.inl : A ⟶ A ⨿ A) ≫ t) s.condition
+        · simp [ψ]
+      · intro m hF hψ
+        change pushout P.i₁ f ⟶ s.pt at m
+        change F ≫ m = s.inl at hF
+        change ψ ≫ m = s.inr at hψ
+        apply pushout.hom_ext
+        · simpa [F] using hF
+        · simpa [ψ, Category.assoc] using
+            congrArg (fun t ↦ (coprod.inr : B ⟶ A ⨿ B) ≫ t) hψ
+  have hψ : Cofibration ψ := cofibration_of_isPushout sq
+  have hinl : Cofibration (coprod.inl : A ⟶ A ⨿ B) := cofibration_coprod_inl
+  have hfac : P.i₀ ≫ pushout.inl P.i₁ f = coprod.inl ≫ ψ := by simp [ψ, F]
+  rw [hfac]
+  exact (cofibration_iff _).2 ((cofibrations C).comp_mem _ _ hinl.mem hψ.mem)
+
 end ABCCofibrations.ABCPrecofibrationCategory

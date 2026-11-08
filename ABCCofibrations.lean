@@ -21,5 +21,6 @@ import ABCCofibrations.ReplacementComparison
 import ABCCofibrations.AmbientHomotopyFractions
 import ABCCofibrations.DerivedFunctor
 import ABCCofibrations.DerivedFunctorComparison
+import ABCCofibrations.DerivedEquivalence
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

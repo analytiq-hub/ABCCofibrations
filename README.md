@@ -78,6 +78,12 @@ It is an equivalence exactly when that restriction lift is an equivalence.
 This isolates the categorical step of 6.2.3(1); the general
 cofibrant-approximation hypothesis is not yet formalized.
 
+`ABCCofibrations.DerivedEquivalence` constructs the cofibrant restriction as
+a morphism of localizers using Brown's lemma. Any total left derived functor
+is an equivalence exactly when that restriction is a localized equivalence;
+under that condition a derived equivalence exists. The target weak equivalences
+need only satisfy two out of three.
+
 Import `ABCCofibrations.Gluing` for both parts of the gluing lemma
 (Lemma 1.4.1(1)): `gluing_cofibration` and `gluing_weakEquivalence`.
 The proof uses relative Brown comparisons only along cofibration edges,

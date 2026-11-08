@@ -416,6 +416,13 @@ equivalences under that criterion. With explicit replacements, it also gives
 the functor-level comparison with the reverse localization construction.
 This is the categorical step of 6.2.3(1), not yet its full general
 cofibrant-approximation formulation.
+`DerivedEquivalence.lean` now expresses this criterion using
+`cofibrantRestrictionLocalizerMorphism` and `IsLocalizedEquivalence`.
+Brown's lemma constructs the morphism of localizers from preservation of
+trivial cofibrations, assuming only two out of three for target weak
+equivalences. Any total left derived functor is an equivalence exactly when
+this restriction is a localized equivalence, and existence under that
+condition is proved for arbitrary source and target localizations.
 
 Suggested next construction:
 
@@ -444,19 +451,24 @@ Suggested next construction:
    `ambientLocalizationToCofibrant` with the localization lift of its
    restriction to cofibrant objects. The equivalence criterion and existence
    theorem under that criterion are also proved.
-8. **Next:** express the criterion using mathlib's
+8. **Complete:** express the criterion using mathlib's
    `LocalizerMorphism.IsLocalizedEquivalence` for the cofibrant restriction
    of a functor between precofibration categories. Use Brown's lemma to
    obtain the required localizer morphism from preservation of trivial
-   cofibrations. Keep the remaining bridge from the paper's structural
-   cofibrant-approximation axioms explicit: general cofibrant approximations,
-   6.2.2, and the full 6.2.3(1) remain unproved. Foundation audits and
-   Chapter 1 backlog items remain open.
+   cofibrations.
+9. **Next:** formalize general cofibrant approximation functors (Definition
+   6.1.1, CFA1–CFA4), using mathlib's functors, morphism properties, and
+   preservation interfaces where appropriate. The source is a precofibration
+   category with all objects cofibrant. Preserve the paper's restriction in
+   CFA3 to pushouts whose two source maps are cofibrations. Then begin the
+   bridge from these structural axioms to localized equivalence; until that
+   bridge is proved, 6.2.2 and the full 6.2.3(1) remain open. Foundation audits
+   and Chapter 1 backlog items remain separate.
 
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 All current proofs use CF1–CF4. The latest full check is
-`lake build ABCCofibrations`: 1944 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 1946 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.2.
@@ -476,6 +488,9 @@ work of Milestone 3. Milestones 0, 1, 2, and 4 retain their unchecked items.
 
 Completed localization infrastructure:
 
+- `DerivedEquivalence.lean`: Brown's lemma packages cofibrant restriction as
+  a localizer morphism; total left derived equivalence is equivalent to that
+  restriction being a localized equivalence; existence under that condition.
 - `DerivedFunctorComparison.lean`: comparison with the localized cofibrant
   restriction, necessary and sufficient equivalence criterion, derived
   equivalence existence under that criterion, and comparison with the
@@ -688,3 +703,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-08 | Total left derived functors | `DerivedFunctor.lean` uses the left derivability structure of cofibrant inclusion to prove Theorem 6.2.1(1), with pointwise existence and counit invertible on cofibrant objects. `lake build ABCCofibrations` passed (1942 jobs), without warnings. |
 | 2026-11-08 | Derived-functor computation on replacements | Computation isomorphism for any cofibrant replacement, counit equations, naturality for replacement squares, and coherent comparisons between computed values; `lake build ABCCofibrations` passed (1942 jobs), without warnings. |
 | 2026-11-08 | Derived comparison and equivalence criterion | `DerivedFunctorComparison.lean` compares arbitrary left derived functors with the lifted cofibrant restriction and the replacement construction, and proves the derived-equivalence criterion. Full structural 6.2.3(1) remains open. `lake build ABCCofibrations` passed (1944 jobs), without warnings. |
+| 2026-11-08 | Localizer criterion for total derived equivalences | `DerivedEquivalence.lean` constructs the restriction localizer via Brown's lemma, proves the iff criterion for arbitrary localizations, and derives existence. Structural CFA1–CFA4 remain next. `lake build ABCCofibrations` passed (1946 jobs), without warnings. |

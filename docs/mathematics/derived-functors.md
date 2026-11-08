@@ -31,6 +31,12 @@ its localization lift is an equivalence, and prove this condition is also
 necessary. The general cofibrant-approximation structure and its induced
 equivalence have not yet been formalized, so this is not a claim that the
 full hypotheses-to-conclusion statement of 6.2.3(1) is complete.
+The localizer formulation below works with a target weak-equivalence class
+satisfying two out of three. This follows automatically if the target is a
+precofibration category, as in 6.2.3(1); no target cofibrations or model
+structure are needed for this formulation. Unlike 6.2.1(1), where target
+localization alone suffices, this two-out-of-three hypothesis is used to
+construct a localizer morphism before localizing the target.
 
 The general intermediate theorem takes a functor into any category that
 inverts trivial cofibrations between cofibrant objects. Mathlib supplies a
@@ -199,6 +205,41 @@ cofibrant replacements as a functor, extending the object and square
 computation formulas above. These comparison results are in
 [DerivedFunctorComparison.lean](../../ABCCofibrations/DerivedFunctorComparison.lean).
 
+## The localizer formulation of the equivalence criterion
+
+Let $u:\mathcal M\to\mathcal N$ send trivial cofibrations with cofibrant
+source to weak equivalences, and assume $W_{\mathcal N}$ satisfies two out
+of three. Brown's lemma proves that $u$ preserves all weak equivalences
+between cofibrant objects. It therefore defines a morphism of localizers
+
+$$
+u_{\mathrm{cof}}:(\mathcal M_{\mathrm{cof}},W_{\mathrm{cof}})
+\longrightarrow(\mathcal N,W_{\mathcal N}).
+$$
+
+In mathlib, `IsLocalizedEquivalence` means that the induced functor on the
+canonical localizations is an equivalence; mathlib transfers this property
+to any choices of localization functors. Applying the preceding comparison
+with $F=\gamma_{\mathcal N}\circ u$ gives
+
+$$
+\mathbf L u\text{ is an equivalence}\quad\Longleftrightarrow\quad
+u_{\mathrm{cof}}\text{ is a localized equivalence}.
+$$
+
+The statement applies to any total left derived functor with its counit,
+and to any source and target localization functors. If the localizer condition
+holds, the existence theorem produces a total left derived equivalence with
+counit invertible on cofibrant objects. The original functor need not preserve
+weak equivalences with noncofibrant endpoints.
+
+These results are in
+[DerivedEquivalence.lean](../../ABCCofibrations/DerivedEquivalence.lean).
+What remains for the full statement of 6.2.3(1) is to define the paper's
+general cofibrant approximation functors (Definition 6.1.1) and prove that
+those structural axioms imply this localizer condition. We have not replaced
+that missing proof with an assumption that it holds automatically.
+
 ## Lean correspondence and status
 
 | Mathematical result | Declaration |
@@ -220,9 +261,13 @@ computation formulas above. These comparison results are in
 | Necessary and sufficient equivalence criterion | `isEquivalence_leftDerivedFunctor_iff_cofibrantRestrictionLift` |
 | Existence of a derived equivalence under that criterion | `exists_leftDerivedEquivalence_of_cofibrantRestrictionLift` |
 | Comparison with the replacement construction | `leftDerivedFunctorIsoViaReplacements` |
+| Restriction as a morphism of localizers | `cofibrantRestrictionLocalizerMorphism` |
+| Inversion after target localization | `inverts_cofibrant_trivialCofibrations_after_localization` |
+| Total derived equivalence iff localized equivalence of the restriction | `isEquivalence_totalLeftDerivedFunctor_iff_localized_cofibrantRestriction` |
+| Existence of a total derived equivalence under that condition | `exists_totalLeftDerivedEquivalence_of_localized_cofibrantRestriction` |
 
 All these results are proved. The full cofibrant-approximation formulation of
 derived equivalences, Quillen adjunctions, general cofibrant approximation
 functors, and the dual fibration-side results remain outside this increment.
 This note was reviewed against the accompanying Lean source following commit
-`d2f46d0`, including the derived comparison increment.
+`5bd8271`, including the localizer formulation of derived equivalences.

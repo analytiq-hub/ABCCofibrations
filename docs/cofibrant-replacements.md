@@ -36,6 +36,11 @@ where $i$ is a cofibration, $r$ is a weak equivalence, and $R$ is cofibrant.
 The construction keeps the prescribed source replacement. It does not
 prescribe a target replacement or supply a functorial choice.
 
+Choosing $q$ first shows that **every ambient arrow has a cofibrant
+replacement square**. Both vertical maps are weak equivalences; this is
+recorded using mathlib's left resolutions for the induced functor on arrow
+categories.
+
 ## Comparing two replacements
 
 For replacements $q_1:Q_1\xrightarrow{\sim}A$ and
@@ -51,6 +56,22 @@ and $ri_k=q_k$. Two out of three makes both $i_k$ weak equivalences.
 Thus the replacements admit a common extension over $A$ by trivial
 cofibrations. The ambient object $A$ need not be cofibrant.
 
+More precisely, let $\mathcal R_A$ be the category whose objects are
+cofibrant replacements $q:Q\xrightarrow{\sim}A$, and whose morphisms
+from $q:Q\to A$ to $q':Q'\to A$ are maps $u:Q\to Q'$ satisfying
+$q'u=q$. Every such $u$ is a weak equivalence, by two out of three.
+The common-extension construction gives a zigzag
+
+$$
+(Q_1,q_1)\longrightarrow(R,r)\longleftarrow(Q_2,q_2)
+$$
+
+between any two objects. Since replacements exist, $\mathcal R_A$ is
+nonempty and connected. Here connected means that objects are joined by
+finite zigzags of morphisms; no assertion of uniqueness of the zigzag is
+needed. This is compatibility infrastructure for the remaining comparison
+proof, not yet a proof of full faithfulness.
+
 ## Lean correspondence
 
 All declarations below are in
@@ -64,8 +85,11 @@ All declarations below are in
 | Comparison is essentially surjective | `cofibrantLocalizationToAmbient_essSurj` |
 | Extend a prescribed source replacement | `exists_cofibrant_replacement_arrow` |
 | Common extension of replacements | `exists_common_cofibrant_replacement` |
+| Maps between replacements are weak equivalences | `weakEquivalence_leftResolution_hom` |
+| Replacement categories are connected | `cofibrantInclusion_leftResolution_isConnected` |
+| Every arrow has a replacement square | `cofibrantInclusion_arrow_hasLeftResolutions` |
 
 The name “left resolution” is mathlib terminology for a weak equivalence
 from an object of the source subcategory to the given ambient object.
 This note was checked against the accompanying Lean source, following
-commit `9078fe4`.
+commit `4266b34`.

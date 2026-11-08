@@ -7,6 +7,7 @@ module
 
 public import ABCCofibrations.HomotopyLocalization
 public import Mathlib.CategoryTheory.Localization.Resolution
+public import Mathlib.CategoryTheory.IsConnected
 
 /-!
 # Cofibrant replacements and the ambient localization
@@ -105,5 +106,52 @@ theorem exists_common_cofibrant_replacement {X Q₁ Q₂ : C}
   exact ⟨R, coprod.inl ≫ i, coprod.inr ≫ i, r, cofibrant_target i,
     inferInstance, weakEquivalence_of_postcomp_of_fac h₁,
     inferInstance, weakEquivalence_of_postcomp_of_fac h₂, hr, h₁, h₂⟩
+
+/-- Every map over the ambient object between its cofibrant replacements is
+a weak equivalence, by two out of three. -/
+theorem weakEquivalence_leftResolution_hom {X : C}
+    {R S : (cofibrantInclusionLocalizerMorphism (C := C)).LeftResolution X}
+    (f : R ⟶ S) : WeakEquivalence f.f.hom := by
+  let : WeakEquivalence (show R.X₁.obj ⟶ X from R.w) := ⟨R.hw⟩
+  let : WeakEquivalence (show S.X₁.obj ⟶ X from S.w) := ⟨S.hw⟩
+  have h : f.f.hom ≫ S.w = R.w := f.comm
+  exact weakEquivalence_of_postcomp_of_fac h
+
+/-- The category of cofibrant replacements over any ambient object is
+connected: two replacements map to their common extension. -/
+instance cofibrantInclusion_leftResolution_isConnected (X : C) :
+    IsConnected ((cofibrantInclusionLocalizerMorphism (C := C)).LeftResolution X) := by
+  apply zigzag_isConnected
+  intro R S
+  let : WeakEquivalence R.w := ⟨R.hw⟩
+  let : WeakEquivalence S.w := ⟨S.hw⟩
+  let : IsCofibrant ((cofibrantInclusionLocalizerMorphism (C := C)).functor.obj R.X₁) :=
+    inferInstanceAs (IsCofibrant R.X₁.obj)
+  let : IsCofibrant ((cofibrantInclusionLocalizerMorphism (C := C)).functor.obj S.X₁) :=
+    inferInstanceAs (IsCofibrant S.X₁.obj)
+  obtain ⟨T, i, j, t, hT, _, _, _, _, ht, hi, hj⟩ :=
+    exists_common_cofibrant_replacement R.w S.w
+  let := hT
+  let U : (cofibrantInclusionLocalizerMorphism (C := C)).LeftResolution X :=
+    { X₁ := CofibrantObject.mk T, w := t, hw := ht.mem }
+  let a : R ⟶ U := { f := CofibrantObject.homMk i, comm := hi }
+  let b : S ⟶ U := { f := CofibrantObject.homMk j, comm := hj }
+  exact Zigzag.of_hom_inv a b
+
+/-- Every arrow of the ambient category has a left resolution by an arrow
+between cofibrant objects. Both vertical maps in the resolution square are
+weak equivalences. -/
+instance cofibrantInclusion_arrow_hasLeftResolutions :
+    (cofibrantInclusionLocalizerMorphism (C := C)).arrow.HasLeftResolutions := by
+  intro f
+  obtain ⟨Q, q, hQ, hq⟩ := exists_cofibrant_replacement f.left
+  let := hQ
+  let := hq
+  obtain ⟨R, i, r, hR, _, hr, h⟩ := exists_cofibrant_replacement_arrow q f.hom
+  let := hR
+  exact ⟨{
+    X₁ := Arrow.mk (CofibrantObject.homMk i)
+    w := Arrow.homMk q r h.symm
+    hw := ⟨hq.mem, hr.mem⟩ }⟩
 
 end ABCCofibrations.ABCPrecofibrationCategory

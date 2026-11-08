@@ -5,7 +5,8 @@ Authors: ABCCofibrations contributors
 -/
 module
 
-public import ABCCofibrations.HomotopyCategory
+public import ABCCofibrations.HomotopyWeakEquivalences
+public import ABCCofibrations.TrivialCofibrationLocalization
 public import Mathlib.CategoryTheory.Localization.Quotient
 
 /-!
@@ -97,6 +98,35 @@ theorem liftFromLeftHomotopyCategory_unique
     G = liftFromLeftHomotopyCategory F hF :=
   CategoryTheory.Quotient.lift_unique _ _ _ G hG
 
+/-- Inverting only the trivial cofibrations already ensures that a functor
+identifies left-homotopic maps, by Brown's functor lemma. -/
+theorem map_eq_of_leftHomotopy_of_inverts_trivialCofibrations
+    (F : CofibrantObject C ⥤ D)
+    (hF : ∀ {X Y : CofibrantObject C} (i : X ⟶ Y),
+      Cofibration i.hom → WeakEquivalence i.hom → IsIso (F.map i))
+    {X Y : CofibrantObject C} {f g : X ⟶ Y}
+    (h : cofibrantLeftHomotopyRel f g) : F.map f = F.map g :=
+  map_eq_of_cofibrant_leftHomotopy F
+    (isInvertedBy_of_inverts_trivialCofibrations F hF) h
+
+/-- A functor inverting trivial cofibrations factors through left-homotopy
+classes; Brown's lemma supplies inversion of all weak equivalences. -/
+noncomputable def liftFromLeftHomotopyCategoryOfTrivialCofibrations
+    (F : CofibrantObject C ⥤ D)
+    (hF : ∀ {X Y : CofibrantObject C} (i : X ⟶ Y),
+      Cofibration i.hom → WeakEquivalence i.hom → IsIso (F.map i)) :
+    LeftHomotopyCategory C ⥤ D :=
+  liftFromLeftHomotopyCategory F (isInvertedBy_of_inverts_trivialCofibrations F hF)
+
+/-- The factorization obtained from inversion of trivial cofibrations agrees
+with the original functor on representatives. -/
+theorem liftFromLeftHomotopyCategoryOfTrivialCofibrations_fac
+    (F : CofibrantObject C ⥤ D)
+    (hF : ∀ {X Y : CofibrantObject C} (i : X ⟶ Y),
+      Cofibration i.hom → WeakEquivalence i.hom → IsIso (F.map i)) :
+    toLeftHomotopyCategory ⋙ liftFromLeftHomotopyCategoryOfTrivialCofibrations F hF = F :=
+  liftFromLeftHomotopyCategory_fac _ _
+
 /-- The canonical comparison from left-homotopy classes to localization at
 weak equivalences of cofibrant objects. -/
 noncomputable def leftHomotopyCategoryToLocalization :
@@ -107,6 +137,21 @@ noncomputable def leftHomotopyCategoryToLocalization :
 theorem leftHomotopyCategoryToLocalization_fac :
     toLeftHomotopyCategory ⋙ leftHomotopyCategoryToLocalization (C := C) =
       (weakEquivalences (CofibrantObject C)).Q :=
+  liftFromLeftHomotopyCategory_fac _ _
+
+/-- Left-homotopy classes also map canonically to localization at trivial
+cofibrations. Brown's lemma supplies inversion of all weak equivalences there. -/
+noncomputable def leftHomotopyCategoryToTrivialCofibrationLocalization :
+    LeftHomotopyCategory C ⥤ (cofibrantTrivialCofibrations (C := C)).Localization :=
+  liftFromLeftHomotopyCategory _
+    ((inverts_weakEquivalences_iff_inverts_trivialCofibrations _).2
+      (cofibrantTrivialCofibrations (C := C)).Q_inverts)
+
+/-- The comparison to trivial-cofibration localization agrees on representatives. -/
+theorem leftHomotopyCategoryToTrivialCofibrationLocalization_fac :
+    toLeftHomotopyCategory ⋙
+      leftHomotopyCategoryToTrivialCofibrationLocalization (C := C) =
+        (cofibrantTrivialCofibrations (C := C)).Q :=
   liftFromLeftHomotopyCategory_fac _ _
 
 /-- Left homotopy is killed by localization at weak equivalences, expressed in
@@ -162,5 +207,48 @@ noncomputable def leftHomotopyLocalizationEquivalence :
     (weakEquivalences (CofibrantObject C)).Localization ≌
       (weakEquivalences (LeftHomotopyCategory C)).Localization :=
   (localizedLeftHomotopyQuotient (C := C)).asEquivalence
+
+/-- The comparison inverts the weak equivalences of the homotopy quotient. -/
+theorem leftHomotopyCategoryToLocalization_inverts :
+    (weakEquivalences (LeftHomotopyCategory C)).IsInvertedBy
+      (leftHomotopyCategoryToLocalization (C := C)) := by
+  rintro ⟨X⟩ ⟨Y⟩ f hf
+  obtain ⟨g, hg, rfl⟩ := hf
+  change IsIso ((weakEquivalences (CofibrantObject C)).Q.map g)
+  exact (weakEquivalences (CofibrantObject C)).Q_inverts g hg
+
+/-- The comparison has the strict localization universal property: every
+functor on left-homotopy classes which inverts weak equivalences factors
+uniquely through it. -/
+noncomputable def leftHomotopyComparisonStrictUniversalProperty :
+    Localization.StrictUniversalPropertyFixedTarget
+      (leftHomotopyCategoryToLocalization (C := C))
+      (weakEquivalences (LeftHomotopyCategory C)) D where
+  inverts := leftHomotopyCategoryToLocalization_inverts
+  lift F hF := Localization.Construction.lift (toLeftHomotopyCategory ⋙ F)
+    (fun _ _ f hf ↦ hF (toLeftHomotopyCategory.map f)
+      ((MorphismProperty.quotient_iff _ _ f).2 hf))
+  fac F hF := by
+    apply CategoryTheory.Quotient.lift_unique' (cofibrantLeftHomotopyRel (C := C))
+    change toLeftHomotopyCategory ⋙ (leftHomotopyCategoryToLocalization ⋙
+      Localization.Construction.lift (toLeftHomotopyCategory ⋙ F) _) =
+      toLeftHomotopyCategory ⋙ F
+    rw [← Functor.assoc, leftHomotopyCategoryToLocalization_fac]
+    exact Localization.Construction.fac (W := weakEquivalences (CofibrantObject C)) _ _
+  uniq F₁ F₂ h := by
+    apply Localization.Construction.uniq
+    rw [← leftHomotopyCategoryToLocalization_fac, Functor.assoc, h, Functor.assoc]
+
+/-- The comparison is a localization of the homotopy quotient at its weak
+equivalences. This does not assert that the comparison is an equivalence
+without localizing those weak equivalences. -/
+instance leftHomotopyCategoryToLocalization_isLocalization :
+    (leftHomotopyCategoryToLocalization (C := C)).IsLocalization
+      (weakEquivalences (LeftHomotopyCategory C)) :=
+  Functor.IsLocalization.mk' _ _
+    (leftHomotopyComparisonStrictUniversalProperty
+      (D := (weakEquivalences (CofibrantObject C)).Localization))
+    (leftHomotopyComparisonStrictUniversalProperty
+      (D := (weakEquivalences (LeftHomotopyCategory C)).Localization))
 
 end ABCCofibrations.ABCPrecofibrationCategory

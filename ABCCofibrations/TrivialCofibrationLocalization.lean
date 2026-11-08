@@ -7,6 +7,7 @@ module
 
 public import ABCCofibrations.BrownFunctor
 public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 
 /-!
 # Localization at trivial cofibrations
@@ -43,6 +44,41 @@ omit [ABCPrecofibrationCategory C] in
 theorem cofibrantTrivialCofibrations_le_weakEquivalences :
     cofibrantTrivialCofibrations (C := C) ≤ weakEquivalences (CofibrantObject C) :=
   fun _ _ _ hf ↦ hf.2
+
+/-- Pushing out a trivial cofibration gives the common target needed to
+move an inverse past a forward arrow in a localization word. -/
+theorem exists_trivialCofibration_ore_square
+    {A B X : CofibrantObject C} (s : A ⟶ B) (f : A ⟶ X)
+    (hs : cofibrantTrivialCofibrations s) :
+    ∃ (Y : CofibrantObject C) (g : B ⟶ Y) (t : X ⟶ Y),
+      cofibrantTrivialCofibrations t ∧ s ≫ g = f ≫ t := by
+  obtain ⟨hs, hw⟩ := (mem_cofibrantTrivialCofibrations_iff s).1 hs
+  let := hs
+  let := hw
+  let h := IsPushout.of_hasPushout s.hom f.hom
+  let := cofibration_of_isPushout h
+  let := weakEquivalence_of_isPushout h
+  let := cofibrant_target (Limits.pushout.inr s.hom f.hom)
+  refine ⟨CofibrantObject.mk (Limits.pushout s.hom f.hom),
+    CofibrantObject.homMk (Limits.pushout.inl s.hom f.hom),
+    CofibrantObject.homMk (Limits.pushout.inr s.hom f.hom), ?_, ?_⟩
+  · apply (mem_cofibrantTrivialCofibrations_iff _).2
+    change Cofibration (Limits.pushout.inr s.hom f.hom) ∧
+      WeakEquivalence (Limits.pushout.inr s.hom f.hom)
+    exact ⟨inferInstance, inferInstance⟩
+  · ext
+    exact h.w
+
+/-- Every right fraction with a trivial-cofibration denominator can be
+converted to a left fraction, using the pushout square. This asserts the
+Ore existence condition only, without a cancellation axiom. -/
+theorem exists_leftFraction_of_trivialCofibration_rightFraction
+    {X Y : CofibrantObject C}
+    (φ : (cofibrantTrivialCofibrations (C := C)).RightFraction X Y) :
+    ∃ ψ : (cofibrantTrivialCofibrations (C := C)).LeftFraction X Y,
+      φ.f ≫ ψ.s = φ.s ≫ ψ.f := by
+  obtain ⟨Z, g, t, ht, h⟩ := exists_trivialCofibration_ore_square φ.s φ.f φ.hs
+  exact ⟨⟨g, t, ht⟩, h.symm⟩
 
 /-- Brown's lemma identifies the functors which invert either class. -/
 theorem inverts_weakEquivalences_iff_inverts_trivialCofibrations

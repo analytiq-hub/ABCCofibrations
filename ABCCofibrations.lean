@@ -9,6 +9,7 @@ import ABCCofibrations.HomotopyCategory
 import ABCCofibrations.BrownFunctor
 import ABCCofibrations.HomotopyWeakEquivalences
 import ABCCofibrations.TrivialCofibrationLocalization
+import ABCCofibrations.TrivialCofibrationFractions
 import ABCCofibrations.HomotopyLocalization
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

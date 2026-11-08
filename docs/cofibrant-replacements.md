@@ -5,6 +5,26 @@ This note describes the first part of the comparison in Theorem 6.1.6 of
 $\mathcal M_{\mathrm{cof}}$ for the full subcategory of cofibrant objects and
 $W$ for weak equivalences.
 
+## Differences from the paper
+
+The intended comparison is Theorem 6.1.6 of the paper, with its CF1–CF4
+hypotheses. The paper proves it through general cofibrant approximation
+functors and the approximation theorem. Our construction specializes to the
+inclusion $\mathcal M_{\mathrm{cof}}\hookrightarrow\mathcal M$ and constructs
+a reverse functor directly, using object replacements and fractions.
+Theorems here concerning that inclusion do not yet formalize the paper's
+general statements for arbitrary cofibrant approximation functors.
+
+The ambient cancellation proof follows the cylinder-boundary pushout argument
+of Lemma 6.1.2(1), specialized to inclusion; we also prove the stronger variant
+starting with strict homotopy after the weak equivalence. For Lemma 6.1.3(1),
+we retain the paper's pushout proof for trivial-cofibration denominators and
+also use a common cofibrant extension to handle general weak-equivalence
+denominators directly. The replacement functor is built with explicit object
+replacement parameters, rather than through the general approximation theorem.
+The remaining completion status is stated below; we do not yet claim the
+paper's completed equivalence.
+
 Inclusion preserves weak equivalences, so it induces a functor
 
 $$
@@ -16,7 +36,8 @@ This functor is **essentially surjective**: every object of the target is
 isomorphic to the image of a cofibrant object. Indeed, CF4 applied to
 $\varnothing\to A$ gives a cofibrant replacement $q:Q\xrightarrow{\sim}A$.
 Localization turns $q$ into an isomorphism. This proves the object part of
-Theorem 6.1.6; full faithfulness, and hence the equivalence, remain unproved.
+Theorem 6.1.6. Faithfulness is now also proved, using the left inverse below;
+fullness and hence the equivalence remain unproved.
 
 ## Extending a replacement across an arrow
 
@@ -148,9 +169,109 @@ pushout $D'\amalg_{B'}D''$, as in the paper. Both versions are in
 | Arbitrary weak-equivalence denominators | `weakEquivalence_fraction_map_eq_of_ambient_comparison` |
 | Trivial-cofibration denominators | `trivialCofibration_fraction_map_eq_of_ambient_comparison` |
 
-These results establish independence of the indicated fraction choices;
-the construction of an inverse to the ambient comparison, and its functor
-laws, remain to be completed.
+These results establish independence of the indicated fraction choices.
+
+## The replacement functor
+
+Choose a cofibrant replacement $q_A:Q_A\xrightarrow{\sim}A$ for every
+ambient object. These are choices on objects; no functorial replacement in
+$\mathcal M$ is assumed. Given $f:A\to B$, factor
+
+$$
+[fq_A,q_B]:Q_A\amalg Q_B\longrightarrow B
+$$
+
+as a cofibration followed by a weak equivalence $p:R\xrightarrow{\sim}B$.
+Writing $i:Q_A\to R$ and $s:Q_B\to R$ for the two components gives
+
+$$
+pi=fq_A,\qquad ps=q_B.
+$$
+
+Both component maps are cofibrations, and two out of three makes $s$ a
+weak equivalence. Thus $Q_A\xrightarrow{i}R\xleftarrow[\sim]{s}Q_B$
+is a trivial-cofibration fraction. `ReplacementFraction` packages such a
+fraction together with $p$ and its two equations; its existence and mapped
+value are proved independent of the factorization choice.
+
+For any functor $F$ on cofibrant objects that inverts trivial cofibrations,
+define the extended functor by
+
+$$
+\widetilde F(A)=F(Q_A),\qquad
+\widetilde F(f)=F(s)^{-1}\circ F(i).
+$$
+
+The identity law follows by comparison with the fraction represented by
+$\mathrm{id}_{Q_A}$. For composition, glue the denominator of the first
+fraction to the numerator of the second by a pushout. The resulting apex
+still maps by a weak equivalence to the final ambient target: the pushout
+map from the second apex is a trivial cofibration, and its composite with
+the comparison map is the original weak equivalence. This constructs a
+fraction for the composite, whose mapped value is the composite of the two
+mapped fractions. Independence of choices proves the functor's composition law.
+
+If $f$ is a weak equivalence, $pi=fq_A$ implies that $i$ is a weak
+equivalence. Brown's functor lemma makes $F(i)$ invertible, so
+$\widetilde F(f)$ is invertible. Taking $F$ to be localization of the
+cofibrant subcategory therefore yields a functor
+
+$$
+\mathcal M[W^{-1}]\longrightarrow\mathcal M_{\mathrm{cof}}[W^{-1}].
+$$
+
+This construction and its functor laws are formalized in
+[ReplacementFunctor.lean](../ABCCofibrations/ReplacementFunctor.lean).
+The object replacements are explicit parameters `Q`, `q`, and `hq`.
+One of the inverse comparison isomorphisms is now proved below. The other
+direction **remains unproved**.
+
+| Statement | Declaration |
+| --- | --- |
+| Fraction over an ambient arrow | `ReplacementFraction` |
+| Existence with prescribed replacements | `ReplacementFraction.nonempty` |
+| Independence of mapped value | `ReplacementFraction.map_eq` |
+| Actual representative map | `ReplacementFraction.ofHom`, `ReplacementFraction.map_ofHom` |
+| Pushout composition | `ReplacementFraction.comp`, `ReplacementFraction.map_comp` |
+| Extension to the ambient category | `replacementFunctor` |
+| Extension inverts weak equivalences | `replacementFunctor_inverts` |
+| Reverse functor on localizations | `ambientLocalizationToCofibrant` |
+
+## Restriction comparison and faithfulness
+
+For a functor $F$ on cofibrant objects inverting weak equivalences, the maps
+$F(q_A)$ for cofibrant $A$ give a natural isomorphism
+
+$$
+\widetilde F\vert_{\mathcal M_{\mathrm{cof}}}\cong F.
+$$
+
+To check naturality, the comparison $p:R\to B$ of a replacement fraction
+is itself a morphism between cofibrant objects whenever $B$ is cofibrant.
+The equations $pi=fq_A$ and $ps=q_B$ then imply
+$F(q_B)\circ\widetilde F(f)=F(f)\circ F(q_A)$.
+This gives `replacementFunctorRestrictionIso`.
+
+Write $K$ for the inclusion-induced comparison and $H$ for the reverse
+functor on localizations. Mathlib's universal property lifts the restriction
+isomorphism to
+
+$$
+H\circ K\cong\mathrm{id}_{\mathcal M_{\mathrm{cof}}[W^{-1}]}.
+$$
+
+Consequently $K$ is faithful: applying $H$ to an equality of images under
+$K$, then conjugating by this isomorphism, recovers equality of the original
+arrows. Existence of cofibrant replacements discharges the parameters for
+this faithfulness result. This does not yet prove fullness. We still need
+the comparison $K\circ H\cong\mathrm{id}_{\mathcal M[W^{-1}]}$.
+
+These are the direct-construction counterparts of part of the paper's
+approximation-theorem argument, rather than a formalization of the general
+approximation theorem. They are in
+[ReplacementComparison.lean](../ABCCofibrations/ReplacementComparison.lean):
+`cofibrantLocalizationReplacementIso` and
+`cofibrantLocalizationToAmbient_faithful`.
 
 ## Lean correspondence
 
@@ -173,4 +294,4 @@ All declarations below are in
 The name “left resolution” is mathlib terminology for a weak equivalence
 from an object of the source subcategory to the given ambient object.
 This note was checked against the accompanying Lean source, following
-commit `65065ac`.
+commit `0746dcc`, including the accompanying `ReplacementFunctor.lean` increment.

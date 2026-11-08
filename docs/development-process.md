@@ -16,6 +16,12 @@ Related community discussion:
 The link is provided for context; the process below describes this project's
 practice and does not attribute particular recommendations to that discussion.
 
+Every mathematical Markdown note must explicitly explain its differences from
+the source paper. Identify changed hypotheses, specializations, notation or
+proof variations, and unfinished parts. If there are no mathematical changes,
+say so. Keep this comparison current when the formalization changes; do not
+leave readers to infer that a note reproduces the paper verbatim.
+
 ## 1. Plan around mathematical dependencies
 
 Begin with a broad roadmap, then expand only the early stages into concrete work

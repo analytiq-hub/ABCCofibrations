@@ -16,5 +16,7 @@ import ABCCofibrations.HomotopyLocalization
 import ABCCofibrations.HomotopyFractions
 import ABCCofibrations.CofibrantReplacement
 import ABCCofibrations.AmbientFractions
+import ABCCofibrations.ReplacementFunctor
+import ABCCofibrations.ReplacementComparison
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

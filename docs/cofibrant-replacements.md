@@ -24,6 +24,14 @@ denominators directly. The replacement functor is built with explicit object
 replacement parameters, rather than through the general approximation theorem.
 The comparison equivalence is now complete. The paper's general approximation
 theorem remains outside this development; we prove the inclusion case directly.
+For the fraction results below, the statements retain the paper's cofibrancy
+hypotheses and apply to any ambient localization. Theorem 6.4.4(1)(a) is proved
+in the stronger form with a trivial-cofibration denominator. Our equality proof
+uses mathlib's calculus of fractions on the homotopy quotient and lifts its
+comparison maps to representatives; this implements the same quotient-and-
+localization argument used in the paper. The stronger representation theorem
+reuses our Brown factorization construction, whereas the paper's proof of
+6.4.5(1)(a) factors the combined numerator–denominator map directly.
 
 Inclusion preserves weak equivalences, so it induces a functor
 
@@ -303,6 +311,65 @@ approximation theorem. They are in
 | Restriction of any ambient localization | `cofibrantInclusion_comp_isLocalization` |
 | Ambient equality iff left homotopy | `ambient_map_eq_iff_cofibrant_leftHomotopy` |
 
+## Ambient homotopy fractions
+
+For cofibrant $A,B$, every arrow $\alpha:L(A)\to L(B)$ in any localization
+$L$ of the ambient category has a representative
+
+$$
+A\xrightarrow{f}B'\xleftarrow[\sim]{s}B,
+\qquad \alpha=L(s)^{-1}\circ L(f),
+$$
+
+with $B'$ cofibrant. We can require that $f$, $s$, and
+$[f,s]:A\amalg B\to B'$ are cofibrations and that $s$ is a weak equivalence.
+This proves 6.4.4(1)(a) and the stronger 6.4.5(1)(a). The Lean statements use
+the equivalent equation $\alpha\mathbin{\gg}L(s)=L(f)$ to avoid exposing
+a choice of inverse in the existence interface.
+
+For fractions $(f,s)$ and $(g,t)$ with arbitrary weak-equivalence
+denominators and cofibrant apices, 6.4.4(1)(b) says equality is equivalent
+to finding a cofibrant $B'''$ and weak equivalences $s',t'$ into it with
+
+$$
+s'\circ s\simeq_l t'\circ t,
+\qquad s'\circ f\simeq_l t'\circ g.
+$$
+
+The proof passes to the homotopy quotient, where these homotopies become
+equalities. Mathlib's fraction equality criterion supplies a common apex and
+comparison maps. Fullness of the quotient functor lifts those maps to the
+cofibrant subcategory, and two out of three proves they are weak equivalences.
+The converse follows by mapping the homotopies and cancelling the common
+invertible denominator.
+
+If $s,t$ are trivial cofibrations, 6.4.5(1)(b) gives the sharper criterion:
+$s',t'$ can be trivial cofibrations, the denominator equation is strict,
+and only the numerator equation needs left homotopy. It holds for any chosen
+common trivial-cofibration denominator, as well as existentially.
+
+Together with ambient equality iff left homotopy above, these prove the
+cofibration-side statements of Theorems 6.4.4 and 6.4.5. The equality statement
+also expresses 6.3.1(1), where the paper's unqualified “homotopic” means equality
+in the homotopy category. No dual fibration-side results are claimed here.
+
+The ambient statements are in
+[AmbientHomotopyFractions.lean](../ABCCofibrations/AmbientHomotopyFractions.lean):
+
+| Paper statement | Declaration |
+| --- | --- |
+| 6.4.4(1)(a), strengthened denominator | `exists_ambient_trivialCofibration_fraction` |
+| 6.4.4(1)(b) | `ambient_weakEquivalence_fraction_map_eq_iff_exists_leftHomotopy` |
+| 6.4.5(1)(a) | `exists_ambient_cofibration_fraction_with_coprod` |
+| 6.4.5(1)(b) | `ambient_trivialCofibration_fraction_map_eq_iff_exists_leftHomotopy` |
+| Fixed common denominator refinement | `ambient_trivialCofibration_fraction_map_eq_iff_leftHomotopy` |
+
+The general weak-equivalence criterion is first proved for the cofibrant
+subcategory in `HomotopyFractions.lean` as
+`weakEquivalence_fraction_map_eq_iff_exists_leftHomotopy`, then transferred
+using Theorem 6.1.6. These results are complete; the general approximation and
+derived-functor theory has not yet been formalized.
+
 ## Lean correspondence
 
 All declarations below are in
@@ -324,4 +391,4 @@ All declarations below are in
 The name “left resolution” is mathlib terminology for a weak equivalence
 from an object of the source subcategory to the given ambient object.
 This note was checked against the accompanying Lean source, following
-commit `42181ee`, including the accompanying completion of `ReplacementComparison.lean`.
+commit `adc3ea3`, including the accompanying ambient fraction increment.

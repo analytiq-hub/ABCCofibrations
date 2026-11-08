@@ -60,6 +60,11 @@ to this inclusion. Restriction of any ambient localization is consequently a
 localization of cofibrant objects, and `ambient_map_eq_iff_cofibrant_leftHomotopy`
 detects equality of their maps in ambient localization.
 
+Import `ABCCofibrations.AmbientHomotopyFractions` for the ambient
+cofibration-side statements of Theorems 6.4.4 and 6.4.5: fraction
+representations with cofibration numerator and coproduct boundary, and equality
+criteria for arbitrary weak-equivalence or trivial-cofibration denominators.
+
 Import `ABCCofibrations.Gluing` for both parts of the gluing lemma
 (Lemma 1.4.1(1)): `gluing_cofibration` and `gluing_weakEquivalence`.
 The proof uses relative Brown comparisons only along cofibration edges,

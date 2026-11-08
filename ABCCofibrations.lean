@@ -18,5 +18,6 @@ import ABCCofibrations.CofibrantReplacement
 import ABCCofibrations.AmbientFractions
 import ABCCofibrations.ReplacementFunctor
 import ABCCofibrations.ReplacementComparison
+import ABCCofibrations.AmbientHomotopyFractions
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

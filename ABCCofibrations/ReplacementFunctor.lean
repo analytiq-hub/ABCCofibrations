@@ -14,7 +14,7 @@ An ambient arrow is represented by a trivial-cofibration fraction between
 prescribed replacements. Independence of fraction choice gives a functor on
 the ambient category, and this functor inverts weak equivalences. It descends
 to a functor in the reverse direction on localizations. The comparison
-isomorphisms proving Theorem 6.1.6 remain to be constructed.
+isomorphisms proving Theorem 6.1.6 are in `ReplacementComparison.lean`.
 -/
 
 @[expose] public section
@@ -270,7 +270,7 @@ theorem replacementFunctor_inverts
     (chosenReplacementFraction (q A) (q B) f) F hF
 
 /-- A functor in the reverse direction on localizations, relative to chosen
-object replacements. The inverse comparison isomorphisms remain to be proved. -/
+object replacements. Its inverse comparisons are in `ReplacementComparison.lean`. -/
 noncomputable def ambientLocalizationToCofibrant
     (Q : C → CofibrantObject C) (q : ∀ A, (Q A).obj ⟶ A)
     (hq : ∀ A, WeakEquivalence (q A)) :

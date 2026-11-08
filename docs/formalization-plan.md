@@ -383,20 +383,15 @@ statements.
 
 ### Resume point (2026-11-08)
 
-The active goal is Theorem 6.1.6: prove that
-`cofibrantLocalizationToAmbient` is an equivalence. Its construction and
-essential surjectivity and faithfulness are complete; fullness is still open.
-The replacement construction in `ReplacementFunctor.lean` gives the following:
-prescribed
-cofibrant replacements give a functor on the ambient category, with proved
-identity and composition laws. It inverts ambient weak equivalences and
-descends to `ambientLocalizationToCofibrant`, a reverse functor on
-localizations. Object replacements remain explicit parameters `Q`, `q`, `hq`.
-The latest increment, `ReplacementComparison.lean`, proves the left-inverse
-comparison isomorphism and hence faithfulness of the ambient comparison.
-The other comparison isomorphism is still missing. The construction uses
-independence of ambient fraction choices (Lemma 6.1.3(1)) in
-`AmbientFractions.lean`, and ambient cancellation (Lemma 6.1.2(1)).
+**Theorem 6.1.6 is complete:** `cofibrantLocalizationToAmbient` is an
+equivalence. `ReplacementComparison.lean` supplies both inverse comparison
+isomorphisms, a parameterized equivalence, and an equivalence with replacement
+choices supplied by existence. The proof specializes to inclusion of cofibrant
+objects and constructs an inverse directly, rather than formalizing the paper's
+general approximation theorem. `cofibrantInclusion_comp_isLocalization` makes
+restriction of any ambient localization a localization of cofibrant objects.
+`ambient_map_eq_iff_cofibrant_leftHomotopy` now proves the full ambient
+equality criterion of Theorem 6.4.4(1)(c).
 
 Suggested next construction:
 
@@ -409,14 +404,13 @@ Suggested next construction:
    trivial-cofibration version) to prove independence of the fraction choice.
    Prove the identity and composition laws to obtain a functor from the
    ambient category to the localization of cofibrant objects.
-3. **Inversion, descent, and left-inverse isomorphism complete. Next:** construct
-   the remaining isomorphism from `ambientLocalizationToCofibrant` followed
-   by `cofibrantLocalizationToAmbient` to the identity on the ambient
-   localization. This will prove the reverse functor is an inverse.
-   An alternative proof of full
-   faithfulness is acceptable if it avoids unnecessary infrastructure.
-4. Transfer the existing cofibrant-subcategory fraction and equality results
-   to the ambient localization only after this equivalence is established.
+3. **Complete:** inversion, descent, and both inverse comparison isomorphisms
+   establish the equivalence, with no functorial replacement assumption.
+4. **Next:** transfer existing cofibrant-subcategory fraction existence and
+   comparison results to ambient localization via
+   `cofibrantInclusion_comp_isLocalization`. The ambient equality criterion
+   for maps is complete; package the remaining fraction statements and audit
+   their precise correspondence with Theorems 6.3.1, 6.4.4, and 6.4.5.
 
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
@@ -441,9 +435,9 @@ work of Milestone 3. Milestones 0, 1, 2, and 4 retain their unchecked items.
 
 Completed localization infrastructure:
 
-- `ReplacementComparison.lean`: the restriction natural isomorphism lifts
-  to a left inverse of the ambient comparison; the comparison is therefore
-  faithful. The right-inverse comparison and fullness remain open.
+- `ReplacementComparison.lean`: both inverse comparison isomorphisms prove
+  Theorem 6.1.6. Any ambient localization restricts to a localization of
+  cofibrant objects, giving ambient equality iff left homotopy.
 - `ReplacementFunctor.lean`: fractions representing ambient arrows between
   prescribed replacements, independence, identity and pushout composition,
   extension to an ambient functor, inversion of weak equivalences, and descent
@@ -477,10 +471,11 @@ Completed localization infrastructure:
   `Factorization.lean`: binary coproducts preserve weak equivalences between
   cofibrant objects.
 
-These results concern localization of `CofibrantObject C`. They do not yet
-identify it with localization of the entire ambient category (Theorem 6.1.6).
-In particular, the existence results establish the cofibrant-subcategory versions
-of Theorems 6.4.4(1)(a) and 6.4.5(1)(a), not their full ambient statements.
+Theorem 6.1.6 now identifies localization of `CofibrantObject C` with
+localization of the entire ambient category. Existing fraction statements can
+be applied to the restriction of an ambient localization through the new
+instance; explicit ambient formulations and their theorem-number correspondence
+remain to be packaged and audited.
 
 The following is a provisional route, checked against §§6.3–6.4, rather than
 a required reproduction of the paper's proof order. Prefer a shorter direct
@@ -521,12 +516,10 @@ substantial result.
    `AmbientFractions.lean` proves Lemma 6.1.3(1) for inclusion of cofibrant
    objects: two fractions with the same ambient numerator and denominator
    have equal images, including arbitrary weak-equivalence denominators. See
-   [the mathematical note](cofibrant-replacements.md). Full faithfulness
-   now reduces to fullness: the left-inverse comparison isomorphism in
-   `ReplacementComparison.lean` proves faithfulness. Fullness remains to
-   obtain the full
-   Theorem 6.3.1(1), and finish the converse fraction equality criteria of
-   Theorems 6.4.4(1)(b) and 6.4.5(1)(b).
+   [the mathematical note](cofibrant-replacements.md).
+   `ReplacementComparison.lean` now supplies both inverse comparison
+   isomorphisms, proving the equivalence and ambient equality criterion.
+   Package the remaining ambient fraction statements next.
 
 Do not infer faithfulness or equivalence of the homotopy quotient's comparison
 merely from its localization property. The foundation audit and elementary API
@@ -636,3 +629,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-08 | Independence of ambient fraction choices | Lemma 6.1.3(1) for inclusion of cofibrant objects in `AmbientFractions.lean`, with arbitrary weak-equivalence denominators and a separate pushout proof for trivial-cofibration denominators; `lake build ABCCofibrations` passed (1900 jobs), without warnings. |
 | 2026-11-08 | Replacement functor and reverse localization functor | `ReplacementFunctor.lean` constructs fractions between prescribed replacements, proves independence and functor laws, inverts ambient weak equivalences, and descends to `ambientLocalizationToCofibrant`; comparison isomorphisms remain open. `lake build ABCCofibrations` passed (1902 jobs), without warnings. |
 | 2026-11-08 | Left-inverse comparison and ambient faithfulness | `replacementFunctorRestrictionIso`, `cofibrantLocalizationReplacementIso`, and `cofibrantLocalizationToAmbient_faithful`; the other inverse comparison and fullness remain open. Documentation now explicitly records differences from the paper. `lake build ABCCofibrations` passed (1904 jobs), without warnings. |
+| 2026-11-08 | Ambient localization equivalence | Both inverse comparisons prove Theorem 6.1.6; restriction of any ambient localization is a localization of cofibrant objects, and `ambient_map_eq_iff_cofibrant_leftHomotopy` proves Theorem 6.4.4(1)(c). `lake build ABCCofibrations` passed (1904 jobs), without warnings. |

@@ -1,6 +1,6 @@
 # Cofibrant replacements and the ambient localization
 
-This note describes the first part of the comparison in Theorem 6.1.6 of
+This note describes the comparison in Theorem 6.1.6 of
 *Cofibrations in Homotopy Theory*. Only CF1–CF4 are used. Write
 $\mathcal M_{\mathrm{cof}}$ for the full subcategory of cofibrant objects and
 $W$ for weak equivalences.
@@ -22,8 +22,8 @@ we retain the paper's pushout proof for trivial-cofibration denominators and
 also use a common cofibrant extension to handle general weak-equivalence
 denominators directly. The replacement functor is built with explicit object
 replacement parameters, rather than through the general approximation theorem.
-The remaining completion status is stated below; we do not yet claim the
-paper's completed equivalence.
+The comparison equivalence is now complete. The paper's general approximation
+theorem remains outside this development; we prove the inclusion case directly.
 
 Inclusion preserves weak equivalences, so it induces a functor
 
@@ -36,8 +36,8 @@ This functor is **essentially surjective**: every object of the target is
 isomorphic to the image of a cofibrant object. Indeed, CF4 applied to
 $\varnothing\to A$ gives a cofibrant replacement $q:Q\xrightarrow{\sim}A$.
 Localization turns $q$ into an isomorphism. This proves the object part of
-Theorem 6.1.6. Faithfulness is now also proved, using the left inverse below;
-fullness and hence the equivalence remain unproved.
+Theorem 6.1.6. Both inverse comparison isomorphisms below now prove fullness,
+faithfulness, and the equivalence as well.
 
 ## Extending a replacement across an arrow
 
@@ -90,8 +90,8 @@ $$
 between any two objects. Since replacements exist, $\mathcal R_A$ is
 nonempty and connected. Here connected means that objects are joined by
 finite zigzags of morphisms; no assertion of uniqueness of the zigzag is
-needed. This is compatibility infrastructure for the remaining comparison
-proof, not yet a proof of full faithfulness.
+needed. This is compatibility infrastructure for the comparison proof;
+connectedness alone is not a proof of full faithfulness.
 
 ## Cancellation into an ambient object
 
@@ -223,8 +223,7 @@ $$
 This construction and its functor laws are formalized in
 [ReplacementFunctor.lean](../ABCCofibrations/ReplacementFunctor.lean).
 The object replacements are explicit parameters `Q`, `q`, and `hq`.
-One of the inverse comparison isomorphisms is now proved below. The other
-direction **remains unproved**.
+Both inverse comparison isomorphisms are now proved below.
 
 | Statement | Declaration |
 | --- | --- |
@@ -237,7 +236,7 @@ direction **remains unproved**.
 | Extension inverts weak equivalences | `replacementFunctor_inverts` |
 | Reverse functor on localizations | `ambientLocalizationToCofibrant` |
 
-## Restriction comparison and faithfulness
+## Inverse comparisons and the equivalence
 
 For a functor $F$ on cofibrant objects inverting weak equivalences, the maps
 $F(q_A)$ for cofibrant $A$ give a natural isomorphism
@@ -263,15 +262,46 @@ $$
 Consequently $K$ is faithful: applying $H$ to an equality of images under
 $K$, then conjugating by this isomorphism, recovers equality of the original
 arrows. Existence of cofibrant replacements discharges the parameters for
-this faithfulness result. This does not yet prove fullness. We still need
-the comparison $K\circ H\cong\mathrm{id}_{\mathcal M[W^{-1}]}$.
+this faithfulness result.
+
+For the other direction, the chosen replacement maps give components for
+a natural isomorphism from the replacement extension followed by $K$ to
+ambient localization. Naturality uses the two equations of a replacement
+fraction and naturality of the canonical comparison
+$\gamma_{\mathrm{cof}}K\cong\iota\gamma$. In particular, the fraction
+denominator equation allows cancellation of its invertible image, and the
+numerator equation gives the desired ambient arrow. Lifting this natural
+isomorphism through ambient localization gives
+
+$$
+K\circ H\cong\mathrm{id}_{\mathcal M[W^{-1}]}.
+$$
+
+Together the two isomorphisms prove Theorem 6.1.6 under CF1–CF4. Both an
+equivalence with explicit replacement choices and one with choices supplied
+by existence are available. No additional model-category assumptions are used.
+
+It follows that any localization $L:\mathcal M\to\mathcal D$, restricted
+to cofibrant objects, is a localization of their weak equivalences. Hence
+the previously proved equality criterion now holds in ambient localization:
+maps between cofibrant objects have equal images under $L$ exactly when
+they are left homotopic (Theorem 6.4.4(1)(c)).
 
 These are the direct-construction counterparts of part of the paper's
 approximation-theorem argument, rather than a formalization of the general
 approximation theorem. They are in
 [ReplacementComparison.lean](../ABCCofibrations/ReplacementComparison.lean):
-`cofibrantLocalizationReplacementIso` and
-`cofibrantLocalizationToAmbient_faithful`.
+
+| Statement | Declaration |
+| --- | --- |
+| Left-inverse comparison | `cofibrantLocalizationReplacementIso` |
+| Ambient comparison before localization | `replacementFunctorAmbientIso` |
+| Right-inverse comparison | `ambientLocalizationReplacementIso` |
+| Equivalence with explicit replacements | `cofibrantAmbientLocalizationEquivalenceOfReplacements` |
+| Canonical comparison is an equivalence | `cofibrantLocalizationToAmbient_isEquivalence` |
+| Equivalence with choices supplied | `cofibrantAmbientLocalizationEquivalence` |
+| Restriction of any ambient localization | `cofibrantInclusion_comp_isLocalization` |
+| Ambient equality iff left homotopy | `ambient_map_eq_iff_cofibrant_leftHomotopy` |
 
 ## Lean correspondence
 
@@ -294,4 +324,4 @@ All declarations below are in
 The name “left resolution” is mathlib terminology for a weak equivalence
 from an object of the source subcategory to the given ambient object.
 This note was checked against the accompanying Lean source, following
-commit `0746dcc`, including the accompanying `ReplacementFunctor.lean` increment.
+commit `42181ee`, including the accompanying completion of `ReplacementComparison.lean`.

@@ -52,6 +52,14 @@ they are left homotopic. `ABCCofibrations.HomotopyFractions` also gives an exact
 fraction equality criterion using a common trivial-cofibration denominator
 and left-homotopic numerators.
 
+Import `ABCCofibrations.ReplacementComparison` for Theorem 6.1.6: inclusion of
+cofibrant objects induces an equivalence on localizations. The proof constructs
+a reverse functor from chosen replacements and fractions, then proves both
+inverse comparisons. It specializes the paper's general approximation argument
+to this inclusion. Restriction of any ambient localization is consequently a
+localization of cofibrant objects, and `ambient_map_eq_iff_cofibrant_leftHomotopy`
+detects equality of their maps in ambient localization.
+
 Import `ABCCofibrations.Gluing` for both parts of the gluing lemma
 (Lemma 1.4.1(1)): `gluing_cofibration` and `gluing_weakEquivalence`.
 The proof uses relative Brown comparisons only along cofibration edges,

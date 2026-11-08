@@ -20,7 +20,7 @@ the restricted pushout axiom. No model-category structure, global coproducts,
 or unrestricted stability under cobase change is assumed.
 -/
 
-public section
+@[expose] public section
 
 universe v u
 
@@ -124,5 +124,63 @@ theorem exists_relative_good_cylinder
   refine ⟨Q, c, k, hgood, hI, hk, h₀, h₁, hright, hkinl, ?_⟩
   rw [hQ]
   exact hkinr
+
+/-- Reversing the two endpoints preserves goodness without unrestricted
+isomorphism stability for cofibrations. -/
+theorem good_cylinder_symm : P.symm.IsGood := by
+  let := coprod_cofibrant (A := A) (B := A)
+  have hb : Cofibration (coprod.braiding A A).hom :=
+    cofibration_of_isIso (coprod.braiding A A).hom
+  have hi : Cofibration P.i := inferInstance
+  refine ⟨?_⟩
+  have h : P.symm.i = (coprod.braiding A A).hom ≫ P.i := by
+    ext <;> simp [Precylinder.i, Cylinder.symm, Precylinder.symm]
+  rw [h]
+  exact (cofibration_iff _).2 ((cofibrations C).comp_mem _ _ hb.mem hi.mem)
+
+/-- Concatenate two good cylinders by identifying the second endpoint of the
+first with the first endpoint of the second. This uses only CF1–CF4. -/
+noncomputable def cylinder_trans (Q : Cylinder A) [Q.IsGood]
+    [HasPushout P.i₁ Q.i₀] : Cylinder A where
+  __ := P.toPrecylinder.trans Q.toPrecylinder
+  weakEquivalence_π := by
+    let := cylinder_cofibrant P
+    let := cofibration_cylinder_i₀ Q
+    let := weakEquivalence_cylinder_i₀ Q
+    have hinl : WeakEquivalence (pushout.inl P.i₁ Q.i₀) :=
+      weakEquivalence_of_isPushout (IsPushout.of_hasPushout P.i₁ Q.i₀).flip
+    let : WeakEquivalence (pushout.inl P.i₁ Q.i₀) := hinl
+    exact weakEquivalence_of_precomp_of_fac (f := pushout.inl P.i₁ Q.i₀)
+      (pushout.inl_desc (f := P.i₁) (g := Q.i₀) P.π Q.π (by simp))
+
+/-- The concatenation is again a good cylinder. -/
+theorem good_cylinder_trans (Q : Cylinder A) [Q.IsGood]
+    [HasPushout P.i₁ Q.i₀] : (cylinder_trans P Q).IsGood := by
+  let := cylinder_cofibrant P
+  let := cylinder_cofibrant Q
+  let := cofibration_cylinder_i₀ P
+  let := cofibration_cylinder_i₁ P
+  let := hasBinaryCoproduct P.I A
+  let := coprod_cofibrant (A := P.I) (B := A)
+  let := coprod_cofibrant (A := A) (B := A)
+  let ψ : P.I ⨿ A ⟶ pushout P.i₁ Q.i₀ :=
+    coprod.desc (pushout.inl P.i₁ Q.i₀) (Q.i₁ ≫ pushout.inr P.i₁ Q.i₀)
+  have fac : coprod.map P.i₁ (𝟙 A) ≫ ψ = Q.i ≫ pushout.inr P.i₁ Q.i₀ := by
+    ext
+    · simp [ψ, pushout.condition, Precylinder.i]
+    · simp [ψ, Precylinder.i]
+  have sq : IsPushout P.i₁ (coprod.inl ≫ Q.i) (coprod.inl ≫ ψ)
+      (pushout.inr P.i₁ Q.i₀) := by
+    simpa [ψ, Precylinder.i] using IsPushout.of_hasPushout P.i₁ Q.i₀
+  have hψ : Cofibration ψ :=
+    cofibration_of_isPushout
+      (IsPushout.of_top sq fac (IsPushout.of_coprod_inl_with_id P.i₁ A).flip).flip
+  let := hψ
+  have hm := cofibration_coprod_map_id P.i₀ A
+  refine ⟨?_⟩
+  have h : (cylinder_trans P Q).i = coprod.map P.i₀ (𝟙 A) ≫ ψ := by
+    ext <;> simp [Precylinder.i, cylinder_trans, Precylinder.trans, ψ]
+  rw [h]
+  exact (cofibration_iff _).2 ((cofibrations C).comp_mem _ _ hm.mem hψ.mem)
 
 end ABCCofibrations.ABCPrecofibrationCategory

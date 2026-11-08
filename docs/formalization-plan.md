@@ -268,7 +268,13 @@ The dependency audit of the gluing proof is complete. Its proof order is:
 This proof uses CF1–CF4 and does not assume the invalid unrestricted comparison
 claims. The theorem accepts arbitrary `IsPushout` representatives of both faces.
 The front and rear comparisons in part (a) use chosen pushouts, whose existence
-follows from CF3. The other extension lemmas of §1.4 remain outstanding.
+follows from CF3.
+
+Excision, Lemma 1.4.2(1), is now proved in `Extension.lean` as
+`weakEquivalence_of_isPushout_of_cofibration`; `weakEquivalence_pushout_inl`
+specializes it to the canonical pushout. The proof applies gluing to a cube
+with identity maps on two vertices. Lemma 1.4.3's comparison of alternative
+axiom systems remains outstanding.
 
 For §1.5, the existing mathlib `Cylinder` and `Cylinder.IsGood` interfaces have
 been reused in `Cylinder.lean`. The paper's Definition 1.5.1(1) corresponds to
@@ -277,11 +283,19 @@ a good cylinder on a cofibrant object. `exists_good_cylinder` proves Lemma
 `cylinder_cofibrant`, provide the elementary consequences following that lemma.
 The endpoint weak-equivalence results apply to every mathlib cylinder.
 
-Next prove Lemma 1.5.3(1), relative cylinder existence, by applying the proved
-Lemma 1.3.3(1) to the square of codiagonals. Retain the comparison cofibration
-from the pushout of the given cylinder along the map of endpoint coproducts.
-This construction does not depend on Lemma 1.3.4. Defer the broader homotopy
-relation API until its required extension results have been established.
+Lemma 1.5.3(1) is implemented as `exists_relative_good_cylinder`, applying
+Lemma 1.3.3(1) to the square of codiagonals. Its witnesses retain both endpoint
+equations, the projection equation, and the cofibration from the relative
+pushout, with its two defining equations. It works with chosen endpoint
+coproducts and a chosen relative pushout; existence of these follows from the
+coproduct API and CF3. It does not depend on Lemma 1.3.4.
+
+The elementary constructions for working with homotopies have also begun:
+`good_cylinder_symm` proves goodness after reversing the endpoints, and
+`cylinder_trans` with `good_cylinder_trans` concatenates good cylinders by
+gluing their adjacent endpoints. These use restricted CF3 and pushout pasting,
+without model-category axioms. Next compare mathlib's left-homotopy interfaces
+before introducing the corresponding existential relation.
 
 ## Milestone 2 — Factorization and extension lemmas
 
@@ -289,7 +303,7 @@ relation API until its required extension results have been established.
 - [ ] Formalize the factorization lemmas in that order.
 - [ ] Do the same for the extension lemmas of §1.4.
 - [x] Prove both parts of the gluing lemma, Lemma 1.4.1(1), with a repaired proof.
-- [ ] Derive excision (Lemma 1.4.2(1)) from gluing.
+- [x] Derive excision (Lemma 1.4.2(1)) from gluing.
 - [ ] Extract reusable commutative-square and pushout lemmas when multiple proofs
   need them, reusing mathlib's universal-property interfaces.
 
@@ -302,7 +316,8 @@ when a construction needs it, without assuming functoriality.
 - [x] Define cylinder objects in a form compatible with §1.5 and mathlib's
   existing abstractions, after comparing the available interfaces.
 - [x] Construct cylinders for cofibrant objects using the preceding milestones.
-- [ ] Construct relative cylinders (Lemma 1.5.3(1)) using relative factorization.
+- [x] Construct relative cylinders (Lemma 1.5.3(1)) using relative factorization.
+- [x] Reverse and concatenate good cylinders under CF1–CF4.
 - [ ] Introduce left homotopy and prove only the elementary properties justified
   by the available hypotheses.
 - [ ] Identify and defer claims that need the later homotopy-category theory.
@@ -340,9 +355,12 @@ statements.
 
 ## Immediate next increment
 
-Derive excision (Lemma 1.4.2(1)) from the now-proved gluing lemma. Then resume
-relative cylinder existence (Lemma 1.5.3(1)) and the foundation audit. Both
-parts of gluing, basic cylinder existence, and endpoint properties are complete.
+Introduce the elementary left-homotopy relation using good cylinders, reusing
+mathlib's homotopy data where suitable. Prove the equivalence-relation properties
+using cylinder existence, reversal, and concatenation, then compatibility with
+composition using relative cylinders. Complete the foundation audit as a
+separate outstanding task. Gluing, excision, relative cylinder existence, and
+the basic cylinder operations are complete.
 The original unrestricted separate-comparison claims of Lemma 1.3.4(1) have
 been replaced by the correction note; they must not be assumed in subsequent
 proofs. The elementary API review remains open.
@@ -361,3 +379,5 @@ proofs. The elementary API review remains open.
 | 2026-11-07 | Compatible Brown factorization and obstruction | Weaker combined-comparison theorem plus a checked injectivity obstruction to the separate target-side claim; full Lemma 1.3.4(1) unresolved; `lake build` passed (1826 jobs), without warnings |
 | 2026-11-07 | Cylinder existence and endpoint properties | Definition 1.5.1(1) represented by mathlib's good cylinders; Lemma 1.5.2(1) and five elementary properties in `Cylinder.lean`; `lake build` passed (1832 jobs), without warnings |
 | 2026-11-07 | Gluing lemma | Both parts of Lemma 1.4.1(1) in `Gluing.lean`, using restricted Brown comparisons along cofibration edges and compatible Brown replacement elsewhere; `lake build` passed (1834 jobs), without warnings |
+| 2026-11-07 | Excision and relative cylinders | Lemma 1.4.2(1) in `Extension.lean` and Lemma 1.5.3(1) in `Cylinder.lean`; `lake build` passed (1836 jobs), without warnings |
+| 2026-11-07 | Cylinder operations | Goodness under endpoint reversal and concatenation in `Cylinder.lean`, using CF1–CF4; `lake build` passed (1836 jobs), without warnings |

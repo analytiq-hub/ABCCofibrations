@@ -46,6 +46,11 @@ Import `ABCCofibrations.HomotopyCategory` for `LeftHomotopyCategory C`, the
 category of cofibrant objects modulo left homotopy, and its quotient functor.
 Equality of quotient maps is exactly left homotopy, and weak equivalences
 descend to the quotient. Its identification with the localization is deferred.
+`ABCCofibrations.HomotopyLocalization` proves that the comparison to localization
+is faithful: localized maps between cofibrant objects are equal exactly when
+they are left homotopic. `ABCCofibrations.HomotopyFractions` also gives an exact
+fraction equality criterion using a common trivial-cofibration denominator
+and left-homotopic numerators.
 
 Import `ABCCofibrations.Gluing` for both parts of the gluing lemma
 (Lemma 1.4.1(1)): `gluing_cofibration` and `gluing_weakEquivalence`.

@@ -344,9 +344,9 @@ when a construction needs it, without assuming functoriality.
   by the available hypotheses.
 - [x] Identify and defer claims that need the later homotopy-category theory.
 
-The identification of left homotopy with equality in the localization
-(Theorem 6.3.1(1)) is deferred until the necessary localization and calculus
-of fractions results are available.
+Left homotopy is now identified with equality in localization of the full
+subcategory of cofibrant objects. The ambient version (Theorem 6.3.1(1)) still
+requires comparison with localization of the entire category.
 
 Suggested module: `Cylinder.lean`. First deliverable: the cylinder existence
 theorem, with its source statement and prerequisites documented.
@@ -396,12 +396,18 @@ Completed localization infrastructure:
 - `HomotopyLocalization.lean`: functors inverting weak equivalences identify
   left-homotopic maps; the homotopy quotient maps to localization and this
   comparison is itself a localization at the quotient's weak equivalences.
+  The comparison is now proved faithful, using Ore and cancellation.
+  `map_eq_iff_cofibrant_leftHomotopy` detects equality for any localization
+  of `CofibrantObject C`.
 - `TrivialCofibrationFractions.lean`: fraction existence, pushout composition,
   common denominators, and finite families over one denominator. Numerators
   can be chosen to be cofibrations, and for a single arrow the combined
   endpoint coproduct map can also be a cofibration.
 - `HomotopyFractions.lean`: sufficient equality criteria using common extensions
-  with left-homotopic numerators and denominators.
+  with left-homotopic numerators and denominators, and exact equality criteria
+  for trivial-cofibration fractions in a localization of cofibrant objects.
+  Both a fixed common denominator and an existential common-extension
+  formulation are available.
 - `HomotopyCancellation.lean`: precomposition and postcomposition by a weak
   equivalence preserve and reflect left homotopy. Consequently every weak
   equivalence in `LeftHomotopyCategory C` is a monomorphism. The precomposition
@@ -425,11 +431,22 @@ substantial result.
    `LeftHomotopyRel.of_precomp_weakEquivalence`, and the corresponding
    `iff` statements. The quotient's monomorphism instances remain available
    for the localization faithfulness argument.
-2. Prove the homotopy Ore condition (Theorem 6.4.3(1)(a)), and install the
-   left calculus of fractions on the homotopy quotient using mathlib.
-3. Deduce the converse equality criterion for localization of cofibrant objects:
-   equal localized maps are left homotopic. This completes the corresponding
-   subcategory version of Theorem 6.4.4(1)(c).
+2. The homotopy Ore condition (Theorem 6.4.3(1)(a)) is complete as
+   `exists_strict_homotopy_ore` in `HomotopyOre.lean`. The proof follows the
+   paper's cylinder construction: the pushout of the full cylinder boundary
+   proves that the remaining endpoint composite is a cofibration; excision
+   then proves the second pushout map is a weak equivalence. It does not
+   assume that the map from the cylinder into the first pushout is a
+   cofibration. `weakEquivalences_leftHomotopyCategory_hasLeftCalculusOfFractions`
+   combines this square with precomposition cancellation to install mathlib's
+   left calculus of fractions on the homotopy quotient.
+3. The converse equality criterion is complete as
+   `map_eq_iff_cofibrant_leftHomotopy`, together with the faithful comparison
+   instance. This proves the cofibrant-subcategory version of
+   Theorem 6.4.4(1)(c). The fixed and existential common-denominator criteria
+   `trivialCofibration_fraction_map_eq_iff_leftHomotopy` and
+   `trivialCofibration_fraction_map_eq_iff_exists_leftHomotopy` also give the
+   cofibrant-subcategory version of Theorem 6.4.5(1)(b).
 4. Prove the ambient comparison (Theorem 6.1.6) to obtain the full
    Theorem 6.3.1(1), and finish the converse fraction equality criteria of
    Theorems 6.4.4(1)(b) and 6.4.5(1)(b).
@@ -534,3 +551,5 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-07 | Fraction representations and operations | Cofibrant-subcategory fraction existence, composition, common denominators, finite families, cofibration numerators, and sufficient homotopy equality criteria; `lake build ABCCofibrations` passed (1888 jobs), without warnings |
 | 2026-11-07 | Postcomposition cancellation | `HomotopyCancellation.lean` proves reflection of left homotopy by weak equivalences and monomorphism instances in the homotopy quotient; `lake build ABCCofibrations` passed (1890 jobs), without warnings |
 | 2026-11-07 | Precomposition cancellation | Theorem 6.4.3(1)(b)(i) and preservation of weak equivalences by binary coproducts of cofibrant objects; `lake build ABCCofibrations` passed (1890 jobs), without warnings |
+| 2026-11-08 | Homotopy Ore condition | Theorem 6.4.3(1)(a), the full-boundary pushout cofibration argument, and left calculus of fractions on the homotopy quotient; `lake build ABCCofibrations` passed (1892 jobs), without warnings |
+| 2026-11-08 | Localization equality criteria | Faithful comparison, equality iff left homotopy for localization of cofibrant objects, and exact trivial-cofibration fraction comparison criteria; `lake build ABCCofibrations` passed (1892 jobs), without warnings |

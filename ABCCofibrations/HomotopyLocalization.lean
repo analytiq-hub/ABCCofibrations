@@ -6,6 +6,7 @@ Authors: ABCCofibrations contributors
 module
 
 public import ABCCofibrations.HomotopyWeakEquivalences
+public import ABCCofibrations.HomotopyOre
 public import ABCCofibrations.TrivialCofibrationLocalization
 public import Mathlib.CategoryTheory.Localization.Quotient
 
@@ -20,7 +21,9 @@ The quotient functor induces an equivalence after both categories are localized
 at their weak equivalences. Thus taking left-homotopy classes does not change
 the localization. Weak equivalences in the quotient still need to be inverted.
 
-This construction does not assert that the comparison is faithful or an
+The homotopy calculus of fractions and cancellation show that the comparison
+is faithful: equality in localization is exactly left homotopy on maps
+between cofibrant objects. We do not assert that the comparison is an
 equivalence, or that the quotient functor itself is a localization.
 -/
 
@@ -250,5 +253,34 @@ instance leftHomotopyCategoryToLocalization_isLocalization :
       (D := (weakEquivalences (CofibrantObject C)).Localization))
     (leftHomotopyComparisonStrictUniversalProperty
       (D := (weakEquivalences (LeftHomotopyCategory C)).Localization))
+
+/-- The comparison is faithful. The calculus of fractions detects equality
+after postcomposition by a weak equivalence, which is a monomorphism in the
+homotopy quotient by homotopy cancellation. -/
+instance leftHomotopyCategoryToLocalization_faithful :
+    (leftHomotopyCategoryToLocalization (C := C)).Faithful where
+  map_injective {X Y} f g h := by
+    obtain ⟨Z, s, hs, he⟩ :=
+      (MorphismProperty.map_eq_iff_postcomp
+        (leftHomotopyCategoryToLocalization (C := C))
+        (weakEquivalences (LeftHomotopyCategory C)) f g).1 h
+    let : WeakEquivalence s := (weakEquivalence_iff _).2 hs
+    exact (cancel_mono s).1 he
+
+/-- For any localization of the full subcategory of cofibrant objects,
+two maps have equal images exactly when they are left homotopic. This is
+the cofibrant-subcategory version of Theorem 6.4.4(1)(c). -/
+theorem map_eq_iff_cofibrant_leftHomotopy
+    (F : CofibrantObject C ⥤ D) [F.IsLocalization (weakEquivalences (CofibrantObject C))]
+    {X Y : CofibrantObject C} (f g : X ⟶ Y) :
+    F.map f = F.map g ↔ cofibrantLeftHomotopyRel f g := by
+  constructor
+  · intro h
+    apply (toLeftHomotopyCategory_map_eq_iff f g).1
+    apply (leftHomotopyCategoryToLocalization (C := C)).map_injective
+    change (weakEquivalences (CofibrantObject C)).Q.map f =
+      (weakEquivalences (CofibrantObject C)).Q.map g
+    exact AreEqualizedByLocalization.mk (weakEquivalences (CofibrantObject C)) f g F h
+  · exact map_eq_of_cofibrant_leftHomotopy F (Localization.inverts F _)
 
 end ABCCofibrations.ABCPrecofibrationCategory

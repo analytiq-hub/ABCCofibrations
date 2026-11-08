@@ -13,7 +13,8 @@ public import ABCCofibrations.HomotopyLocalization
 
 A common extension of two cospans identifies their fractions whenever both
 the numerator and denominator triangles commute up to left homotopy.
-This gives a sufficient equality criterion, without asserting its converse.
+For localization of cofibrant objects, equality is also detected by left
+homotopy of the numerators over any common trivial-cofibration denominator.
 -/
 
 public section
@@ -73,5 +74,43 @@ theorem trivialCofibration_fraction_map_eq_of_leftHomotopy
   (trivialCofibration_fraction_map_eq_iff φ ψ i j hi hj hs F hF).2
     (map_eq_of_cofibrant_leftHomotopy F
     ((inverts_weakEquivalences_iff_inverts_trivialCofibrations F).2 hF) hf)
+
+/-- In a localization of cofibrant objects, equality over a fixed common
+trivial-cofibration denominator is exactly left homotopy of the numerators. -/
+theorem trivialCofibration_fraction_map_eq_iff_leftHomotopy
+    {X Y P : CofibrantObject C}
+    (φ ψ : (cofibrantTrivialCofibrations (C := C)).LeftFraction X Y)
+    (i : φ.Y' ⟶ P) (j : ψ.Y' ⟶ P)
+    (hi : cofibrantTrivialCofibrations i) (hj : cofibrantTrivialCofibrations j)
+    (hs : φ.s ≫ i = ψ.s ≫ j)
+    (F : CofibrantObject C ⥤ D)
+    [F.IsLocalization (weakEquivalences (CofibrantObject C))]
+    (hF : (cofibrantTrivialCofibrations (C := C)).IsInvertedBy F) :
+    φ.map F hF = ψ.map F hF ↔ cofibrantLeftHomotopyRel (φ.f ≫ i) (ψ.f ≫ j) :=
+  (trivialCofibration_fraction_map_eq_iff φ ψ i j hi hj hs F hF).trans
+    (map_eq_iff_cofibrant_leftHomotopy F _ _)
+
+/-- The cofibrant-subcategory version of the trivial-cofibration fraction
+equality criterion in Theorem 6.4.5(1)(b). Equal fractions admit a common
+trivial-cofibration extension with strictly equal denominators and left-homotopic
+numerators. -/
+theorem trivialCofibration_fraction_map_eq_iff_exists_leftHomotopy
+    {X Y : CofibrantObject C}
+    (φ ψ : (cofibrantTrivialCofibrations (C := C)).LeftFraction X Y)
+    (F : CofibrantObject C ⥤ D)
+    [F.IsLocalization (weakEquivalences (CofibrantObject C))]
+    (hF : (cofibrantTrivialCofibrations (C := C)).IsInvertedBy F) :
+    φ.map F hF = ψ.map F hF ↔
+      ∃ (P : CofibrantObject C) (i : φ.Y' ⟶ P) (j : ψ.Y' ⟶ P),
+        cofibrantTrivialCofibrations i ∧ cofibrantTrivialCofibrations j ∧
+        φ.s ≫ i = ψ.s ≫ j ∧ cofibrantLeftHomotopyRel (φ.f ≫ i) (ψ.f ≫ j) := by
+  constructor
+  · intro he
+    obtain ⟨P, i, j, hi, hj, hs⟩ :=
+      exists_common_trivialCofibration_denominator φ.s ψ.s φ.hs ψ.hs
+    exact ⟨P, i, j, hi, hj, hs,
+      (trivialCofibration_fraction_map_eq_iff_leftHomotopy φ ψ i j hi hj hs F hF).1 he⟩
+  · rintro ⟨P, i, j, hi, hj, hs, hh⟩
+    exact (trivialCofibration_fraction_map_eq_iff_leftHomotopy φ ψ i j hi hj hs F hF).2 hh
 
 end ABCCofibrations.ABCPrecofibrationCategory

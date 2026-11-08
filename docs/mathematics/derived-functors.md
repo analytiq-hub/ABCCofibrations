@@ -16,6 +16,14 @@ left derivability structures, based on Kahn–Maltsiniotis, to supply the
 universal property. General cofibrant approximations, Theorem 6.2.2(1), and
 the dual right-derived theory have not been formalized here.
 
+The computation results below are explicit corollaries for any derived functor
+with its counit and any cofibrant replacement. They are not presented as a
+separately numbered theorem in the paper. The paper's proof of 5.7.1 constructs
+a derived functor using chosen regular cleavages; we instead obtain the
+universal object through mathlib, then derive computation and naturality from
+its counit. No regular, functorial, or specially normalized choice of
+replacements is required for these corollaries.
+
 The general intermediate theorem takes a functor into any category that
 inverts trivial cofibrations between cofibrant objects. Mathlib supplies a
 **pointwise** left derived functor, and we retain that stronger existence
@@ -81,6 +89,58 @@ left derivability structures transfers invertibility to the ambient counit
 at every cofibrant object. This argument applies to any left derived functor
 with the stated universal property, not just a particular chosen construction.
 
+## Computing with a replacement
+
+For this section, let $F:\mathcal M\to\mathcal H$ invert trivial
+cofibrations between cofibrant objects, let $L$ localize $\mathcal M$, and
+let $LF$ be any left derived functor with counit $\varepsilon$.
+For a cofibrant replacement $q:Q\xrightarrow{\sim}A$, define
+
+$$
+c_q:LF(L(A))\xrightarrow{\cong}F(Q),\qquad
+c_q=\varepsilon_Q\circ LF(L(q))^{-1}.
+$$
+
+This is an isomorphism because localization inverts $q$ and
+$\varepsilon_Q$ is invertible for cofibrant $Q$. It satisfies
+
+$$
+c_q\circ LF(L(q))=\varepsilon_Q,
+\qquad F(q)\circ c_q=\varepsilon_A.
+$$
+
+The second equation computes the ambient counit even when $A$ is not
+cofibrant; it does not assert that $F(q)$ is invertible.
+
+Given replacements $q:Q\to A$, $r:R\to B$ and maps $f:A\to B$,
+$a:Q\to R$ satisfying $ra=fq$, the following square commutes:
+
+$$
+\begin{array}{ccc}
+LF(L(A)) & \xrightarrow{LF(L(f))} & LF(L(B))\\
+{\scriptstyle c_q}\downarrow && \downarrow{\scriptstyle c_r}\\
+F(Q) & \xrightarrow{F(a)} & F(R).
+\end{array}
+$$
+
+Indeed, precompose the desired equation with the invertible $LF(L(q))$.
+The replacement square moves this map through to $LF(L(r))$, and the
+remaining equation is naturality of $\varepsilon$ at $a$. The map $a$
+need not be a cofibration.
+
+For two replacements $q:Q\to A$ and $r:R\to A$, the comparison
+
+$$
+d_{q,r}=c_r\circ c_q^{-1}:F(Q)\xrightarrow{\cong}F(R)
+$$
+
+exists without choosing a map between them. If $a:Q\to R$ satisfies
+$ra=q$, then $d_{q,r}=F(a)$. These comparisons satisfy
+$d_{q,q}=\mathrm{id}$ and $d_{r,s}\circ d_{q,r}=d_{q,s}$.
+Here “canonical” is relative to the given derived functor and its counit.
+For a total left derived functor of $u$, apply these results to
+$F=\gamma_{\mathcal N}\circ u$.
+
 ## Lean correspondence and status
 
 | Mathematical result | Declaration |
@@ -90,8 +150,15 @@ with the stated universal property, not just a particular chosen construction.
 | Any derived counit is invertible at cofibrant objects | `isIso_leftDerivedCounit_app_cofibrant` |
 | Existence with universal property and counit statement | `exists_leftDerivedFunctor_of_inverts_cofibrant_trivialCofibrations` |
 | Theorem 6.2.1(1), with target localization | `exists_totalLeftDerivedFunctor_of_map_trivialCofibrations` |
+| Compute the derived value from a replacement | `leftDerivedObjIsoOfCofibrantReplacement` |
+| Recover the counit at the replacement source | `map_comp_leftDerivedObjIsoOfCofibrantReplacement_hom` |
+| Compute the ambient counit | `leftDerivedObjIsoOfCofibrantReplacement_hom_comp_map` |
+| Naturality for a replacement square | `leftDerivedObjIsoOfCofibrantReplacement_naturality` |
+| Compare two computed values | `leftDerivedReplacementComparisonIso` |
+| Comparison equals the functor image of a map over the ambient object | `leftDerivedReplacementComparisonIso_hom_eq_map` |
+| Coherent identity and composition | `leftDerivedReplacementComparisonIso_refl`, `leftDerivedReplacementComparisonIso_trans` |
 
 All these results are proved. Derived equivalences, Quillen adjunctions,
 general cofibrant approximation functors, and the dual fibration-side results
 remain outside this increment. This note was reviewed against the accompanying
-Lean source following commit `80d16e2`.
+Lean source following commit `b3bc296`, including the replacement-computation increment.

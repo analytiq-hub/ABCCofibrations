@@ -404,6 +404,11 @@ at cofibrant objects. Composing the original functor with target localization
 gives the paper's total left derived functor under the stated preservation
 hypothesis. See [the derived-functor note](mathematics/derived-functors.md),
 including its explicit comparison of universal-property conventions.
+The latest increment computes any such derived functor on any cofibrant
+replacement: `leftDerivedObjIsoOfCofibrantReplacement`, its counit equations,
+and naturality for a commutative replacement square. Comparison isomorphisms
+between two replacements agree with any map over the ambient object and
+satisfy identity and composition laws. They require no functorial choice.
 
 Suggested next construction:
 
@@ -423,13 +428,17 @@ Suggested next construction:
 5. **Complete:** mathlib's left derivability structure for the cofibrant
    inclusion, pointwise left derived-functor existence, invertible counit on
    cofibrant objects, and Theorem 6.2.1(1).
-6. **Next:** give an explicit computation isomorphism using any cofibrant
+6. **Complete:** give an explicit computation isomorphism using any cofibrant
    replacement $Q A\xrightarrow{\sim}A$, for an arbitrary total left derived
    functor with its counit. Check naturality for a commutative square between
-   replacements. This will connect the abstract universal-property construction
-   to calculations before treating derived equivalences (6.2.3) or adjunctions.
-   General cofibrant approximations and 6.2.2 remain separate. Foundation audits
-   and Chapter 1 backlog items remain open.
+   replacements. Coherent comparisons between replacement computations are
+   also complete.
+7. **Next:** compare an arbitrary left derived functor to the composite of
+   `ambientLocalizationToCofibrant` with the localization lift of its
+   restriction to cofibrant objects. Use this comparison toward a criterion
+   for derived equivalences (6.2.3), before treating adjunctions. General
+   cofibrant approximations and 6.2.2 remain separate. Foundation audits and
+   Chapter 1 backlog items remain open.
 
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
@@ -456,7 +465,8 @@ Completed localization infrastructure:
 
 - `DerivedFunctor.lean`: cofibrant inclusion is a left derivability structure;
   existence of pointwise left derived functors and invertibility of the counit
-  on cofibrant objects; Theorem 6.2.1(1) after target localization.
+  on cofibrant objects; Theorem 6.2.1(1) after target localization; computation
+  on arbitrary cofibrant replacements and natural, coherent comparisons.
 - `AmbientHomotopyFractions.lean`: ambient representations and equality criteria
   of Theorems 6.4.4(1) and 6.4.5(1), for arbitrary weak-equivalence denominators
   and the sharper trivial-cofibration case.
@@ -658,3 +668,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-08 | Ambient localization equivalence | Both inverse comparisons prove Theorem 6.1.6; restriction of any ambient localization is a localization of cofibrant objects, and `ambient_map_eq_iff_cofibrant_leftHomotopy` proves Theorem 6.4.4(1)(c). `lake build ABCCofibrations` passed (1904 jobs), without warnings. |
 | 2026-11-08 | Ambient homotopy fractions | The cofibration-side statements of 6.4.4 and 6.4.5: strong fraction representations and both general and trivial-cofibration denominator equality criteria. `HomotopyFractions.lean` supplies the general converse via the quotient calculus. `lake build ABCCofibrations` passed (1906 jobs), without warnings. |
 | 2026-11-08 | Total left derived functors | `DerivedFunctor.lean` uses the left derivability structure of cofibrant inclusion to prove Theorem 6.2.1(1), with pointwise existence and counit invertible on cofibrant objects. `lake build ABCCofibrations` passed (1942 jobs), without warnings. |
+| 2026-11-08 | Derived-functor computation on replacements | Computation isomorphism for any cofibrant replacement, counit equations, naturality for replacement squares, and coherent comparisons between computed values; `lake build ABCCofibrations` passed (1942 jobs), without warnings. |

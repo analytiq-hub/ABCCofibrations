@@ -1,6 +1,7 @@
 import ABCCofibrations.Basic
 import ABCCofibrations.Coproducts
 import ABCCofibrations.Factorization
+import ABCCofibrations.Gluing
 import ABCCofibrations.Cylinder
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

@@ -33,6 +33,16 @@ set-theoretic core in `ABCCofibrations.RelativeBrownObstruction`.
 
 The incremental roadmap is in [docs/formalization-plan.md](docs/formalization-plan.md).
 
+Import `ABCCofibrations.Cylinder` for cylinder existence (Lemma 1.5.2(1))
+and the endpoint properties under CF1–CF4. The paper's cylinders are represented
+by mathlib's `Cylinder` with `Cylinder.IsGood`; no new cylinder structure is needed.
+
+Import `ABCCofibrations.Gluing` for both parts of the gluing lemma
+(Lemma 1.4.1(1)): `gluing_cofibration` and `gluing_weakEquivalence`.
+The proof uses relative Brown comparisons only along cofibration edges,
+where their properties are proved separately; it assumes no unrestricted
+version of the comparison claims in Lemma 1.3.4(1).
+
 Both use mathlib's `CategoryWithCofibrations`, `CategoryWithWeakEquivalences`,
 and `IsCofibrant`. Supply `[Category C]`, the two morphism-class instances,
 and `[HasInitial C]` separately. The axiom classes are propositions about those

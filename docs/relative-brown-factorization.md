@@ -320,9 +320,49 @@ injectivity contradiction above, for every target type universe. The full
 precofibration structure on sets with injections is justified mathematically
 above; it has not been constructed in Lean in this repository.
 
-Subsequent uses of the original lemma, including in the gluing argument, must
-be checked against this corrected conclusion. The combined comparison does
-not supply either omitted separate-comparison cofibration claim.
+## Consequence for the gluing lemma
+
+**The gluing lemma, Lemma 1.4.1(1), remains true.** The error in the unrestricted
+relative Brown statement does not invalidate its conclusion. The proof can be
+repaired using the separate comparisons only in the case where the edges
+$a:A_1\to A_2$ and $b:B_1\to B_2$ are both cofibrations. These are precisely
+the hypotheses on $f_{12}$ and $g_{12}$ in the gluing argument.
+
+For this restricted Brown construction, form
+
+$$
+P_A=B'_1\amalg_{A_1}A_2,\qquad
+P_B=B'_1\amalg_{B_1}B_2,\qquad
+R=P_A\amalg_{B'_1}P_B.
+$$
+
+Since $a$ and $b$ are cofibrations, the maps $B'_1\to P_A$ and $B'_1\to P_B$
+are cofibrations, as are both maps into $R$. Factor the induced map
+$R\to B_2$ by CF4. The resulting comparisons $P_A\to B'_2$ and
+$P_B\to B'_2$ are cofibrations. The latter is also a weak equivalence:
+its composite with the trivial cofibration $B_2\to P_B$ is the new section
+$s_2$, which is a weak equivalence, so two-out-of-three applies.
+
+This supplies the separate-comparison properties required along the
+cofibration edges. Along the other edges, compatibility of Brown
+factorizations suffices. Thus the standard reduction to gluing trivial
+cofibrations, followed by the section/retraction argument and
+two-out-of-three, proves the general weak-equivalence assertion.
+
+The restricted construction and the full gluing lemma are now checked in Lean
+in `ABCCofibrations/Gluing.lean`:
+
+- `exists_relative_brown_of_cofibration_edges` supplies the restricted
+  Brown construction and both separate comparison properties.
+- `gluing_cofibration` proves Lemma 1.4.1(1)(a).
+- `gluing_weakEquivalence_of_cofibrations` proves the intermediate case used
+  in the reduction.
+- `gluing_weakEquivalence` proves the full Lemma 1.4.1(1)(b), with no
+  additional cofibration assumptions on the three given weak equivalences.
+
+All these results use CF1–CF4. The full proof uses the restricted construction
+along the $12$ edges and `exists_compatible_brown_factorization` along the
+$13$ edges. It does not assume the false unrestricted comparison claims.
 
 ## Appendix: historical note and references
 

@@ -248,24 +248,48 @@ using its separate-comparison claims in §1.4.
 
 ### F. Extension and cylinder entry point
 
-Before starting §1.4, make a statement-by-statement dependency list and select
-its first cofibration-side lemma. Keep that work separate from the basic Brown
-factorization increment. In particular, audit the uses of Lemma 1.3.4 in the
-gluing argument against the obstruction recorded in package E.
+The gluing lemma, Lemma 1.4.1(1), is now proved in `Gluing.lean`:
+`gluing_cofibration` proves part (a), and `gluing_weakEquivalence` proves part
+(b) for arbitrary weak equivalences on the three span vertices.
 
-For §1.5, inspect the existing `HomotopicalAlgebra.Precylinder`, `Cylinder`, and
-`Cylinder.IsGood` interfaces in mathlib's `ModelCategory/Cylinder.lean` before
-defining a project-specific structure. These interfaces already exist; their
-existence theorems may require stronger assumptions. First attempt to construct
-a good cylinder using our factorization field and package B. Prove the endpoint
-properties under the ABC assumptions. Defer the broader homotopy relation API
-until its required extension results have been established.
+The dependency audit of the gluing proof is complete. Its proof order is:
+
+1. Pushout pasting identifies the rear comparison as a cobase change of the
+   front comparison.
+2. CF3 gives the cofibration assertion and the weak-equivalence case with
+   extra cofibration hypotheses.
+3. `exists_relative_brown_of_cofibration_edges` supplies both separate Brown
+   comparisons when the two edges are cofibrations, using two pushouts and CF4.
+4. Brown replacement on the central vertex, the restricted construction along
+   the cofibration edges, and compatible replacement on the other edges give
+   an intermediate span. Applying step 2 to its two inclusion maps and using
+   their common retraction proves the general case by two-out-of-three.
+
+This proof uses CF1–CF4 and does not assume the invalid unrestricted comparison
+claims. The theorem accepts arbitrary `IsPushout` representatives of both faces.
+The front and rear comparisons in part (a) use chosen pushouts, whose existence
+follows from CF3. The other extension lemmas of §1.4 remain outstanding.
+
+For §1.5, the existing mathlib `Cylinder` and `Cylinder.IsGood` interfaces have
+been reused in `Cylinder.lean`. The paper's Definition 1.5.1(1) corresponds to
+a good cylinder on a cofibrant object. `exists_good_cylinder` proves Lemma
+1.5.2(1). The endpoint cofibration and weak-equivalence lemmas, together with
+`cylinder_cofibrant`, provide the elementary consequences following that lemma.
+The endpoint weak-equivalence results apply to every mathlib cylinder.
+
+Next prove Lemma 1.5.3(1), relative cylinder existence, by applying the proved
+Lemma 1.3.3(1) to the square of codiagonals. Retain the comparison cofibration
+from the pushout of the given cylinder along the map of endpoint coproducts.
+This construction does not depend on Lemma 1.3.4. Defer the broader homotopy
+relation API until its required extension results have been established.
 
 ## Milestone 2 — Factorization and extension lemmas
 
 - [ ] Translate the cofibration-side statements of §1.3 into a dependency list.
 - [ ] Formalize the factorization lemmas in that order.
 - [ ] Do the same for the extension lemmas of §1.4.
+- [x] Prove both parts of the gluing lemma, Lemma 1.4.1(1), with a repaired proof.
+- [ ] Derive excision (Lemma 1.4.2(1)) from gluing.
 - [ ] Extract reusable commutative-square and pushout lemmas when multiple proofs
   need them, reusing mathlib's universal-property interfaces.
 
@@ -275,9 +299,10 @@ when a construction needs it, without assuming functoriality.
 
 ## Milestone 3 — Cylinders and elementary homotopy
 
-- [ ] Define cylinder objects in a form compatible with §1.5 and mathlib's
+- [x] Define cylinder objects in a form compatible with §1.5 and mathlib's
   existing abstractions, after comparing the available interfaces.
-- [ ] Construct cylinders for cofibrant objects using the preceding milestones.
+- [x] Construct cylinders for cofibrant objects using the preceding milestones.
+- [ ] Construct relative cylinders (Lemma 1.5.3(1)) using relative factorization.
 - [ ] Introduce left homotopy and prove only the elementary properties justified
   by the available hypotheses.
 - [ ] Identify and defer claims that need the later homotopy-category theory.
@@ -315,12 +340,12 @@ statements.
 
 ## Immediate next increment
 
-Resolve the intended separate-comparison statement of Lemma 1.3.4(1) before
-relying on it for the gluing argument. Independent work can continue with the
-foundation correspondence audit and cylinder existence. The finite-coproduct
-portion of Milestone 1, basic Brown factorization, relative factorization, and
-the weaker compatible Brown construction are complete. The full Lemma 1.3.4(1)
-and the elementary API review remain open.
+Derive excision (Lemma 1.4.2(1)) from the now-proved gluing lemma. Then resume
+relative cylinder existence (Lemma 1.5.3(1)) and the foundation audit. Both
+parts of gluing, basic cylinder existence, and endpoint properties are complete.
+The original unrestricted separate-comparison claims of Lemma 1.3.4(1) have
+been replaced by the correction note; they must not be assumed in subsequent
+proofs. The elementary API review remains open.
 
 ## Progress log
 
@@ -334,3 +359,5 @@ and the elementary API review remain open.
 | 2026-11-07 | Brown factorization | Lemma 1.3.1(1) and Remark 1.3.2 in `Factorization.lean`, exported by the library root; `lake build` passed (1824 jobs), without warnings |
 | 2026-11-07 | Relative factorization | Lemma 1.3.3(1), with the pushout comparison cofibration and all square equations; `lake build` passed (1824 jobs), without warnings |
 | 2026-11-07 | Compatible Brown factorization and obstruction | Weaker combined-comparison theorem plus a checked injectivity obstruction to the separate target-side claim; full Lemma 1.3.4(1) unresolved; `lake build` passed (1826 jobs), without warnings |
+| 2026-11-07 | Cylinder existence and endpoint properties | Definition 1.5.1(1) represented by mathlib's good cylinders; Lemma 1.5.2(1) and five elementary properties in `Cylinder.lean`; `lake build` passed (1832 jobs), without warnings |
+| 2026-11-07 | Gluing lemma | Both parts of Lemma 1.4.1(1) in `Gluing.lean`, using restricted Brown comparisons along cofibration edges and compatible Brown replacement elsewhere; `lake build` passed (1834 jobs), without warnings |

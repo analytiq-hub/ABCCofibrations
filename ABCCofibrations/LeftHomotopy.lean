@@ -77,6 +77,15 @@ theorem to_mathlib {f g : A ⟶ B} (h : StrictLeftHomotopyRel f g) :
   obtain ⟨P, _, H⟩ := h
   exact ⟨P, H⟩
 
+omit [IsCofibrant A] in
+/-- Strictly homotopic maps are weak equivalences simultaneously. -/
+theorem weakEquivalence_iff {f g : A ⟶ B} (h : StrictLeftHomotopyRel f g) :
+    WeakEquivalence f ↔ WeakEquivalence g := by
+  obtain ⟨P, _, ⟨H⟩⟩ := h
+  let : (weakEquivalences C).ContainsIdentities :=
+    ⟨fun X ↦ (weakEquivalence_of_isIso (𝟙 X)).mem⟩
+  exact H.weakEquivalence_iff
+
 end StrictLeftHomotopyRel
 
 /-- Left homotopy in the sense of §6.3: strict homotopy after a trivial
@@ -206,6 +215,15 @@ theorem comp {D : C} [IsCofibrant D] [HasBinaryCoproduct B B]
 /-- Left homotopy is an equivalence relation on maps between cofibrant objects. -/
 theorem equivalence : Equivalence (LeftHomotopyRel (A := A) (B := B)) :=
   ⟨refl, symm, trans⟩
+
+omit [IsCofibrant A] [IsCofibrant B] in
+/-- Weak equivalence is invariant under the paper's left-homotopy relation. -/
+theorem weakEquivalence_iff {f g : A ⟶ B} (h : LeftHomotopyRel f g) :
+    WeakEquivalence f ↔ WeakEquivalence g := by
+  obtain ⟨B', b, _, hw, H⟩ := h
+  let := hw
+  exact (weakEquivalence_postcomp_iff f b).symm.trans
+    (H.weakEquivalence_iff.trans (weakEquivalence_postcomp_iff g b))
 
 end LeftHomotopyRel
 

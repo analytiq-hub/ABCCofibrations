@@ -1,5 +1,13 @@
 # References on cofibration categories
 
+Local reading copies and acquisition status are indexed in
+[`references/inventory.md`](../references/inventory.md). Available arXiv works
+have PDFs, searchable text, and unpacked sources at fixed versions; other
+references have explicit acquisition statuses. The library is a reading aid,
+not evidence that these works have been formalized.
+The `references/` directory is Git-ignored; these local links require a
+separately populated reference library and will not resolve in a fresh clone.
+
 Candidate references for this formalization. They are not an audit of correspondence
 with [arXiv:math/0610009v4](https://arxiv.org/abs/math/0610009v4), and a listing
 here does not mean the work has been checked against the Lean development.

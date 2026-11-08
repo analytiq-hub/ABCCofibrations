@@ -413,8 +413,15 @@ of replacement categories alone does not establish the comparison equivalence.
 All current proofs use CF1–CF4. The latest full check is
 `lake build ABCCofibrations`: 1900 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
-Local paper source for the next argument is `.tmp-rb/chap-homotopy.tex`, §6.1;
-this untracked source is a reading aid, not a library dependency.
+Local paper source for the next argument is
+`references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.1.
+The [reference library](../references/README.md) contains fixed-version PDFs,
+searchable text, unpacked arXiv sources where available, and provenance.
+These are reading aids, not library dependencies.
+The acquisition inventory is `references/inventory.md`: 70 PDFs with searchable
+text and 54 unpacked source directories are available. It maps the broader
+`docs/references.md` bibliography to local copies or missing-copy statuses,
+and preserves the original v4 bibliography as an additional acquisition backlog.
 
 ### Completed infrastructure and remaining scope
 

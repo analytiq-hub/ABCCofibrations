@@ -76,3 +76,9 @@ The library proves `exists_cofibrant_replacement` in the
 `sequential_colimit_cofibrant` in `ABCCofibrations.ABCCofibrationCategory`.
 `ABCCofibrations/Examples.lean` checks a model on `Type u` with both morphism
 classes consisting of all maps; its instances are local.
+
+## Reference papers
+
+See [references/README.md](references/README.md) for local PDFs, searchable
+text, and unpacked source for the main references. The `references/` directory
+is a local, Git-ignored library; its files are not included in a fresh clone.

@@ -78,6 +78,20 @@ theorem map_eq_of_cofibrant_leftHomotopy
   apply (cancel_mono (F.map b')).1
   rw [← F.map_comp, ← F.map_comp, ← h₀, ← h₁, F.map_comp, F.map_comp, hi]
 
+/-- Equality after a weak equivalence to an arbitrary ambient object already
+forces equality under every weak-equivalence-inverting functor on cofibrant
+objects. The ambient target need not be cofibrant (Lemma 6.1.2(1)). -/
+theorem map_eq_of_postcomp_ambient_weakEquivalence
+    (F : CofibrantObject C ⥤ D)
+    (hF : (weakEquivalences (CofibrantObject C)).IsInvertedBy F)
+    {X Y : CofibrantObject C} (f g : X ⟶ Y)
+    {B : C} (b : Y.obj ⟶ B) [WeakEquivalence b]
+    (h : f.hom ≫ b = g.hom ≫ b) : F.map f = F.map g := by
+  apply map_eq_of_cofibrant_leftHomotopy F hF
+  let := hasBinaryCoproduct X.obj X.obj
+  change LeftHomotopyRel f.hom g.hom
+  exact LeftHomotopyRel.of_postcomp_weakEquivalence_eq b h
+
 /-- Factor a weak-equivalence-inverting functor through left-homotopy classes. -/
 noncomputable def liftFromLeftHomotopyCategory
     (F : CofibrantObject C ⥤ D)

@@ -381,6 +381,43 @@ statements.
 
 ## Immediate next increment
 
+### Resume point (2026-11-08)
+
+The active goal is Theorem 6.1.6: prove that
+`cofibrantLocalizationToAmbient` is an equivalence. Its construction and
+essential surjectivity are complete; full faithfulness is still open.
+The latest completed increment is independence of ambient fraction choices
+(Lemma 6.1.3(1) for inclusion of cofibrant objects), in
+`AmbientFractions.lean`. This builds on ambient cancellation (Lemma 6.1.2(1))
+in `HomotopyCancellation.lean` and `HomotopyLocalization.lean`.
+
+Suggested next construction:
+
+1. Choose a cofibrant replacement of each ambient object. For an ambient
+   arrow, factor the coproduct of its composite with the source replacement
+   and the target replacement. This supplies a fraction between replacements
+   with a trivial-cofibration denominator.
+2. Use `weakEquivalence_fraction_map_eq_of_ambient_comparison` (or its
+   trivial-cofibration version) to prove independence of the fraction choice.
+   Prove the identity and composition laws to obtain a functor from the
+   ambient category to the localization of cofibrant objects.
+3. Show this functor inverts ambient weak equivalences and descend it through
+   localization. Construct the comparison isomorphisms proving it is inverse
+   to `cofibrantLocalizationToAmbient`. An alternative proof of full
+   faithfulness is acceptable if it avoids unnecessary infrastructure.
+4. Transfer the existing cofibrant-subcategory fraction and equality results
+   to the ambient localization only after this equivalence is established.
+
+No functorial factorization or functorial replacement is assumed. Connectedness
+of replacement categories alone does not establish the comparison equivalence.
+All current proofs use CF1–CF4. The latest full check is
+`lake build ABCCofibrations`: 1900 jobs, without warnings. The accompanying
+mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
+Local paper source for the next argument is `.tmp-rb/chap-homotopy.tex`, §6.1;
+this untracked source is a reading aid, not a library dependency.
+
+### Completed infrastructure and remaining scope
+
 The comparison functor is implemented. Current proof development is in the
 localization project (Chapters 5–7), beyond the completed elementary homotopy
 work of Milestone 3. Milestones 0, 1, 2, and 4 retain their unchecked items.
@@ -452,7 +489,13 @@ substantial result.
    source replacements extend across arrows, and pairs of replacements have
    common extensions by trivial cofibrations. The categories of replacements
    are connected, all their morphisms are weak equivalences, and the inclusion
-   on arrow categories has left resolutions. See
+   on arrow categories has left resolutions. Lemma 6.1.2(1), for inclusion of
+   cofibrant objects, now cancels equality after a weak equivalence to an
+   arbitrary ambient object; parallel replacement comparison maps therefore
+   have equal images under weak-equivalence-inverting functors.
+   `AmbientFractions.lean` proves Lemma 6.1.3(1) for inclusion of cofibrant
+   objects: two fractions with the same ambient numerator and denominator
+   have equal images, including arbitrary weak-equivalence denominators. See
    [the mathematical note](cofibrant-replacements.md). Full faithfulness
    remains to be proved to obtain the full
    Theorem 6.3.1(1), and finish the converse fraction equality criteria of
@@ -562,3 +605,5 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-08 | Localization equality criteria | Faithful comparison, equality iff left homotopy for localization of cofibrant objects, and exact trivial-cofibration fraction comparison criteria; `lake build ABCCofibrations` passed (1892 jobs), without warnings |
 | 2026-11-08 | Ambient comparison: objects and replacements | Constructed the ambient localization comparison and proved essential surjectivity; extensions across arrows and common extensions of replacements in `CofibrantReplacement.lean`; `lake build ABCCofibrations` passed (1898 jobs), without warnings. Full faithfulness remains open. |
 | 2026-11-08 | Compatibility of replacements | Replacement categories are connected, all their morphisms are weak equivalences, and every ambient arrow has a cofibrant replacement square; `lake build ABCCofibrations` passed (1898 jobs), without warnings. |
+| 2026-11-08 | Ambient cancellation | Lemma 6.1.2(1) for inclusion of cofibrant objects, strict-homotopy reflection with arbitrary ambient codomain, and equality of parallel replacement maps under weak-equivalence-inverting functors; `lake build ABCCofibrations` passed (1898 jobs), without warnings. |
+| 2026-11-08 | Independence of ambient fraction choices | Lemma 6.1.3(1) for inclusion of cofibrant objects in `AmbientFractions.lean`, with arbitrary weak-equivalence denominators and a separate pushout proof for trivial-cofibration denominators; `lake build ABCCofibrations` passed (1900 jobs), without warnings. |

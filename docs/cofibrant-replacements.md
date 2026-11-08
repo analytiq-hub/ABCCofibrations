@@ -72,6 +72,86 @@ finite zigzags of morphisms; no assertion of uniqueness of the zigzag is
 needed. This is compatibility infrastructure for the remaining comparison
 proof, not yet a proof of full faithfulness.
 
+## Cancellation into an ambient object
+
+Lemma 6.1.2(1), specialized to the inclusion of cofibrant objects, says that
+for cofibrant $A,B$ and a weak equivalence $b:B\xrightarrow{\sim}B'$,
+
+$$
+bf=bg\quad\Longrightarrow\quad f\simeq_l g.
+$$
+
+The object $B'$ can be any ambient object. In fact, the formal proof allows
+a strict cylinder homotopy between $bf$ and $bg$ in place of equality.
+Choose a good cylinder $IA$ and glue it to $B$ along its full boundary
+$A\amalg A$, using $f$ and $g$. The given homotopy defines a map from this
+pushout to $B'$. Factor that map by CF4. The composite from $B$ to the
+factorization object is a cofibration, and is a weak equivalence by two out
+of three since its composite with the final weak equivalence is $b$.
+The map out of $IA$ supplies the required homotopy after this trivial
+cofibration. Equality gives a constant homotopy and hence the stated lemma.
+
+Consequently, if $F$ is any functor on cofibrant objects that inverts weak
+equivalences, then $bf=bg$ implies $F(f)=F(g)$. In particular, parallel maps
+in $\mathcal R_A$ have equal images under $F$: their composites with the
+target replacement map are equal by definition. This gives equality for
+parallel comparison maps, beyond the connectedness result above.
+
+The cancellation results are
+`LeftHomotopyRel.of_postcomp_weakEquivalence_of_strict` and
+`LeftHomotopyRel.of_postcomp_weakEquivalence_eq` in
+[HomotopyCancellation.lean](../ABCCofibrations/HomotopyCancellation.lean).
+The functor statement is `map_eq_of_postcomp_ambient_weakEquivalence` in
+[HomotopyLocalization.lean](../ABCCofibrations/HomotopyLocalization.lean).
+
+## Independence of fraction choices
+
+Lemma 6.1.3(1), specialized to inclusion of cofibrant objects, is now also
+formalized. Suppose $A',B',D',D''$ are cofibrant and we have two cospans
+
+$$
+A'\xrightarrow{i'}D'\xleftarrow[\sim]{j'}B',
+\qquad
+A'\xrightarrow{i''}D''\xleftarrow[\sim]{j''}B'.
+$$
+
+Suppose weak equivalences $\sigma':D'\to B$ and
+$\sigma'':D''\to B$ to an arbitrary ambient object satisfy
+
+$$
+\sigma'i'=\sigma''i'',\qquad
+\sigma'j'=\sigma''j''.
+$$
+
+Then the fractions agree in the localization of cofibrant objects:
+
+$$
+\gamma(j')^{-1}\circ\gamma(i')
+=\gamma(j'')^{-1}\circ\gamma(i'').
+$$
+
+More generally they agree under any functor on cofibrant objects that
+inverts weak equivalences. To prove this, take a common cofibrant extension
+$h':D'\to R$, $h'':D''\to R$ of the replacements
+$\sigma',\sigma''$, with $r:R\xrightarrow{\sim}B$ and
+$rh'=\sigma'$, $rh''=\sigma''$. Both extended numerator maps, and both
+extended denominator maps, become equal after $r$. Ambient cancellation
+therefore gives equal images under the functor. Cancelling the common
+invertible denominator proves equality of the fractions.
+
+For trivial-cofibration denominators there is also a proof using the
+pushout $D'\amalg_{B'}D''$, as in the paper. Both versions are in
+[AmbientFractions.lean](../ABCCofibrations/AmbientFractions.lean):
+
+| Statement | Declaration |
+| --- | --- |
+| Arbitrary weak-equivalence denominators | `weakEquivalence_fraction_map_eq_of_ambient_comparison` |
+| Trivial-cofibration denominators | `trivialCofibration_fraction_map_eq_of_ambient_comparison` |
+
+These results establish independence of the indicated fraction choices;
+the construction of an inverse to the ambient comparison, and its functor
+laws, remain to be completed.
+
 ## Lean correspondence
 
 All declarations below are in
@@ -86,10 +166,11 @@ All declarations below are in
 | Extend a prescribed source replacement | `exists_cofibrant_replacement_arrow` |
 | Common extension of replacements | `exists_common_cofibrant_replacement` |
 | Maps between replacements are weak equivalences | `weakEquivalence_leftResolution_hom` |
+| Parallel comparison maps have equal images | `map_eq_of_leftResolution_hom` |
 | Replacement categories are connected | `cofibrantInclusion_leftResolution_isConnected` |
 | Every arrow has a replacement square | `cofibrantInclusion_arrow_hasLeftResolutions` |
 
 The name “left resolution” is mathlib terminology for a weak equivalence
 from an object of the source subcategory to the given ambient object.
 This note was checked against the accompanying Lean source, following
-commit `4266b34`.
+commit `65065ac`.

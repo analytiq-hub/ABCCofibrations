@@ -117,6 +117,18 @@ theorem weakEquivalence_leftResolution_hom {X : C}
   have h : f.f.hom ≫ S.w = R.w := f.comm
   exact weakEquivalence_of_postcomp_of_fac h
 
+/-- Parallel maps between replacements have equal images under every functor
+on cofibrant objects which inverts weak equivalences. -/
+theorem map_eq_of_leftResolution_hom
+    {D : Type*} [Category D] (F : CofibrantObject C ⥤ D)
+    (hF : (weakEquivalences (CofibrantObject C)).IsInvertedBy F)
+    {X : C}
+    {R S : (cofibrantInclusionLocalizerMorphism (C := C)).LeftResolution X}
+    (f g : R ⟶ S) : F.map f.f = F.map g.f := by
+  let : WeakEquivalence (show S.X₁.obj ⟶ X from S.w) := ⟨S.hw⟩
+  exact map_eq_of_postcomp_ambient_weakEquivalence F hF f.f g.f S.w
+    (f.comm.trans g.comm.symm)
+
 /-- The category of cofibrant replacements over any ambient object is
 connected: two replacements map to their common extension. -/
 instance cofibrantInclusion_leftResolution_isConnected (X : C) :

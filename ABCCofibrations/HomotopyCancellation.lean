@@ -15,6 +15,10 @@ Postcomposition and precomposition by a weak equivalence between cofibrant
 objects reflect left homotopy (Theorem 6.4.3(1)(b)). Postcomposition uses a
 pushout of the cylinder boundary and CF4. Precomposition extends that cylinder
 along the weak equivalence and cancels the resulting trivial cofibration.
+
+The postcomposition reflection argument also works with an arbitrary ambient
+codomain. In particular, equality after an ambient weak equivalence implies
+left homotopy, as in Lemma 6.1.2(1) for inclusion of cofibrant objects.
 -/
 
 public section
@@ -31,27 +35,27 @@ variable {C : Type u} [Category.{v} C] [CategoryWithCofibrations C]
 
 namespace LeftHomotopyRel
 
-/-- A weak equivalence after the target can be cancelled from a left homotopy. -/
-theorem of_postcomp_weakEquivalence {f g : A ⟶ B}
-    {D : C} [IsCofibrant D] (b : B ⟶ D) [WeakEquivalence b]
-    (h : LeftHomotopyRel (f ≫ b) (g ≫ b)) : LeftHomotopyRel f g := by
-  obtain ⟨E, c, hc, hcw, P, hP, ⟨H⟩⟩ := h
+/-- Strict homotopy after an ambient weak equivalence implies left homotopy.
+The codomain of the weak equivalence need not be cofibrant. -/
+theorem of_postcomp_weakEquivalence_of_strict {f g : A ⟶ B}
+    {D : C} (b : B ⟶ D) [WeakEquivalence b]
+    (h : StrictLeftHomotopyRel (f ≫ b) (g ≫ b)) : LeftHomotopyRel f g := by
+  obtain ⟨P, hP, ⟨H⟩⟩ := h
   let := hP
-  let := hcw
   let := coprod_cofibrant (A := A) (B := A)
   let := cylinder_cofibrant P
   let d := coprod.desc f g
   let sq := IsPushout.of_hasPushout P.i d
   let := cofibration_of_isPushout sq
   let := cofibrant_target (pushout.inr P.i d)
-  have hboundary : P.i ≫ H.h = d ≫ (b ≫ c) := by
-    ext <;> simp [Precylinder.i, d, H.h₀, H.h₁, Category.assoc]
-  let u := pushout.desc H.h (b ≫ c) hboundary
+  have hboundary : P.i ≫ H.h = d ≫ b := by
+    ext <;> simp [Precylinder.i, d, H.h₀, H.h₁]
+  let u := pushout.desc H.h b hboundary
   obtain ⟨Z, j, p, hj, hp, hjp⟩ := factorization u
   let := hj
   let := hp
   let q := pushout.inr P.i d ≫ j
-  have hqp : q ≫ p = b ≫ c := by
+  have hqp : q ≫ p = b := by
     dsimp [q]
     rw [Category.assoc, hjp]
     exact pushout.inr_desc _ _ _
@@ -70,6 +74,25 @@ theorem of_postcomp_weakEquivalence {f g : A ⟶ B}
         simp only [Precylinder.inr_i_assoc] at he
         dsimp [d] at he
         simpa [q, Category.assoc] using congrArg (fun k ↦ k ≫ j) he }
+
+/-- A weak equivalence after the target can be cancelled from a left homotopy,
+even when its codomain is not cofibrant. -/
+theorem of_postcomp_weakEquivalence {f g : A ⟶ B}
+    {D : C} (b : B ⟶ D) [WeakEquivalence b]
+    (h : LeftHomotopyRel (f ≫ b) (g ≫ b)) : LeftHomotopyRel f g := by
+  obtain ⟨E, c, _, hcw, h⟩ := h
+  let := hcw
+  exact of_postcomp_weakEquivalence_of_strict (b ≫ c)
+    (by simpa only [Category.assoc] using h)
+
+/-- Equality after an ambient weak equivalence implies left homotopy.
+This is Lemma 6.1.2(1) for the inclusion of cofibrant objects. -/
+theorem of_postcomp_weakEquivalence_eq {f g : A ⟶ B}
+    {D : C} (b : B ⟶ D) [WeakEquivalence b]
+    (h : f ≫ b = g ≫ b) : LeftHomotopyRel f g := by
+  apply of_postcomp_weakEquivalence_of_strict b
+  rw [h]
+  exact StrictLeftHomotopyRel.refl _
 
 /-- Postcomposition by a weak equivalence preserves and reflects left homotopy. -/
 theorem postcomp_weakEquivalence_iff {f g : A ⟶ B}

@@ -14,5 +14,6 @@ import ABCCofibrations.TrivialCofibrationLocalization
 import ABCCofibrations.TrivialCofibrationFractions
 import ABCCofibrations.HomotopyLocalization
 import ABCCofibrations.HomotopyFractions
+import ABCCofibrations.CofibrantReplacement
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

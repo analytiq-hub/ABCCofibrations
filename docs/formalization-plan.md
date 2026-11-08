@@ -447,7 +447,12 @@ substantial result.
    `trivialCofibration_fraction_map_eq_iff_leftHomotopy` and
    `trivialCofibration_fraction_map_eq_iff_exists_leftHomotopy` also give the
    cofibrant-subcategory version of Theorem 6.4.5(1)(b).
-4. Prove the ambient comparison (Theorem 6.1.6) to obtain the full
+4. The ambient comparison (Theorem 6.1.6) is now constructed in
+   `CofibrantReplacement.lean` and proved essentially surjective. Prescribed
+   source replacements extend across arrows, and pairs of replacements have
+   common extensions by trivial cofibrations. See
+   [the mathematical note](cofibrant-replacements.md). Full faithfulness
+   remains to be proved to obtain the full
    Theorem 6.3.1(1), and finish the converse fraction equality criteria of
    Theorems 6.4.4(1)(b) and 6.4.5(1)(b).
 
@@ -553,3 +558,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-07 | Precomposition cancellation | Theorem 6.4.3(1)(b)(i) and preservation of weak equivalences by binary coproducts of cofibrant objects; `lake build ABCCofibrations` passed (1890 jobs), without warnings |
 | 2026-11-08 | Homotopy Ore condition | Theorem 6.4.3(1)(a), the full-boundary pushout cofibration argument, and left calculus of fractions on the homotopy quotient; `lake build ABCCofibrations` passed (1892 jobs), without warnings |
 | 2026-11-08 | Localization equality criteria | Faithful comparison, equality iff left homotopy for localization of cofibrant objects, and exact trivial-cofibration fraction comparison criteria; `lake build ABCCofibrations` passed (1892 jobs), without warnings |
+| 2026-11-08 | Ambient comparison: objects and replacements | Constructed the ambient localization comparison and proved essential surjectivity; extensions across arrows and common extensions of replacements in `CofibrantReplacement.lean`; `lake build ABCCofibrations` passed (1898 jobs), without warnings. Full faithfulness remains open. |

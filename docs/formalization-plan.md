@@ -392,6 +392,77 @@ The original unrestricted separate-comparison claims of Lemma 1.3.4(1) have
 been replaced by the correction note; they must not be assumed in subsequent
 proofs. The elementary API review remains open.
 
+## Parallel workstream — mathematical exposition
+
+Maintain readable mathematical explanations alongside the Lean library. These
+notes should let a mathematician review the definitions, statements, and proof
+constructions without reading tactic scripts. They complement module docstrings
+and declaration documentation in the Lean files.
+
+### Documents to produce
+
+Use `docs/mathematics/` for the exposition. Organize it by mathematical subject;
+a substantial Lean module usually merits a matching note, while small supporting
+modules can share one. The initial documentation backlog is:
+
+| Status | Document | Lean coverage |
+| --- | --- | --- |
+| Planned | `index.md` | Reading order, dependency diagram, and coverage map |
+| Planned | `foundations.md` | `Basic.lean`: CF1–CF6, supplied structures, cofibrancy, and size conventions |
+| Planned | `coproducts.md` | `Coproducts.lean`: binary and finite constructions, including the empty case |
+| Planned | `factorization.md` | `Factorization.lean`: Brown, relative, and compatible factorizations |
+| Planned | `gluing-and-excision.md` | `Gluing.lean` and `Extension.lean`: the repaired gluing argument and excision |
+| Planned | `cylinders.md` | `Cylinder.lean`: existence, relative cylinders, refinement, reversal, and concatenation |
+| Planned | `left-homotopy.md` | `LeftHomotopy.lean`: strict versus enlarged-target homotopy and composition |
+| Planned | `homotopy-quotient-and-localization.md` | `HomotopyCategory.lean` and `HomotopyLocalization.lean`: quotient, weak equivalences, comparison, and precise limits of proved results |
+
+### Required content and review
+
+Each note should include:
+
+1. Its purpose, prerequisites, and references to the fixed version of the paper.
+2. Precise mathematical definitions and theorem statements, retaining all
+   substantive hypotheses.
+3. LaTeX equations, commutative diagrams, and explanations of the proof's main
+   constructions. Add element-level diagrams when they clarify an example.
+4. Examples or counterexamples where useful.
+5. A correspondence table linking the paper's notation and theorem numbers to
+   actual Lean declarations and source files.
+6. A clear account of what is formalized, what is only explained informally,
+   and what remains unproved.
+
+Use the paper's notation in mathematical exposition, with an explicit key for
+different Lean names. Explain mathematical choices rather than individual tactics.
+In particular, distinguish strict left homotopy from the paper's left homotopy,
+and distinguish the homotopy quotient from its localization. Link to the existing
+[relative Brown correction](relative-brown-factorization.md) rather than creating
+a competing account of that correction.
+
+Review statements against the actual Lean signatures and their dependencies,
+not just declaration names or the roadmap. Check rendered equations and diagrams
+in Markdown preview, verify source links, and check the reading order. A successful
+Lean build does not certify the accuracy of explanatory prose. Record the code
+revision reviewed and any relevant uncommitted changes when handing off a draft.
+
+### Background-agent handoff
+
+This workstream is suitable for a separate documentation agent running alongside
+proof development, delegated from the main conversation. Give that agent one or
+a few related notes at a time, beginning with foundations and coproducts.
+
+The documentation agent should read the corresponding Lean modules and paper
+sections, draft only its assigned files under `docs/mathematics/`, and report
+mathematical or source-correspondence questions for review. It should not edit
+Lean proofs, shared roadmap files, or Git state as part of this assignment.
+Keep file ownership separate from the agent implementing proofs. The main agent
+reviews the drafts, reconciles them with ongoing code changes, and updates this
+backlog after acceptance. Agent execution must be initiated in the main
+conversation; this side conversation has not started a background agent.
+
+For subsequent increments, update the corresponding mathematical note whenever
+a public statement, hypothesis, construction, or formalization status changes.
+Treat that documentation update as part of completing the increment.
+
 ## Progress log
 
 | Date | Increment | Status / evidence |

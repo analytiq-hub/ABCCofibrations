@@ -138,6 +138,58 @@ theorem good_cylinder_symm : P.symm.IsGood := by
   rw [h]
   exact (cofibration_iff _).2 ((cofibrations C).comp_mem _ _ hb.mem hi.mem)
 
+/-- Two good cylinders admit a common refinement by trivial cofibrations. -/
+theorem exists_common_cylinder_refinement (Q : Cylinder A) [Q.IsGood]
+    [HasPushout P.i Q.i] :
+    ∃ (R : Cylinder A) (j : P.I ⟶ R.I) (k : Q.I ⟶ R.I),
+      R.IsGood ∧ Cofibration j ∧ WeakEquivalence j ∧
+      Cofibration k ∧ WeakEquivalence k ∧
+      P.i₀ ≫ j = R.i₀ ∧ P.i₁ ≫ j = R.i₁ ∧ j ≫ R.π = P.π ∧
+      Q.i₀ ≫ k = R.i₀ ∧ Q.i₁ ≫ k = R.i₁ ∧ k ≫ R.π = Q.π := by
+  let := coprod_cofibrant (A := A) (B := A)
+  let := cylinder_cofibrant P
+  let := cylinder_cofibrant Q
+  let := cofibration_of_isPushout (IsPushout.of_hasPushout P.i Q.i)
+  let := cofibration_of_isPushout (IsPushout.of_hasPushout P.i Q.i).flip
+  let := cofibrant_target (pushout.inl P.i Q.i)
+  have heq : P.i ≫ P.π = Q.i ≫ Q.π := by ext <;> simp [Precylinder.i]
+  let q := pushout.desc P.π Q.π heq
+  obtain ⟨I, l, p, hl, hp, hlp⟩ := factorization q
+  let := hl
+  let j := pushout.inl P.i Q.i ≫ l
+  let k := pushout.inr P.i Q.i ≫ l
+  have hj : Cofibration j := by dsimp [j]; infer_instance
+  have hk : Cofibration k := by dsimp [k]; infer_instance
+  have hjp : j ≫ p = P.π := by simp [j, Category.assoc, hlp, q]
+  have hkp : k ≫ p = Q.π := by simp [k, Category.assoc, hlp, q]
+  have hc : P.i ≫ j = Q.i ≫ k := by
+    dsimp [j, k]
+    rw [← Category.assoc, pushout.condition, Category.assoc]
+  let R : Cylinder A :=
+    { I := I
+      i₀ := P.i₀ ≫ j
+      i₁ := P.i₁ ≫ j
+      π := p
+      i₀_π := by simp [Category.assoc, hjp]
+      i₁_π := by simp [Category.assoc, hjp]
+      weakEquivalence_π := hp }
+  have hR : R.IsGood := by
+    refine ⟨?_⟩
+    have he : R.i = P.i ≫ j := by ext <;> simp [Precylinder.i, R]
+    rw [he]
+    have hPi : Cofibration P.i := inferInstance
+    exact (cofibration_iff _).2 ((cofibrations C).comp_mem _ _ hPi.mem hj.mem)
+  let := hp
+  have hjw : WeakEquivalence j := weakEquivalence_of_postcomp_of_fac hjp
+  have hkw : WeakEquivalence k := weakEquivalence_of_postcomp_of_fac hkp
+  have h₀ : Q.i₀ ≫ k = R.i₀ := by
+    simpa [R, Category.assoc] using
+      (congrArg (fun t ↦ (coprod.inl : A ⟶ A ⨿ A) ≫ t) hc).symm
+  have h₁ : Q.i₁ ≫ k = R.i₁ := by
+    simpa [R, Category.assoc] using
+      (congrArg (fun t ↦ (coprod.inr : A ⟶ A ⨿ A) ≫ t) hc).symm
+  exact ⟨R, j, k, hR, hj, hjw, hk, hkw, rfl, rfl, hjp, h₀, h₁, hkp⟩
+
 /-- Concatenate two good cylinders by identifying the second endpoint of the
 first with the first endpoint of the second. This uses only CF1–CF4. -/
 noncomputable def cylinder_trans (Q : Cylinder A) [Q.IsGood]

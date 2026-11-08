@@ -294,8 +294,17 @@ The elementary constructions for working with homotopies have also begun:
 `good_cylinder_symm` proves goodness after reversing the endpoints, and
 `cylinder_trans` with `good_cylinder_trans` concatenates good cylinders by
 gluing their adjacent endpoints. These use restricted CF3 and pushout pasting,
-without model-category axioms. Next compare mathlib's left-homotopy interfaces
-before introducing the corresponding existential relation.
+without model-category axioms. `exists_common_cylinder_refinement` also provides
+a common cylinder refinement by trivial cofibrations, as used in §6.3.
+
+`LeftHomotopy.lean` reuses mathlib's `Cylinder.LeftHomotopy` data and defines
+two distinct relations: `StrictLeftHomotopyRel` and `LeftHomotopyRel`. The latter
+allows a trivial cofibration of the target, as required by the paper's §6.3.
+Both are proved reflexive, symmetric, and transitive. Change of cylinder
+(`LeftHomotopyRel.exists_on_cylinder`, Lemma 6.3.2(1)) uses common refinement
+and a pushout of the homotopy map. Relative cylinders then give precomposition
+compatibility. Postcomposition and horizontal composition are also proved,
+covering Theorem 6.3.3(1). No strict-homotopy precomposition claim is assumed.
 
 ## Milestone 2 — Factorization and extension lemmas
 
@@ -318,9 +327,13 @@ when a construction needs it, without assuming functoriality.
 - [x] Construct cylinders for cofibrant objects using the preceding milestones.
 - [x] Construct relative cylinders (Lemma 1.5.3(1)) using relative factorization.
 - [x] Reverse and concatenate good cylinders under CF1–CF4.
-- [ ] Introduce left homotopy and prove only the elementary properties justified
+- [x] Introduce left homotopy and prove only the elementary properties justified
   by the available hypotheses.
-- [ ] Identify and defer claims that need the later homotopy-category theory.
+- [x] Identify and defer claims that need the later homotopy-category theory.
+
+The identification of left homotopy with equality in the localization
+(Theorem 6.3.1(1)) is deferred until the necessary localization and calculus
+of fractions results are available.
 
 Suggested module: `Cylinder.lean`. First deliverable: the cylinder existence
 theorem, with its source statement and prerequisites documented.
@@ -355,12 +368,11 @@ statements.
 
 ## Immediate next increment
 
-Introduce the elementary left-homotopy relation using good cylinders, reusing
-mathlib's homotopy data where suitable. Prove the equivalence-relation properties
-using cylinder existence, reversal, and concatenation, then compatibility with
-composition using relative cylinders. Complete the foundation audit as a
-separate outstanding task. Gluing, excision, relative cylinder existence, and
-the basic cylinder operations are complete.
+Construct the category of cofibrant objects modulo left homotopy, using the
+congruence just proved. Establish that weak equivalence is invariant under
+left homotopy before descending it to homotopy classes. Complete the foundation
+audit as a separate outstanding task. Gluing, excision, relative cylinders,
+and the elementary homotopy properties are complete.
 The original unrestricted separate-comparison claims of Lemma 1.3.4(1) have
 been replaced by the correction note; they must not be assumed in subsequent
 proofs. The elementary API review remains open.
@@ -381,3 +393,4 @@ proofs. The elementary API review remains open.
 | 2026-11-07 | Gluing lemma | Both parts of Lemma 1.4.1(1) in `Gluing.lean`, using restricted Brown comparisons along cofibration edges and compatible Brown replacement elsewhere; `lake build` passed (1834 jobs), without warnings |
 | 2026-11-07 | Excision and relative cylinders | Lemma 1.4.2(1) in `Extension.lean` and Lemma 1.5.3(1) in `Cylinder.lean`; `lake build` passed (1836 jobs), without warnings |
 | 2026-11-07 | Cylinder operations | Goodness under endpoint reversal and concatenation in `Cylinder.lean`, using CF1–CF4; `lake build` passed (1836 jobs), without warnings |
+| 2026-11-07 | Left homotopy | Common cylinder refinements, strict and enlarged-target relations, Lemma 6.3.2(1), and Theorem 6.3.3(1); `lake build` passed (1864 jobs), without warnings |

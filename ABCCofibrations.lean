@@ -4,5 +4,6 @@ import ABCCofibrations.Factorization
 import ABCCofibrations.Gluing
 import ABCCofibrations.Extension
 import ABCCofibrations.Cylinder
+import ABCCofibrations.LeftHomotopy
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

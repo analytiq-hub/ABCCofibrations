@@ -38,6 +38,10 @@ and the endpoint properties under CF1–CF4. The paper's cylinders are represent
 by mathlib's `Cylinder` with `Cylinder.IsGood`; no new cylinder structure is needed.
 The same module provides relative cylinders (Lemma 1.5.3(1)), endpoint reversal,
 and concatenation of good cylinders.
+Import `ABCCofibrations.LeftHomotopy` for strict left homotopy and the paper's
+left homotopy after a trivial cofibration of the target. It proves the
+equivalence-relation properties, change of cylinder (Lemma 6.3.2(1)), and
+compatibility with composition (Theorem 6.3.3(1)) under CF1–CF4.
 
 Import `ABCCofibrations.Gluing` for both parts of the gluing lemma
 (Lemma 1.4.1(1)): `gluing_cofibration` and `gluing_weakEquivalence`.

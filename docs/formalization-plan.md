@@ -409,6 +409,13 @@ replacement: `leftDerivedObjIsoOfCofibrantReplacement`, its counit equations,
 and naturality for a commutative replacement square. Comparison isomorphisms
 between two replacements agree with any map over the ambient object and
 satisfy identity and composition laws. They require no functorial choice.
+`DerivedFunctorComparison.lean` now compares any left derived functor with
+the localization lift of its cofibrant restriction. It proves a necessary and
+sufficient equivalence criterion and an existence theorem for derived
+equivalences under that criterion. With explicit replacements, it also gives
+the functor-level comparison with the reverse localization construction.
+This is the categorical step of 6.2.3(1), not yet its full general
+cofibrant-approximation formulation.
 
 Suggested next construction:
 
@@ -433,17 +440,23 @@ Suggested next construction:
    functor with its counit. Check naturality for a commutative square between
    replacements. Coherent comparisons between replacement computations are
    also complete.
-7. **Next:** compare an arbitrary left derived functor to the composite of
+7. **Complete:** compare an arbitrary left derived functor to the composite of
    `ambientLocalizationToCofibrant` with the localization lift of its
-   restriction to cofibrant objects. Use this comparison toward a criterion
-   for derived equivalences (6.2.3), before treating adjunctions. General
-   cofibrant approximations and 6.2.2 remain separate. Foundation audits and
+   restriction to cofibrant objects. The equivalence criterion and existence
+   theorem under that criterion are also proved.
+8. **Next:** express the criterion using mathlib's
+   `LocalizerMorphism.IsLocalizedEquivalence` for the cofibrant restriction
+   of a functor between precofibration categories. Use Brown's lemma to
+   obtain the required localizer morphism from preservation of trivial
+   cofibrations. Keep the remaining bridge from the paper's structural
+   cofibrant-approximation axioms explicit: general cofibrant approximations,
+   6.2.2, and the full 6.2.3(1) remain unproved. Foundation audits and
    Chapter 1 backlog items remain open.
 
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 All current proofs use CF1–CF4. The latest full check is
-`lake build ABCCofibrations`: 1942 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 1944 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.2.
@@ -463,6 +476,11 @@ work of Milestone 3. Milestones 0, 1, 2, and 4 retain their unchecked items.
 
 Completed localization infrastructure:
 
+- `DerivedFunctorComparison.lean`: comparison with the localized cofibrant
+  restriction, necessary and sufficient equivalence criterion, derived
+  equivalence existence under that criterion, and comparison with the
+  replacement construction. The structural approximation hypothesis of
+  Theorem 6.2.3(1) is not yet formalized.
 - `DerivedFunctor.lean`: cofibrant inclusion is a left derivability structure;
   existence of pointwise left derived functors and invertibility of the counit
   on cofibrant objects; Theorem 6.2.1(1) after target localization; computation
@@ -669,3 +687,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-08 | Ambient homotopy fractions | The cofibration-side statements of 6.4.4 and 6.4.5: strong fraction representations and both general and trivial-cofibration denominator equality criteria. `HomotopyFractions.lean` supplies the general converse via the quotient calculus. `lake build ABCCofibrations` passed (1906 jobs), without warnings. |
 | 2026-11-08 | Total left derived functors | `DerivedFunctor.lean` uses the left derivability structure of cofibrant inclusion to prove Theorem 6.2.1(1), with pointwise existence and counit invertible on cofibrant objects. `lake build ABCCofibrations` passed (1942 jobs), without warnings. |
 | 2026-11-08 | Derived-functor computation on replacements | Computation isomorphism for any cofibrant replacement, counit equations, naturality for replacement squares, and coherent comparisons between computed values; `lake build ABCCofibrations` passed (1942 jobs), without warnings. |
+| 2026-11-08 | Derived comparison and equivalence criterion | `DerivedFunctorComparison.lean` compares arbitrary left derived functors with the lifted cofibrant restriction and the replacement construction, and proves the derived-equivalence criterion. Full structural 6.2.3(1) remains open. `lake build ABCCofibrations` passed (1944 jobs), without warnings. |

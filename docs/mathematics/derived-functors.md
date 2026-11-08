@@ -24,6 +24,14 @@ universal object through mathlib, then derive computation and naturality from
 its counit. No regular, functorial, or specially normalized choice of
 replacements is required for these corollaries.
 
+The comparison and equivalence criterion below isolate the categorical step
+in the proof of Theorem 6.2.3(1). Instead of assuming that the original
+functor's restriction is a cofibrant approximation, we assume directly that
+its localization lift is an equivalence, and prove this condition is also
+necessary. The general cofibrant-approximation structure and its induced
+equivalence have not yet been formalized, so this is not a claim that the
+full hypotheses-to-conclusion statement of 6.2.3(1) is complete.
+
 The general intermediate theorem takes a functor into any category that
 inverts trivial cofibrations between cofibrant objects. Mathlib supplies a
 **pointwise** left derived functor, and we retain that stronger existence
@@ -141,6 +149,56 @@ Here “canonical” is relative to the given derived functor and its counit.
 For a total left derived functor of $u$, apply these results to
 $F=\gamma_{\mathcal N}\circ u$.
 
+## Comparing with the localized restriction
+
+Let $F$, $L$, and $(LF,\varepsilon)$ be as in the computation section.
+Brown's lemma allows the restriction of $F$ to cofibrant objects to factor
+through localization. Write this lift as
+
+$$
+\overline F:\mathcal M_{\mathrm{cof}}[W^{-1}]\longrightarrow\mathcal H.
+$$
+
+For the comparison
+$K:\mathcal M_{\mathrm{cof}}[W^{-1}]\to\mathcal D$ induced by $L$,
+there is a natural isomorphism
+
+$$
+LF\circ K\cong\overline F.
+$$
+
+The localized restriction is a left derived functor of the restricted $F$,
+with invertible counit. Mathlib's comparison theorem for the left
+derivability structure of cofibrant inclusion therefore supplies this
+isomorphism. It depends on the given counit, so it applies to any derived
+functor satisfying the universal property.
+
+Since $K$ is an equivalence, the comparison gives
+
+$$
+LF\text{ is an equivalence}\quad\Longleftrightarrow\quad
+\overline F\text{ is an equivalence}.
+$$
+
+In particular, if $\overline F$ is an equivalence, the earlier existence
+theorem produces a derived equivalence with counit invertible on cofibrant
+objects. For a total left derived functor of $u$, take
+$F=\gamma_{\mathcal N}\circ u$.
+
+With the canonical ambient localization and explicit object replacements,
+let $H$ denote `ambientLocalizationToCofibrant`, the reverse functor
+constructed earlier. The inverse comparison $KH\cong\mathrm{id}$ and
+the restriction comparison give
+
+$$
+LF\cong\overline F\circ H.
+$$
+
+This identifies the abstract derived functor with the construction via
+cofibrant replacements as a functor, extending the object and square
+computation formulas above. These comparison results are in
+[DerivedFunctorComparison.lean](../../ABCCofibrations/DerivedFunctorComparison.lean).
+
 ## Lean correspondence and status
 
 | Mathematical result | Declaration |
@@ -157,8 +215,14 @@ $F=\gamma_{\mathcal N}\circ u$.
 | Compare two computed values | `leftDerivedReplacementComparisonIso` |
 | Comparison equals the functor image of a map over the ambient object | `leftDerivedReplacementComparisonIso_hom_eq_map` |
 | Coherent identity and composition | `leftDerivedReplacementComparisonIso_refl`, `leftDerivedReplacementComparisonIso_trans` |
+| Localized cofibrant restriction | `cofibrantRestrictionLift` |
+| Comparison after cofibrant inclusion | `leftDerivedFunctorCofibrantRestrictionIso` |
+| Necessary and sufficient equivalence criterion | `isEquivalence_leftDerivedFunctor_iff_cofibrantRestrictionLift` |
+| Existence of a derived equivalence under that criterion | `exists_leftDerivedEquivalence_of_cofibrantRestrictionLift` |
+| Comparison with the replacement construction | `leftDerivedFunctorIsoViaReplacements` |
 
-All these results are proved. Derived equivalences, Quillen adjunctions,
-general cofibrant approximation functors, and the dual fibration-side results
-remain outside this increment. This note was reviewed against the accompanying
-Lean source following commit `b3bc296`, including the replacement-computation increment.
+All these results are proved. The full cofibrant-approximation formulation of
+derived equivalences, Quillen adjunctions, general cofibrant approximation
+functors, and the dual fibration-side results remain outside this increment.
+This note was reviewed against the accompanying Lean source following commit
+`d2f46d0`, including the derived comparison increment.

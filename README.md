@@ -72,6 +72,12 @@ The proof uses mathlib's left derivability structures; the
 [mathematical note](docs/mathematics/derived-functors.md) records the universal
 property and differences from the paper.
 
+`ABCCofibrations.DerivedFunctorComparison` identifies an arbitrary left derived
+functor with the lifted cofibrant restriction after the localization comparison.
+It is an equivalence exactly when that restriction lift is an equivalence.
+This isolates the categorical step of 6.2.3(1); the general
+cofibrant-approximation hypothesis is not yet formalized.
+
 Import `ABCCofibrations.Gluing` for both parts of the gluing lemma
 (Lemma 1.4.1(1)): `gluing_cofibration` and `gluing_weakEquivalence`.
 The proof uses relative Brown comparisons only along cofibration edges,

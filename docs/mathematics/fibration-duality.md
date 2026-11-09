@@ -136,12 +136,12 @@ The following names are in `ABCCofibrations.IsFibrantApproximation`:
 | Total right-derived existence | `exists_totalRightDerivedFunctor_of_map_trivialFibrations` |
 
 The native fibrant-subcategory instances and Theorems 6.2.1(2) and 6.2.3(2)
-are now proved as described below. Quillen adjunctions remain to be implemented. Mathlib's
+are now proved as described below. Quillen adjunctions are also now proved;
+see [the adjunction note](quillen-adjunctions.md). Mathlib's
 `CategoryTheory.Functor.Derived.Adjunction` already implements the
 Maltsiniotis argument for absolute derived functors: it requires that the
-relevant composites remain derived functors. Before applying it we must
-supply those preservation statements. Its availability does not itself
-prove these hypotheses for our categories.
+relevant composites remain derived functors. Those preservation statements are now proved in `DerivedAbsoluteness.lean`
+and used by `QuillenAdjunction.lean`; see [the adjunction note](quillen-adjunctions.md).
 
 ## The native fibrant subcategory and Theorems 6.2.1(2), 6.2.3(2)
 

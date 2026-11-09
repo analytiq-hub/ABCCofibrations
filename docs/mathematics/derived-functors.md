@@ -275,6 +275,7 @@ subcategory structure is established in
 All these results are proved. General cofibrant approximations and the full
 structural formulation of 6.2.3(1) are now proved in the companion modules
 linked above. The dual statements 6.2.1(2)–6.2.3(2) are also proved;
-Quillen adjunctions remain to be formalized.
+Quillen adjunctions are now proved using Maltsiniotis's argument; see
+[the adjunction note](quillen-adjunctions.md).
 This note was reviewed against the accompanying Lean source following commit
 `5bd8271`, including the localizer formulation of derived equivalences.

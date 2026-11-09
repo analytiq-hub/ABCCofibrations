@@ -381,7 +381,7 @@ statements.
 
 ## Immediate next increment
 
-### Resume point (2026-11-08)
+### Resume point (2026-11-09)
 
 **Theorem 6.1.6 is complete:** `cofibrantLocalizationToAmbient` is an
 equivalence. `ReplacementComparison.lean` supplies both inverse comparison
@@ -453,8 +453,18 @@ equivalence and right derivability structure and proves total right-derived
 existence with invertible unit on image objects (6.2.2(2), with the weaker
 composite preservation hypothesis). The fibrant-subcategory instances and
 the native statements of 6.2.1(2) and 6.2.3(2) are now proved in
-`FibrantSubcategory.lean` and `RightDerivedFunctor.lean`. Next audit
-absoluteness under postcomposition for the derived-adjunction argument.
+`FibrantSubcategory.lean` and `RightDerivedFunctor.lean`.
+The derived functors now remain derived after arbitrary postcomposition.
+`QuillenAdjunction.lean` applies the Maltsiniotis argument and proves
+6.2.5(1), including joint existence. `QuillenComparison.lean` now proves
+the comparison equations, full-faithfulness criteria in 6.2.5(2), and
+the Quillen-equivalence conclusion in 6.2.5(3). `PathObject.lean` and
+`RightHomotopy.lean` now start the native dual homotopy API; the explicit
+opposite comparison, transitivity, postcomposition, and 6.3.1(2) are now
+proved in `HomotopyOpposite.lean`. `RightHomotopyCancellation.lean`
+transfers weak-equivalence cancellation, and `RightHomotopyFractions.lean`
+proves right-fraction representation and common-denominator equality.
+Different-denominator equality and the full-boundary strengthening remain next.
 
 Suggested next construction:
 
@@ -508,7 +518,7 @@ Suggested next construction:
     property for any total left derived functor. The cofibrant subcategory
     has its inherited CF1–CF4 structure, and its inclusion is a general
     cofibrant approximation.
-13. **In progress:** prepare the dual fibration/right-derived infrastructure
+13. **Complete:** prepare the dual fibration/right-derived infrastructure
     via opposite categories before the Quillen adjunction theorem 6.2.5.
     `FibrationBasic.lean` now defines F1–F4 as CF1–CF4 on the opposite and
     provides the native fibrancy bridge, terminal fibrancy, composition,
@@ -520,17 +530,38 @@ Suggested next construction:
     objects. `FibrantSubcategory.lean` now packages its native subcategory
     and inclusion, and `RightDerivedFunctor.lean` proves 6.2.1(2) and
     6.2.3(2), including the unit and equivalence properties for any derived
-    functor. **Next:** prove the postcomposition preservation needed by
-    the absolute-derived-functor adjunction argument.
-    Mathlib's `Functor.Derived.Adjunction` already supplies Maltsiniotis's
-    formal argument; prove the required preservation under postcomposition
-    before applying it. Foundation audits and Chapter 1 backlog items
-    remain separate.
+    functor.
+14. **Complete:** arbitrary postcomposition preserves the derived functors
+    computed by these derivability structures (`DerivedAbsoluteness.lean`).
+    `QuillenAdjunction.lean` records Definition 6.2.4(1)–(3) and proves
+    Theorem 6.2.5(1) for arbitrary derived choices, plus joint existence.
+    It uses mathlib's Maltsiniotis construction after proving its two
+    postcomposition hypotheses. See [the adjunction note](mathematics/quillen-adjunctions.md).
+15. **Complete:** the derived unit/counit and hom-set comparison formulas,
+    both one-sided full-faithfulness criteria of 6.2.5(2), Definition
+    6.2.4(4), and the derived-equivalence conclusion 6.2.5(3). These are
+    in `QuillenComparison.lean`, with no weak-equivalence reflection
+    assumption for localization.
+16. **In progress:** the native path-object/right-homotopy interface is
+    started in `PathObject.lean` and `RightHomotopy.lean`. Products of
+    fibrant objects, good path objects, their trivial-fibration projections,
+    reversal, and the strict/general right-homotopy definitions are proved,
+    with reflexivity, symmetry, precomposition, and weak-equivalence
+    invariance. The constructions use the native F3/F4 results already
+    transported through opposites. See [the right-homotopy note](mathematics/right-homotopy.md).
+    `HomotopyOpposite.lean` now compares arbitrary product/coproduct choices,
+    proves goodness and homotopy equivalence under opposites, and transfers
+    transitivity, postcomposition, and Theorem 6.3.1(2).
+    Cancellation is now transported in `RightHomotopyCancellation.lean`.
+    `RightHomotopyFractions.lean` proves 6.4.4(2)(a) with trivial-fibration
+    denominators and a common-denominator equality criterion.
+    **Next:** the general different-denominator criterion 6.4.4(2)(b),
+    then the full-boundary refinement 6.4.5(2), reusing the left-side results. Foundation audits and Chapter 1 backlog items remain separate.
 
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
-All current proofs use CF1–CF4. The latest full check is
-`lake build ABCCofibrations`: 1976 jobs, without warnings. The accompanying
+The cofibration proofs use CF1–CF4, and the dual fibration proofs use F1–F4. The latest full check is
+`lake build ABCCofibrations`: 2000 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.2.
@@ -554,6 +585,24 @@ Completed localization infrastructure:
   example, image cofibrancy, induced localizer morphism, object and arrow
   resolutions, common extensions, and connected resolution categories.
   The localized-equivalence consequence is proved in the module below.
+- `RightHomotopyCancellation.lean`: weak-equivalence cancellation on both
+  sides of right homotopy, including the ambient precomposition variant.
+- `RightHomotopyFractions.lean`: localized right-fraction representations
+  with trivial-fibration denominators and common-denominator equality.
+- `HomotopyOpposite.lean`: chosen-product/coproduct comparison, native
+  path/cylinder and homotopy duality, transitivity, postcomposition, and
+  the localization equality criterion 6.3.1(2).
+- `PathObject.lean`: products of fibrant objects and good path objects,
+  including trivial-fibration projections, fibrancy, and reversal.
+- `RightHomotopy.lean`: native strict/general right homotopy, reflexivity,
+  symmetry, precomposition, and weak-equivalence invariance.
+- `QuillenComparison.lean`: comparison equations, Definition 6.2.4(4),
+  both full-faithfulness criteria, and the Quillen-equivalence theorem
+  6.2.5(2)–(3) for the chosen derived functors.
+- `DerivedAbsoluteness.lean`: arbitrary postcomposition preserves derived
+  functors computed using a left/right derivability structure.
+- `QuillenAdjunction.lean`: the relative Quillen-pair conditions and
+  Theorem 6.2.5(1), using mathlib's Maltsiniotis derived-adjunction argument.
 - `FibrantSubcategory.lean`: native fibrant subcategory, restricted F1–F4,
   and inclusion as a general fibrant approximation.
 - `RightDerivedFunctor.lean`: 6.2.1(2), the arbitrary derived-unit property
@@ -807,3 +856,7 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-08 | Prefibration foundation by duality | `FibrationBasic.lean` defines F1–F4 through the opposite precofibration category and proves the fibrant/cofibrant bridge plus native F1–F4 consequences and fibrant replacements. The new note explains differences from the paper and records mathlib's Maltsiniotis derived-adjunction interface. Full build passed (1962 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: fibrant approximations and right-derived existence. |
 | 2026-11-08 | Fibrant approximations and total right-derived existence | `FibrantApproximation.lean` dualizes the approximation class, transports localization equivalence and right derivability, and proves 6.2.2(2) under the weaker composite preservation hypothesis with invertibility of any derived unit on image objects. The note records differences from v4. Full build passed (1970 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: fibrant-subcategory instances and 6.2.1(2)/6.2.3(2). |
 | 2026-11-08 | Native fibrant subcategory and right-derived equivalences | `FibrantSubcategory.lean` supplies F1–F4 on mathlib's fibrant subcategory and its inclusion approximation. `RightDerivedFunctor.lean` proves 6.2.1(2), invertibility of any derived unit at fibrant objects, and 6.2.3(2) under its structural approximation hypothesis. Full build passed (1976 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: postcomposition preservation for Maltsiniotis's derived adjunction argument. |
+| 2026-11-08 | Absolute derived functors and Quillen adjunction | `DerivedAbsoluteness.lean` proves postcomposition preservation using mathlib's image-object criterion. `QuillenAdjunction.lean` records 6.2.4(1)–(3), proves 6.2.5(1) for arbitrary total derived functors, and proves joint existence, using Maltsiniotis's argument. The note explains the changed proof route. Full build passed (1984 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: derived comparison formulas and 6.2.5(2)–(3). |
+| 2026-11-08 | Quillen comparison and equivalence criteria | `QuillenComparison.lean` exposes the derived unit/counit and adjoint-arrow equations, proves both one-sided full-faithfulness criteria of 6.2.5(2), records Definition 6.2.4(4), and constructs the derived equivalence of 6.2.5(3). The note explains the direct comparison-formula proof and unchanged hypotheses. Full build passed (1986 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: native dual homotopy/path-object interface. |
+| 2026-11-08 | Native path objects and initial right-homotopy API | `PathObject.lean` proves restricted binary products, good path-object existence (1.5.2(2)), trivial-fibration projections, fibrancy, and reversal. `RightHomotopy.lean` defines the strict/general native relations and proves reflexivity, symmetry, precomposition, and weak-equivalence invariance. The note explains the use of native F3/F4 rather than silently identifying product choices with opposite coproducts. Full build passed (1994 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: explicit opposite comparison, transitivity, and 6.3.1(2). |
+| 2026-11-09 | Native/opposite homotopy bridge and right fractions | `HomotopyOpposite.lean` proves the chosen-product/coproduct comparison and strict/general homotopy equivalence, transferring transitivity, postcomposition, and 6.3.1(2). `RightHomotopyCancellation.lean` transfers weak-equivalence cancellation. `RightHomotopyFractions.lean` proves 6.4.4(2)(a) with trivial-fibration denominators and common-denominator equality. Full build passed (2000 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: different-denominator equality 6.4.4(2)(b) and full-boundary refinement 6.4.5(2). |

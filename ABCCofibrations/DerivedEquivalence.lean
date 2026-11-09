@@ -13,8 +13,8 @@ public import ABCCofibrations.DerivedFunctorComparison
 Brown's lemma packages the cofibrant restriction as a localizer morphism.
 Any total left derived functor is an equivalence exactly when this localizer
 morphism is a localized equivalence. This supplies the categorical implication
-used in Theorem 6.2.3(1); the general structural cofibrant-approximation
-hypothesis of that theorem remains to be treated.
+used in Theorem 6.2.3(1). `DerivedApproximationEquivalence.lean` applies it
+under the general structural cofibrant-approximation hypothesis.
 -/
 
 @[expose] public section

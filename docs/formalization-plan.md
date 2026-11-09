@@ -440,8 +440,12 @@ prescribed resolutions, proves independence and pushout composition, and
 builds `resolutionFunctor`, which inverts ambient weak equivalences.
 `CofibrantApproximationLocalization.lean` lifts it and proves both inverse
 comparison isomorphisms, establishing Theorem 6.1.7(1) and the general
-left derivability structure. Next apply this bridge to the full structural
-hypotheses in 6.2.2(1) and 6.2.3(1).
+left derivability structure. `CofibrantApproximationDerived.lean` now proves
+Theorem 6.2.2(1) under its full structural hypotheses, including invertibility
+of any derived counit on the image of the approximation.
+Theorem 6.2.3(1) is now also proved under its full structural hypothesis
+in `DerivedApproximationEquivalence.lean`. `CofibrantSubcategory.lean` supplies
+the restricted CF1–CF4 structure and the inclusion approximation instance.
 
 Suggested next construction:
 
@@ -488,17 +492,23 @@ Suggested next construction:
     fractions between resolutions, and both inverse comparison isomorphisms
     give a direct proof. Only then apply mathlib's constructor to obtain
     the general left derivability structure; there is no circularity.
-11. **Next:** apply this bridge to the full structural statements of
-    6.2.2(1), then 6.2.3(1). Packaging the cofibrant inclusion as an instance
-    of the new class is also outstanding. Keep checking Cisinski and
-    Maltsiniotis for simpler arguments, especially before the later
-    derived-adjunction work. Foundation audits and Chapter 1 backlog
-    items remain separate.
+11. **Complete:** Theorem 6.2.2(1), with preservation required only after
+    composition with the approximation. Brown's lemma is applied after
+    target localization, so no target saturation hypothesis is added.
+12. **Complete:** Theorem 6.2.3(1), including existence and the equivalence
+    property for any total left derived functor. The cofibrant subcategory
+    has its inherited CF1–CF4 structure, and its inclusion is a general
+    cofibrant approximation.
+13. **Next:** prepare the dual fibration/right-derived infrastructure via
+    opposite categories before the Quillen adjunction theorem 6.2.5. Check
+    Maltsiniotis's absolute-derived-functor argument and the exact mathlib
+    adjunction interfaces before choosing the proof. Foundation audits and
+    Chapter 1 backlog items remain separate.
 
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 All current proofs use CF1–CF4. The latest full check is
-`lake build ABCCofibrations`: 1954 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 1960 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.2.
@@ -522,6 +532,13 @@ Completed localization infrastructure:
   example, image cofibrancy, induced localizer morphism, object and arrow
   resolutions, common extensions, and connected resolution categories.
   The localized-equivalence consequence is proved in the module below.
+- `CofibrantSubcategory.lean`: CF1–CF4 on the full subcategory of cofibrant
+  objects and the general approximation instance for its inclusion.
+- `DerivedApproximationEquivalence.lean`: Theorem 6.2.3(1) under its structural
+  approximation hypothesis; existence and equivalence of any derived functor.
+- `CofibrantApproximationDerived.lean`: Theorem 6.2.2(1), pointwise
+  derived-functor existence, and invertibility of any derived counit on
+  the image of a general approximation.
 - `CofibrantApproximationLocalization.lean`: the inverse localization
   functor, both comparison isomorphisms, the general localization equivalence
   (Theorem 6.1.7(1)), and the general left derivability structure.
@@ -753,3 +770,5 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-08 | General approximation fraction independence | Lemma 6.1.4(1) is proved under every functor inverting source weak equivalences, using common resolutions and homotopy cancellation. The note explains the difference from the paper. Full build passed (1950 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: fractions between prescribed general resolutions and the inverse functor. |
 | 2026-11-08 | Fractions and the general resolution functor | Fractions between prescribed resolutions retain two cofibration legs; existence, independence, computation on actual source arrows, and pushout composition are proved. `resolutionFunctor` respects identities and composition and inverts ambient weak equivalences. Full build passed (1952 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: localization lift and inverse comparison isomorphisms. |
 | 2026-11-08 | General cofibrant approximation localization equivalence | `CofibrantApproximationLocalization.lean` constructs the inverse and both natural comparison isomorphisms, proves Theorem 6.1.7(1), and then obtains the general left derivability structure. Corrected v4 lemma citations: cancellation is 6.1.3(1), fraction independence is 6.1.4(1). Full build passed (1954 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: the full structural hypotheses of 6.2.2(1) and 6.2.3(1). |
+| 2026-11-08 | Derived functors from general approximations | `CofibrantApproximationDerived.lean` proves Theorem 6.2.2(1) under its full hypothesis on the composite, pointwise existence, and invertibility of any derived counit on approximation image objects. No target two-out-of-three or saturation axiom is added. Full build passed (1956 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: cofibrant-subcategory structure and the structural version of 6.2.3(1). |
+| 2026-11-08 | Cofibrant subcategory and structural derived equivalence | CF1–CF4 restrict to `CofibrantObject C`, and its inclusion is a general cofibrant approximation. `DerivedApproximationEquivalence.lean` proves Theorem 6.2.3(1), with existence and equivalence of any total left derived functor. Full build passed (1960 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: opposite-category/right-derived infrastructure and audit the shorter Maltsiniotis route before Quillen adjunction. |

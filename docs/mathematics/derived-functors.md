@@ -13,8 +13,11 @@ the source and target localization functors explicit. The paper proves this
 through general cofibrant approximation functors and its Chapter 5 approximation
 theory. We specialize to inclusion of cofibrant objects, then use mathlib's
 left derivability structures, based on Kahn–Maltsiniotis, to supply the
-universal property. General cofibrant approximations, Theorem 6.2.2(1), and
-the dual right-derived theory have not been formalized here.
+universal property. General cofibrant approximations and Theorem 6.2.2(1)
+are now formalized separately in
+[the approximation development](cofibrant-approximations.md); the original
+inclusion-specific proof here is retained. The dual right-derived theory
+has not been formalized.
 
 The computation results below are explicit corollaries for any derived functor
 with its counit and any cofibrant replacement. They are not presented as a
@@ -28,9 +31,11 @@ The comparison and equivalence criterion below isolate the categorical step
 in the proof of Theorem 6.2.3(1). Instead of assuming that the original
 functor's restriction is a cofibrant approximation, we assume directly that
 its localization lift is an equivalence, and prove this condition is also
-necessary. The general cofibrant-approximation structure and its induced
-equivalence have not yet been formalized, so this is not a claim that the
-full hypotheses-to-conclusion statement of 6.2.3(1) is complete.
+necessary. The structural hypothesis now implies this condition in
+[DerivedApproximationEquivalence.lean](../../ABCCofibrations/DerivedApproximationEquivalence.lean),
+completing Theorem 6.2.3(1); see the
+[approximation note](cofibrant-approximations.md) for the proof and its
+comparison with the paper.
 The localizer formulation below works with a target weak-equivalence class
 satisfying two out of three. This follows automatically if the target is a
 precofibration category, as in 6.2.3(1); no target cofibrations or model
@@ -235,10 +240,10 @@ weak equivalences with noncofibrant endpoints.
 
 These results are in
 [DerivedEquivalence.lean](../../ABCCofibrations/DerivedEquivalence.lean).
-What remains for the full statement of 6.2.3(1) is to define the paper's
-general cofibrant approximation functors (Definition 6.1.1) and prove that
-those structural axioms imply this localizer condition. We have not replaced
-that missing proof with an assumption that it holds automatically.
+The general approximation axioms now imply this localizer condition by the
+proved localization equivalence, completing 6.2.3(1). The cofibrant
+subcategory structure is established in
+[CofibrantSubcategory.lean](../../ABCCofibrations/CofibrantSubcategory.lean).
 
 ## Lean correspondence and status
 
@@ -266,8 +271,9 @@ that missing proof with an assumption that it holds automatically.
 | Total derived equivalence iff localized equivalence of the restriction | `isEquivalence_totalLeftDerivedFunctor_iff_localized_cofibrantRestriction` |
 | Existence of a total derived equivalence under that condition | `exists_totalLeftDerivedEquivalence_of_localized_cofibrantRestriction` |
 
-All these results are proved. The full cofibrant-approximation formulation of
-derived equivalences, Quillen adjunctions, general cofibrant approximation
-functors, and the dual fibration-side results remain outside this increment.
+All these results are proved. General cofibrant approximations and the full
+structural formulation of 6.2.3(1) are now proved in the companion modules
+linked above. Quillen adjunctions and the dual fibration-side theory remain
+to be formalized.
 This note was reviewed against the accompanying Lean source following commit
 `5bd8271`, including the localizer formulation of derived equivalences.

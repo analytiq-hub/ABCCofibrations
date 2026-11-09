@@ -225,13 +225,76 @@ are the same ones used for those axioms. We then obtain mathlib's
 `IsLocalizedEquivalence` and, using the already proved connected resolutions
 and arrow resolutions, `IsLeftDerivabilityStructure`. The latter constructor
 is applied only after the localization equivalence has been established.
-This does not yet formalize the full structural statements of 6.2.2(1) or
-6.2.3(1). See
+The next two steps apply this bridge to the full structural statements of
+6.2.2(1) and 6.2.3(1). See
 [CofibrantApproximationLocalization.lean](../../ABCCofibrations/CofibrantApproximationLocalization.lean).
 
 The references in earlier notes to cancellation as Lemma 6.1.2 and fraction
 independence as Lemma 6.1.3 were numbering errors. In the pinned v4 text they
 are Lemmas 6.1.3 and 6.1.4 respectively; these citations have been corrected.
+
+## Total left derived functors: Theorem 6.2.2(1)
+
+Let $t:\mathcal M'\to\mathcal M$ be a cofibrant approximation and
+$u:\mathcal M\to\mathcal N$ a functor such that $ut$ sends trivial
+cofibrations to weak equivalences. Then $u$ admits a total left derived
+functor. For any such derived functor and its counit $\epsilon$, the
+component $\epsilon_{t(A)}$ is invertible for every $A$ of $\mathcal M'$.
+This hypothesis concerns $ut$ only; preservation on all cofibrant objects
+of $\mathcal M$ is not required.
+
+After localizing the target by $R$, the composite $Rut$ inverts trivial
+cofibrations. All source objects are cofibrant, so Brown's lemma shows it
+inverts every source weak equivalence. Its pointwise left derived functor
+therefore exists. The left derivability structure of $t$ transfers this
+existence to $Ru$. Its comparison theorem transfers invertibility of the
+counit to all objects $t(A)$. The existence statement allows arbitrary
+choices of source and target localizations.
+
+**Difference from the paper:** the paper first assumes the target weak
+equivalences saturated and then applies Brown's lemma. We apply Brown's
+lemma directly to isomorphisms after target localization, so no saturation
+or two-out-of-three hypothesis on the original target weak equivalences
+is needed. Mathlib's pointwise derivability machinery supplies existence
+and the counit comparison. Its left-derived convention uses a universal
+counit, as explained in [derived-functors.md](derived-functors.md). The result
+is proved for any derived counit, in addition to constructing one.
+See [CofibrantApproximationDerived.lean](../../ABCCofibrations/CofibrantApproximationDerived.lean).
+
+## Cofibrant restriction and derived equivalence: Theorem 6.2.3(1)
+
+The full subcategory $\mathcal M_{cof}$ is now equipped with CF1–CF4.
+We reuse mathlib's `CofibrantObject` and its inherited weak equivalences.
+The cofibrations are the inverse image of the ambient cofibrations under
+inclusion. The ambient initial object is initial in this full subcategory.
+For a cofibration $A\to B$ and any $A\to D$ between cofibrant objects,
+the ambient pushout is cofibrant because $D\to B\amalg_A D$ is a
+cofibration. Fullness and faithfulness give its universal property inside
+the subcategory, and the inclusion preserves it. Ambient CF4 factorizations
+also remain inside the subcategory because the intermediate object is
+cofibrant. These observations establish all the restricted axioms and
+CFA1–CFA4 for the inclusion.
+
+Suppose $u:\mathcal M\to\mathcal N$ is a functor between precofibration
+categories whose restriction to $\mathcal M_{cof}$ is a cofibrant
+approximation. That restriction preserves weak equivalences, hence sends
+trivial cofibrations to weak equivalences. Theorem 6.2.1(1) gives a total
+left derived functor with invertible counit on cofibrant objects.
+Theorem 6.1.7(1) makes the restriction a localized equivalence. The previously
+proved criterion comparing a derived functor to its localized cofibrant
+restriction therefore makes the total left derived functor an equivalence.
+The same criterion proves this for any total left derived functor.
+
+**Difference from the paper:** this follows the paper's argument, using the
+already proved inclusion-specific existence theorem 6.2.1(1) where the paper
+invokes its generalization 6.2.2(1). The categorical equivalence criterion
+was packaged separately in our earlier development. The precofibration
+structure and approximation instance for the inclusion are proved from
+the ambient axioms; neither is an additional assumption. The statement
+allows arbitrary source and target localizations and assumes no preservation
+of weak equivalences outside the cofibrant subcategory.
+See [CofibrantSubcategory.lean](../../ABCCofibrations/CofibrantSubcategory.lean)
+and [DerivedApproximationEquivalence.lean](../../ABCCofibrations/DerivedApproximationEquivalence.lean).
 
 ## Lean correspondence and status
 
@@ -265,8 +328,17 @@ All names in the table except the class itself are in
 | Theorem 6.1.7(1), no chosen resolutions in the statement | `localizedFunctor_isEquivalence` |
 | Localizer equivalence | `toLocalizerMorphism_isLocalizedEquivalence` |
 | General left derivability structure | `toLocalizerMorphism_isLeftDerivabilityStructure` |
+| Pointwise existence under a general approximation | `hasPointwiseLeftDerivedFunctor_of_inverts_trivialCofibrations` |
+| Any derived counit is invertible on image objects | `isIso_leftDerivedCounit_app` |
+| Theorem 6.2.2(1) | `exists_totalLeftDerivedFunctor_of_map_trivialCofibrations` |
 
 The general localization equivalence and its bridge to a left derivability
-structure are proved. Theorems 6.2.2(1) and 6.2.3(1) under their full structural
-hypotheses remain unproved. The previously proved inclusion case is not yet
-packaged as an instance of this new class.
+structure are proved. Theorem 6.2.2(1) is also proved under its full structural hypotheses.
+Theorem 6.2.3(1) is also proved, and the cofibrant inclusion is now an
+instance of the general approximation class.
+
+The declarations for Theorem 6.2.3(1) are
+`ABCPrecofibrationCategory.exists_totalLeftDerivedEquivalence_of_cofibrantApproximation`
+and `ABCPrecofibrationCategory.isEquivalence_totalLeftDerivedFunctor_of_cofibrantApproximation`.
+The subcategory instance is `ABCPrecofibrationCategory.cofibrantObject_precofibrationCategory`;
+the inclusion instance is `ABCPrecofibrationCategory.cofibrantInclusion_isCofibrantApproximation`.

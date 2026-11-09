@@ -135,10 +135,59 @@ The following names are in `ABCCofibrations.IsFibrantApproximation`:
 | Any derived unit on an image object is invertible | `isIso_rightDerivedUnit_app` |
 | Total right-derived existence | `exists_totalRightDerivedFunctor_of_map_trivialFibrations` |
 
-The native fibrant-subcategory instances, Theorems 6.2.1(2) and 6.2.3(2),
-and Quillen adjunctions remain to be implemented. Mathlib's
+The native fibrant-subcategory instances and Theorems 6.2.1(2) and 6.2.3(2)
+are now proved as described below. Quillen adjunctions remain to be implemented. Mathlib's
 `CategoryTheory.Functor.Derived.Adjunction` already implements the
 Maltsiniotis argument for absolute derived functors: it requires that the
 relevant composites remain derived functors. Before applying it we must
 supply those preservation statements. Its availability does not itself
 prove these hypotheses for our categories.
+
+## The native fibrant subcategory and Theorems 6.2.1(2), 6.2.3(2)
+
+[FibrantSubcategory.lean](../../ABCCofibrations/FibrantSubcategory.lean)
+uses mathlib's `FibrantObject C`, with fibrations inherited from the ambient
+category and mathlib's inherited weak equivalences. The ambient terminal
+object is terminal in this full subcategory. Restricted ambient pullbacks
+remain in it: the projection to a fibrant object is a fibration, hence the
+pullback object is fibrant. Fullness and faithfulness give the universal
+property within the subcategory, and inclusion preserves these pullbacks.
+Ambient F4 factorizations remain inside the subcategory as well.
+These facts provide F1–F4 and a fibrant approximation instance for inclusion.
+
+[RightDerivedFunctor.lean](../../ABCCofibrations/RightDerivedFunctor.lean)
+applies the general right-derived existence theorem to that inclusion.
+Thus a functor sending trivial fibrations between fibrant objects to weak
+equivalences admits a total right derived functor, with unit invertible at
+fibrant objects: Theorem 6.2.1(2). The invertibility statement is also proved
+for any total right derived functor and its unit.
+
+If a functor between prefibration categories restricts to a fibrant
+approximation on fibrant objects, its total right derived functor is an
+equivalence, Theorem 6.2.3(2). Indeed, both the inclusion and the restriction
+induce equivalences on localizations. Mathlib's right-derived comparison
+identifies the derived functor composed with the localized inclusion with
+the localization of the restriction. Cancelling the inclusion equivalence
+proves that any total right derived functor is an equivalence. An existence
+statement includes the invertible unit on fibrant objects.
+
+**Differences from the paper:** these are the native fibration-side
+statements, with the same hypotheses and arbitrary localization choices.
+The paper omits the dual proof of 6.2.3; we implement it using the already
+transported localization equivalences and mathlib's right-derived comparison.
+The native subcategory is mathlib's actual `FibrantObject C`, rather than
+replacing it by the opposite of `CofibrantObject Cᵒᵖ`. Its prefibration
+structure is still implemented as a precofibration structure on its opposite,
+so the mathematical duality is unchanged. No model-category structure or
+functorial replacement is assumed.
+
+The new names lie in `ABCCofibrations.ABCPrefibrationCategory`:
+
+| Statement | Declaration |
+| --- | --- |
+| F1–F4 on the fibrant subcategory | `fibrantObject_prefibrationCategory` |
+| Inclusion is a fibrant approximation | `fibrantInclusion_isFibrantApproximation` |
+| Theorem 6.2.1(2) | `exists_totalRightDerivedFunctor_of_map_trivialFibrations` |
+| Any derived unit at a fibrant object is invertible | `isIso_totalRightDerivedUnit_app_fibrant` |
+| Any derived functor under 6.2.3(2) is an equivalence | `isEquivalence_totalRightDerivedFunctor_of_fibrantApproximation` |
+| Existence in Theorem 6.2.3(2) | `exists_totalRightDerivedEquivalence_of_fibrantApproximation` |

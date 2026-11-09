@@ -16,8 +16,9 @@ left derivability structures, based on Kahn–Maltsiniotis, to supply the
 universal property. General cofibrant approximations and Theorem 6.2.2(1)
 are now formalized separately in
 [the approximation development](cofibrant-approximations.md); the original
-inclusion-specific proof here is retained. The dual right-derived theory
-has not been formalized.
+inclusion-specific proof here is retained. The dual right-derived existence
+and equivalence statements are now formalized in
+[the fibration development](fibration-duality.md).
 
 The computation results below are explicit corollaries for any derived functor
 with its counit and any cofibrant replacement. They are not presented as a
@@ -273,7 +274,7 @@ subcategory structure is established in
 
 All these results are proved. General cofibrant approximations and the full
 structural formulation of 6.2.3(1) are now proved in the companion modules
-linked above. Quillen adjunctions and the dual fibration-side theory remain
-to be formalized.
+linked above. The dual statements 6.2.1(2)–6.2.3(2) are also proved;
+Quillen adjunctions remain to be formalized.
 This note was reviewed against the accompanying Lean source following commit
 `5bd8271`, including the localizer formulation of derived equivalences.

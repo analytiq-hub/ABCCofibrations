@@ -31,5 +31,7 @@ import ABCCofibrations.CofibrantSubcategory
 import ABCCofibrations.DerivedApproximationEquivalence
 import ABCCofibrations.FibrationBasic
 import ABCCofibrations.FibrantApproximation
+import ABCCofibrations.FibrantSubcategory
+import ABCCofibrations.RightDerivedFunctor
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

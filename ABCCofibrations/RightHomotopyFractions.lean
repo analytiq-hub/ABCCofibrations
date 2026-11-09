@@ -145,7 +145,8 @@ theorem ambient_rightFraction_eq_iff_exists_rightHomotopy
     apply (cancel_mono (H.map ψ.s)).1
     rw [ψ.map_comp_map_s H hH]
     exact (congrArg Quiver.Hom.op hβ).symm
-  have he := ABCPrecofibrationCategory.ambient_weakEquivalence_fraction_map_eq_iff_exists_leftHomotopy
+  have he :=
+    ABCPrecofibrationCategory.ambient_weakEquivalence_fraction_map_eq_iff_exists_leftHomotopy
     L.op φ ψ
   rw [hφ, hψ] at he
   constructor
@@ -165,6 +166,81 @@ theorem ambient_rightFraction_eq_iff_exists_rightHomotopy
       CofibrantObject.homMk j.op, (weakEquivalences_op_iff i).2 hi |>.mem,
       (weakEquivalences_op_iff j).2 hj |>.mem, ?_, ?_⟩
     · exact (rightHomotopy_iff_op _ _).1 hs
+    · exact (rightHomotopy_iff_op _ _).1 hf
+
+/-- Theorem 6.4.5(2)(b): trivial-fibration fractions agree exactly when
+common trivial-fibration refinements have equal denominators and
+right-homotopic numerators. -/
+theorem ambient_trivialFibration_fraction_eq_iff_exists_rightHomotopy
+    (L : C ⥤ D) [L.IsLocalization (weakEquivalences C)]
+    {A B Z₁ Z₂ : C} [IsFibrant A] [IsFibrant B] [IsFibrant Z₁] [IsFibrant Z₂]
+    [HasBinaryProduct B B]
+    (s : Z₁ ⟶ A) (t : Z₂ ⟶ A) [Fibration s] [Fibration t]
+    [WeakEquivalence s] [WeakEquivalence t]
+    (f : Z₁ ⟶ B) (g : Z₂ ⟶ B) (α β : L.obj A ⟶ L.obj B)
+    (hα : L.map s ≫ α = L.map f) (hβ : L.map t ≫ β = L.map g) :
+    α = β ↔ ∃ (P : C) (i : P ⟶ Z₁) (j : P ⟶ Z₂),
+      IsFibrant P ∧ Fibration i ∧ WeakEquivalence i ∧ Fibration j ∧ WeakEquivalence j ∧
+        i ≫ s = j ≫ t ∧ RightHomotopyRel (i ≫ f) (j ≫ g) := by
+  let := ABCPrecofibrationCategory.hasBinaryCoproduct (Opposite.op B) (Opposite.op B)
+  let : L.op.IsLocalization (weakEquivalences Cᵒᵖ) :=
+    inferInstanceAs (L.op.IsLocalization (weakEquivalences C).op)
+  let φ : (ABCPrecofibrationCategory.cofibrantTrivialCofibrations (C := Cᵒᵖ)).LeftFraction
+      (CofibrantObject.mk (Opposite.op B)) (CofibrantObject.mk (Opposite.op A)) := {
+    Y' := CofibrantObject.mk (Opposite.op Z₁)
+    f := CofibrantObject.homMk f.op
+    s := CofibrantObject.homMk s.op
+    hs := (ABCPrecofibrationCategory.mem_cofibrantTrivialCofibrations_iff _).2
+      ⟨inferInstanceAs (Cofibration s.op), inferInstanceAs (WeakEquivalence s.op)⟩ }
+  let ψ : (ABCPrecofibrationCategory.cofibrantTrivialCofibrations (C := Cᵒᵖ)).LeftFraction
+      (CofibrantObject.mk (Opposite.op B)) (CofibrantObject.mk (Opposite.op A)) := {
+    Y' := CofibrantObject.mk (Opposite.op Z₂)
+    f := CofibrantObject.homMk g.op
+    s := CofibrantObject.homMk t.op
+    hs := (ABCPrecofibrationCategory.mem_cofibrantTrivialCofibrations_iff _).2
+      ⟨inferInstanceAs (Cofibration t.op), inferInstanceAs (WeakEquivalence t.op)⟩ }
+  let H := CofibrantObject.ι ⋙ L.op
+  let hH := (ABCPrecofibrationCategory.inverts_weakEquivalences_iff_inverts_trivialCofibrations H).1
+    (Localization.inverts H (weakEquivalences (CofibrantObject Cᵒᵖ)))
+  have hφ : ABCPrecofibrationCategory.ambientTrivialCofibrationFractionMap L.op φ = α.op := by
+    change φ.map H hH = α.op
+    let := hH _ φ.hs
+    apply (cancel_mono (H.map φ.s)).1
+    rw [φ.map_comp_map_s H hH]
+    exact (congrArg Quiver.Hom.op hα).symm
+  have hψ : ABCPrecofibrationCategory.ambientTrivialCofibrationFractionMap L.op ψ = β.op := by
+    change ψ.map H hH = β.op
+    let := hH _ ψ.hs
+    apply (cancel_mono (H.map ψ.s)).1
+    rw [ψ.map_comp_map_s H hH]
+    exact (congrArg Quiver.Hom.op hβ).symm
+  have he :=
+    ABCPrecofibrationCategory.ambient_trivialCofibration_fraction_map_eq_iff_exists_leftHomotopy
+    L.op φ ψ
+  rw [hφ, hψ] at he
+  constructor
+  · intro h
+    obtain ⟨P, i, j, hi, hj, hs, hf⟩ := he.1 (congrArg Quiver.Hom.op h)
+    obtain ⟨hci, hwi⟩ := (ABCPrecofibrationCategory.mem_cofibrantTrivialCofibrations_iff i).1 hi
+    obtain ⟨hcj, hwj⟩ := (ABCPrecofibrationCategory.mem_cofibrantTrivialCofibrations_iff j).1 hj
+    refine ⟨P.obj.unop, i.hom.unop, j.hom.unop,
+      (isFibrant_iff_isCofibrant_op P.obj.unop).2 P.property,
+      (fibration_unop_iff i.hom).2 hci, (weakEquivalences_unop_iff i.hom).2 hwi,
+      (fibration_unop_iff j.hom).2 hcj, (weakEquivalences_unop_iff j.hom).2 hwj, ?_, ?_⟩
+    · exact congrArg (fun k ↦ k.hom.unop) hs
+    · exact (rightHomotopy_iff_op _ _).2 hf
+  · rintro ⟨P, i, j, hP, hci, hi, hcj, hj, hs, hf⟩
+    let := hP
+    apply Quiver.Hom.op_inj
+    apply he.2
+    refine ⟨CofibrantObject.mk (Opposite.op P), CofibrantObject.homMk i.op,
+      CofibrantObject.homMk j.op,
+      (ABCPrecofibrationCategory.mem_cofibrantTrivialCofibrations_iff _).2
+        ⟨(cofibration_op_iff i).2 hci, (weakEquivalences_op_iff i).2 hi⟩,
+      (ABCPrecofibrationCategory.mem_cofibrantTrivialCofibrations_iff _).2
+        ⟨(cofibration_op_iff j).2 hcj, (weakEquivalences_op_iff j).2 hj⟩, ?_, ?_⟩
+    · apply ObjectProperty.hom_ext
+      exact congrArg Quiver.Hom.op hs
     · exact (rightHomotopy_iff_op _ _).1 hf
 
 end ABCCofibrations.ABCPrefibrationCategory

@@ -166,8 +166,8 @@ translating the result back to native objects. The representation strengthens
 the denominator to a trivial fibration, as the dual of our previously proved
 left-side result. The common-denominator criterion is an intermediate API;
 it is not the full criterion allowing different denominators in 6.4.4(2)(b).
-That general criterion, and the full-boundary strengthening 6.4.5(2), remain
-next.
+The general criterion and the full-boundary strengthening 6.4.5(2) are
+now proved below.
 
 | Statement | Declaration in `ABCCofibrations.ABCPrefibrationCategory` |
 | --- | --- |
@@ -177,3 +177,116 @@ next.
 | Preservation and reflection | `RightHomotopyRel.precomp_weakEquivalence_iff`, `RightHomotopyRel.postcomp_weakEquivalence_iff` |
 | Right-fraction representation | `exists_ambient_trivialFibration_fraction` |
 | Equality with a common denominator | `ambient_common_rightFraction_eq_iff_rightHomotopy` |
+
+## Different denominators and the full-boundary refinement
+
+For weak equivalences $s:Z_1\to A$, $t:Z_2\to A$ and numerators
+$f:Z_1\to B$, $g:Z_2\to B$, with all four objects fibrant, let their
+localized values be $\alpha,\beta$. Theorem 6.4.4(2)(b) is now proved:
+these values agree exactly when there are fibrant $P$ and weak equivalences
+$i:P\to Z_1$, $j:P\to Z_2$ such that
+
+$$
+is\simeq_r jt,\qquad if\simeq_r jg.
+$$
+
+The localized values are specified by the equations
+$L(s)\alpha=L(f)$ and $L(t)\beta=L(g)$, so no particular implementation
+of formal right-fraction evaluation is required by the interface.
+
+For trivial-fibration denominators $s,t$, Theorem 6.4.5(2)(b) sharpens this:
+the comparison maps $i,j$ can be trivial fibrations, with $is=jt$ exactly
+and $if\simeq_r jg$. Only a binary product of $B$ with itself is needed
+to express the remaining homotopy.
+
+Theorem 6.4.5(2)(a) also strengthens representation: the numerator $f$,
+denominator $s$, and full boundary $(f,s):Z\to B\times A$ can all be
+fibrations, while $s$ remains a weak equivalence. The theorem accepts any
+chosen product $B\times A$. We compare it explicitly with the unopposite
+of the chosen coproduct of $B^{op},A^{op}$, using
+`oppositeCoprodProductIsoPair`. The order $(f,s)$ follows the order of the
+opposite numerator and denominator.
+
+**Differences from the paper:** these results are direct transports of the
+already proved left-side theorems. The proof temporarily bundles opposite
+objects as mathlib cofibrant objects, then returns native objects, maps,
+fibrancy, and right homotopies. The evaluation interface uses the numerator
+and denominator equations instead of a new right-fraction structure. This
+changes packaging only. The general criterion retains homotopy in both
+triangles; the sharper criterion uses exact equality only under the stated
+trivial-fibration assumptions. No saturation or weak-equivalence reflection
+hypothesis is added.
+
+| Statement | Declaration in `ABCCofibrations.ABCPrefibrationCategory` |
+| --- | --- |
+| Mixed product/coproduct comparison | `oppositeCoprodProductIsoPair` |
+| Theorem 6.4.4(2)(b) | `ambient_rightFraction_eq_iff_exists_rightHomotopy` |
+| Theorem 6.4.5(2)(a) | `exists_ambient_fibration_fraction_with_prod` |
+| Theorem 6.4.5(2)(b) | `ambient_trivialFibration_fraction_eq_iff_exists_rightHomotopy` |
+
+With the localization equality criterion `ambient_map_eq_iff_fibrant_rightHomotopy`
+from the opposite comparison, the statements of 6.4.4(2) and 6.4.5(2)
+are now proved. The native quotient category of fibrant objects by right homotopy and its
+right calculus of fractions are now packaged below.
+
+## The native quotient and its right calculus of fractions
+
+[RightHomotopyCategory.lean](../../ABCCofibrations/RightHomotopyCategory.lean)
+defines the native quotient of mathlib's `FibrantObject C` by right homotopy,
+using mathlib's category quotient. Homotopy is a congruence, and equality of
+the images of two arrows is exactly right homotopy. Each quotient arrow has
+a representative. Weak equivalences descend because right-homotopic maps
+are weak equivalences simultaneously.
+
+[RightHomotopyWeakEquivalences.lean](../../ABCCofibrations/RightHomotopyWeakEquivalences.lean)
+proves identities, composition, and two out of three for this descended
+class, by choosing representatives. No saturation assumption is involved.
+
+[RightHomotopyCategoryOpposite.lean](../../ABCCofibrations/RightHomotopyCategoryOpposite.lean)
+constructs an equivalence
+
+$$
+\pi_r(\mathcal C_{fib})\simeq
+  \bigl(\pi_l((\mathcal C^{op})_{cof})\bigr)^{op}.
+$$
+
+It sends a fibrant object to its cofibrant opposite object and reverses
+representative arrows. The homotopy comparison proves faithfulness;
+surjectivity on representative arrows proves fullness; the fibrant/cofibrant
+object bridge proves essential surjectivity. This equivalence preserves
+and reflects the descended weak equivalences.
+
+[RightHomotopyOre.lean](../../ABCCofibrations/RightHomotopyOre.lean)
+transports the strict Ore square of 6.4.3(1)(a) into the native statement
+6.4.3(2)(a). A cospan $A\xrightarrow{f}B\xleftarrow[\sim]{b}B'$ of
+fibrant objects admits fibrant $A'$, a weak equivalence $a:A'\to A$,
+and $d:A'\to B'$ with $db$ strictly right homotopic to $af$.
+On the quotient this is an honest commutative square. The extensionality
+axiom uses postcomposition cancellation, with an identity as the new
+denominator. Together with multiplicativity, this gives mathlib's
+`HasRightCalculusOfFractions` for the native quotient weak equivalences.
+
+**Differences from the paper:** the quotient is the native quotient on
+fibrant objects, not a definition by an opposite category. Its comparison
+with the opposite left quotient is proved afterward. The calculus is
+recorded in mathlib's general Gabriel–Zisman interface (the infrastructure
+for the simplified right calculus of Theorem 6.4.2). Its Ore proof reuses
+the earlier opposite cylinder construction, while the quotient and
+representative arguments are native. Combined with the previously proved
+cancellation statements, the fibration-side statements in 6.4.3(2) are now
+proved. We do not assert that the quotient itself is already a localization:
+its weak equivalences still need to be inverted. Comparing that localization
+with the localization of fibrant objects is the next step.
+
+All new names below are in `ABCCofibrations.ABCPrefibrationCategory`.
+
+| Statement | Declaration |
+| --- | --- |
+| Native relation on fibrant objects | `fibrantRightHomotopyRel` |
+| Native quotient and projection | `RightHomotopyCategory`, `toRightHomotopyCategory` |
+| Equality iff right homotopy | `toRightHomotopyCategory_map_eq_iff` |
+| Representative weak equivalences | `weakEquivalence_toRightHomotopyCategory_map_iff` |
+| Opposite quotient equivalence | `rightHomotopyCategoryOppositeEquivalence` |
+| Preservation and reflection of weak equivalences | `weakEquivalence_rightHomotopyCategoryToOpposite_map_iff` |
+| Native strict Ore square | `exists_strict_right_homotopy_ore` |
+| Right calculus of fractions | `weakEquivalences_rightHomotopyCategory_hasRightCalculusOfFractions` |

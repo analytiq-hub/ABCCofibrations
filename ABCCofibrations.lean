@@ -22,5 +22,7 @@ import ABCCofibrations.AmbientHomotopyFractions
 import ABCCofibrations.DerivedFunctor
 import ABCCofibrations.DerivedFunctorComparison
 import ABCCofibrations.DerivedEquivalence
+import ABCCofibrations.CofibrantApproximation
+import ABCCofibrations.CofibrantApproximationHomotopy
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

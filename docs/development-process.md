@@ -37,6 +37,13 @@ existence; relative factorization supports relative cylinders. When work moves
 ahead of an unfinished section, leave that section explicitly outstanding in the
 plan.
 
+When developing Chapter 6, inspect simpler approaches of Cisinski and
+Maltsiniotis before reproducing a long source-paper argument. In particular,
+Maltsiniotis's *Quillen's adjunction theorem for derived functors, revisited*
+uses a formal argument with absolute derived functors. Verify those hypotheses
+before using that route; record any proof change and its source in the
+mathematical note.
+
 Before implementing a result, record:
 
 - Its reference in the fixed version of the paper.

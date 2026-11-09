@@ -84,6 +84,12 @@ is an equivalence exactly when that restriction is a localized equivalence;
 under that condition a derived equivalence exists. The target weak equivalences
 need only satisfy two out of three.
 
+`ABCCofibrations.CofibrantApproximation` defines the paper's general
+cofibrant approximation functors (CFA1–CFA4) and proves elementary properties
+and connected object-resolution categories with arrow resolutions. Their
+general localization equivalence remains to be proved; see the
+[approximation note](docs/mathematics/cofibrant-approximations.md).
+
 Import `ABCCofibrations.Gluing` for both parts of the gluing lemma
 (Lemma 1.4.1(1)): `gluing_cofibration` and `gluing_weakEquivalence`.
 The proof uses relative Brown comparisons only along cofibration edges,

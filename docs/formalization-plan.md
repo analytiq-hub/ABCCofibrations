@@ -427,16 +427,21 @@ The latest increment, `CofibrantApproximation.lean`, formalizes Definition
 6.1.1 (CFA1–CFA4), with the all-cofibrant source condition explicit in the
 class. It proves cofibrancy of images, exact detection of weak equivalences,
 object and arrow resolutions, common resolution extensions, and connectedness
-of resolution categories. It does not assume or yet prove a localized
-equivalence. See [the approximation note](mathematics/cofibrant-approximations.md).
-`CofibrantApproximationHomotopy.lean` now proves Lemma 6.1.2(1) for a
+of resolution categories. A localized equivalence is not assumed in the
+class; it is now proved in `CofibrantApproximationLocalization.lean`. See [the approximation note](mathematics/cofibrant-approximations.md).
+`CofibrantApproximationHomotopy.lean` now proves Lemma 6.1.3(1) for a
 general approximation, with an explicit left-homotopy witness. It follows
 the paper's boundary-factorization and cylinder-pushout construction,
 using CFA3 only for a span of two cofibrations. Independence of fraction
-choices (Lemma 6.1.3(1)) is now also proved, using common resolutions and
-homotopy cancellation for both numerator and denominator. Next construct
-fractions between prescribed general resolutions and the resulting inverse
-functor, toward the general localization equivalence.
+choices (Lemma 6.1.4(1)) is now also proved, using common resolutions and
+homotopy cancellation for both numerator and denominator.
+`CofibrantApproximationFractions.lean` constructs fractions between
+prescribed resolutions, proves independence and pushout composition, and
+builds `resolutionFunctor`, which inverts ambient weak equivalences.
+`CofibrantApproximationLocalization.lean` lifts it and proves both inverse
+comparison isomorphisms, establishing Theorem 6.1.7(1) and the general
+left derivability structure. Next apply this bridge to the full structural
+hypotheses in 6.2.2(1) and 6.2.3(1).
 
 Suggested next construction:
 
@@ -478,24 +483,22 @@ Suggested next construction:
    consequences, object and arrow resolutions, and connectedness of the
    resolution categories are also proved. The identity on an all-cofibrant
    precofibration category is a checked example.
-10. **Next:** prove that a general cofibrant approximation is a localized
-    equivalence. General homotopy cancellation, Lemma 6.1.2(1), is complete;
-    independence of fraction choices, Lemma 6.1.3(1), is also complete.
-    Next construct fractions between prescribed general resolutions and
-    the resulting inverse functor.
-    Inspect simpler arguments from Cisinski and Maltsiniotis
-    before generalizing the earlier inclusion-specific proof. Mathlib's
-    derivability constructor requires this equivalence in addition to the
-    connectedness and arrow resolutions already proved; do not use it
-    circularly to establish the equivalence. Afterwards obtain the general
-    derivability structure and 6.2.2(1), then full 6.2.3(1). Packaging the
-    cofibrant inclusion as an instance of the new class is also outstanding.
-    Foundation audits and Chapter 1 backlog items remain separate.
+10. **Complete:** prove that a general cofibrant approximation is a localized
+    equivalence, Theorem 6.1.7(1). Cancellation, fraction independence,
+    fractions between resolutions, and both inverse comparison isomorphisms
+    give a direct proof. Only then apply mathlib's constructor to obtain
+    the general left derivability structure; there is no circularity.
+11. **Next:** apply this bridge to the full structural statements of
+    6.2.2(1), then 6.2.3(1). Packaging the cofibrant inclusion as an instance
+    of the new class is also outstanding. Keep checking Cisinski and
+    Maltsiniotis for simpler arguments, especially before the later
+    derived-adjunction work. Foundation audits and Chapter 1 backlog
+    items remain separate.
 
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 All current proofs use CF1–CF4. The latest full check is
-`lake build ABCCofibrations`: 1950 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 1954 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.2.
@@ -518,10 +521,16 @@ Completed localization infrastructure:
 - `CofibrantApproximation.lean`: CFA1–CFA4 with all-cofibrant source, identity
   example, image cofibrancy, induced localizer morphism, object and arrow
   resolutions, common extensions, and connected resolution categories.
-  The general localized-equivalence theorem remains open.
+  The localized-equivalence consequence is proved in the module below.
+- `CofibrantApproximationLocalization.lean`: the inverse localization
+  functor, both comparison isomorphisms, the general localization equivalence
+  (Theorem 6.1.7(1)), and the general left derivability structure.
+- `CofibrantApproximationFractions.lean`: fractions between prescribed
+  resolutions, independence, computation on actual source maps, pushout
+  composition, and a resolution functor inverting ambient weak equivalences.
 - `CofibrantApproximationHomotopy.lean`: general homotopy cancellation,
-  Lemma 6.1.2(1), producing a left-homotopy witness in the source, and
-  fraction independence, Lemma 6.1.3(1), under every functor inverting
+  Lemma 6.1.3(1), producing a left-homotopy witness in the source, and
+  fraction independence, Lemma 6.1.4(1), under every functor inverting
   source weak equivalences.
 - `DerivedEquivalence.lean`: Brown's lemma packages cofibrant restriction as
   a localizer morphism; total left derived equivalence is equivalent to that
@@ -611,11 +620,11 @@ substantial result.
    source replacements extend across arrows, and pairs of replacements have
    common extensions by trivial cofibrations. The categories of replacements
    are connected, all their morphisms are weak equivalences, and the inclusion
-   on arrow categories has left resolutions. Lemma 6.1.2(1), for inclusion of
+   on arrow categories has left resolutions. Lemma 6.1.3(1), for inclusion of
    cofibrant objects, now cancels equality after a weak equivalence to an
    arbitrary ambient object; parallel replacement comparison maps therefore
    have equal images under weak-equivalence-inverting functors.
-   `AmbientFractions.lean` proves Lemma 6.1.3(1) for inclusion of cofibrant
+   `AmbientFractions.lean` proves Lemma 6.1.4(1) for inclusion of cofibrant
    objects: two fractions with the same ambient numerator and denominator
    have equal images, including arbitrary weak-equivalence denominators. See
    [the mathematical note](cofibrant-replacements.md).
@@ -729,8 +738,8 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-08 | Localization equality criteria | Faithful comparison, equality iff left homotopy for localization of cofibrant objects, and exact trivial-cofibration fraction comparison criteria; `lake build ABCCofibrations` passed (1892 jobs), without warnings |
 | 2026-11-08 | Ambient comparison: objects and replacements | Constructed the ambient localization comparison and proved essential surjectivity; extensions across arrows and common extensions of replacements in `CofibrantReplacement.lean`; `lake build ABCCofibrations` passed (1898 jobs), without warnings. Full faithfulness remains open. |
 | 2026-11-08 | Compatibility of replacements | Replacement categories are connected, all their morphisms are weak equivalences, and every ambient arrow has a cofibrant replacement square; `lake build ABCCofibrations` passed (1898 jobs), without warnings. |
-| 2026-11-08 | Ambient cancellation | Lemma 6.1.2(1) for inclusion of cofibrant objects, strict-homotopy reflection with arbitrary ambient codomain, and equality of parallel replacement maps under weak-equivalence-inverting functors; `lake build ABCCofibrations` passed (1898 jobs), without warnings. |
-| 2026-11-08 | Independence of ambient fraction choices | Lemma 6.1.3(1) for inclusion of cofibrant objects in `AmbientFractions.lean`, with arbitrary weak-equivalence denominators and a separate pushout proof for trivial-cofibration denominators; `lake build ABCCofibrations` passed (1900 jobs), without warnings. |
+| 2026-11-08 | Ambient cancellation | Lemma 6.1.3(1) for inclusion of cofibrant objects, strict-homotopy reflection with arbitrary ambient codomain, and equality of parallel replacement maps under weak-equivalence-inverting functors; `lake build ABCCofibrations` passed (1898 jobs), without warnings. |
+| 2026-11-08 | Independence of ambient fraction choices | Lemma 6.1.4(1) for inclusion of cofibrant objects in `AmbientFractions.lean`, with arbitrary weak-equivalence denominators and a separate pushout proof for trivial-cofibration denominators; `lake build ABCCofibrations` passed (1900 jobs), without warnings. |
 | 2026-11-08 | Replacement functor and reverse localization functor | `ReplacementFunctor.lean` constructs fractions between prescribed replacements, proves independence and functor laws, inverts ambient weak equivalences, and descends to `ambientLocalizationToCofibrant`; comparison isomorphisms remain open. `lake build ABCCofibrations` passed (1902 jobs), without warnings. |
 | 2026-11-08 | Left-inverse comparison and ambient faithfulness | `replacementFunctorRestrictionIso`, `cofibrantLocalizationReplacementIso`, and `cofibrantLocalizationToAmbient_faithful`; the other inverse comparison and fullness remain open. Documentation now explicitly records differences from the paper. `lake build ABCCofibrations` passed (1904 jobs), without warnings. |
 | 2026-11-08 | Ambient localization equivalence | Both inverse comparisons prove Theorem 6.1.6; restriction of any ambient localization is a localization of cofibrant objects, and `ambient_map_eq_iff_cofibrant_leftHomotopy` proves Theorem 6.4.4(1)(c). `lake build ABCCofibrations` passed (1904 jobs), without warnings. |
@@ -740,5 +749,7 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-08 | Derived comparison and equivalence criterion | `DerivedFunctorComparison.lean` compares arbitrary left derived functors with the lifted cofibrant restriction and the replacement construction, and proves the derived-equivalence criterion. Full structural 6.2.3(1) remains open. `lake build ABCCofibrations` passed (1944 jobs), without warnings. |
 | 2026-11-08 | Localizer criterion for total derived equivalences | `DerivedEquivalence.lean` constructs the restriction localizer via Brown's lemma, proves the iff criterion for arbitrary localizations, and derives existence. Structural CFA1–CFA4 remain next. `lake build ABCCofibrations` passed (1946 jobs), without warnings. |
 | 2026-11-08 | General cofibrant approximation axioms and resolutions | Definition 6.1.1, identity example, image cofibrancy, induced localizer, object and arrow resolutions, common extensions, and connectedness; general localized equivalence remains open. `lake build ABCCofibrations` passed (1948 jobs), without warnings. |
-| 2026-11-08 | General approximation homotopy cancellation | `CofibrantApproximationHomotopy.lean` proves Lemma 6.1.2(1) with an explicit left-homotopy witness, following the paper and preserving the restriction on CFA3. Full build passed (1950 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: Lemma 6.1.3(1), independence of fraction choices. |
-| 2026-11-08 | General approximation fraction independence | Lemma 6.1.3(1) is proved under every functor inverting source weak equivalences, using common resolutions and homotopy cancellation. The note explains the difference from the paper. Full build passed (1950 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: fractions between prescribed general resolutions and the inverse functor. |
+| 2026-11-08 | General approximation homotopy cancellation | `CofibrantApproximationHomotopy.lean` proves Lemma 6.1.3(1) with an explicit left-homotopy witness, following the paper and preserving the restriction on CFA3. Full build passed (1950 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: Lemma 6.1.4(1), independence of fraction choices. |
+| 2026-11-08 | General approximation fraction independence | Lemma 6.1.4(1) is proved under every functor inverting source weak equivalences, using common resolutions and homotopy cancellation. The note explains the difference from the paper. Full build passed (1950 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: fractions between prescribed general resolutions and the inverse functor. |
+| 2026-11-08 | Fractions and the general resolution functor | Fractions between prescribed resolutions retain two cofibration legs; existence, independence, computation on actual source arrows, and pushout composition are proved. `resolutionFunctor` respects identities and composition and inverts ambient weak equivalences. Full build passed (1952 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: localization lift and inverse comparison isomorphisms. |
+| 2026-11-08 | General cofibrant approximation localization equivalence | `CofibrantApproximationLocalization.lean` constructs the inverse and both natural comparison isomorphisms, proves Theorem 6.1.7(1), and then obtains the general left derivability structure. Corrected v4 lemma citations: cancellation is 6.1.3(1), fraction independence is 6.1.4(1). Full build passed (1954 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: the full structural hypotheses of 6.2.2(1) and 6.2.3(1). |

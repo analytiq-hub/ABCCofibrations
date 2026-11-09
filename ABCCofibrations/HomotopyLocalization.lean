@@ -80,7 +80,7 @@ theorem map_eq_of_cofibrant_leftHomotopy
 
 /-- Equality after a weak equivalence to an arbitrary ambient object already
 forces equality under every weak-equivalence-inverting functor on cofibrant
-objects. The ambient target need not be cofibrant (Lemma 6.1.2(1)). -/
+objects. The ambient target need not be cofibrant (Lemma 6.1.3(1)). -/
 theorem map_eq_of_postcomp_ambient_weakEquivalence
     (F : CofibrantObject C ⥤ D)
     (hF : (weakEquivalences (CofibrantObject C)).IsInvertedBy F)

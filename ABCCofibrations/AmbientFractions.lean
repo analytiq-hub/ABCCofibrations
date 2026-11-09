@@ -11,7 +11,7 @@ public import ABCCofibrations.CofibrantReplacement
 /-!
 # Independence of fraction choices over an ambient object
 
-Lemma 6.1.3(1) for inclusion of cofibrant objects. The comparison weak
+Lemma 6.1.4(1) for inclusion of cofibrant objects. The comparison weak
 equivalences may take values in an arbitrary ambient object. A common
 cofibrant extension and ambient cancellation identify the two fractions.
 For trivial-cofibration denominators, a second proof uses their pushout.
@@ -29,7 +29,7 @@ variable {C : Type u} [Category.{v} C] [CategoryWithCofibrations C]
   [CategoryWithWeakEquivalences C] [HasInitial C] [ABCPrecofibrationCategory C]
   {D : Type u'} [Category.{v'} D]
 
-/-- Independence of fraction choices over an ambient object, Lemma 6.1.3(1)
+/-- Independence of fraction choices over an ambient object, Lemma 6.1.4(1)
 for inclusion of cofibrant objects. Denominators need only be weak
 equivalences. A common extension of the ambient comparison maps makes both
 numerator and denominator triangles commute up to left homotopy. -/

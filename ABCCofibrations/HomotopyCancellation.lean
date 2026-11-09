@@ -18,7 +18,7 @@ along the weak equivalence and cancels the resulting trivial cofibration.
 
 The postcomposition reflection argument also works with an arbitrary ambient
 codomain. In particular, equality after an ambient weak equivalence implies
-left homotopy, as in Lemma 6.1.2(1) for inclusion of cofibrant objects.
+left homotopy, as in Lemma 6.1.3(1) for inclusion of cofibrant objects.
 -/
 
 public section
@@ -86,7 +86,7 @@ theorem of_postcomp_weakEquivalence {f g : A ⟶ B}
     (by simpa only [Category.assoc] using h)
 
 /-- Equality after an ambient weak equivalence implies left homotopy.
-This is Lemma 6.1.2(1) for the inclusion of cofibrant objects. -/
+This is Lemma 6.1.3(1) for the inclusion of cofibrant objects. -/
 theorem of_postcomp_weakEquivalence_eq {f g : A ⟶ B}
     {D : C} (b : B ⟶ D) [WeakEquivalence b]
     (h : f ≫ b = g ≫ b) : LeftHomotopyRel f g := by

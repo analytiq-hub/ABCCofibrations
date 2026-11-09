@@ -24,5 +24,7 @@ import ABCCofibrations.DerivedFunctorComparison
 import ABCCofibrations.DerivedEquivalence
 import ABCCofibrations.CofibrantApproximation
 import ABCCofibrations.CofibrantApproximationHomotopy
+import ABCCofibrations.CofibrantApproximationFractions
+import ABCCofibrations.CofibrantApproximationLocalization
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

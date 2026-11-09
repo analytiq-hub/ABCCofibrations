@@ -11,10 +11,10 @@ public import ABCCofibrations.HomotopyLocalization
 /-!
 # Homotopy cancellation and fraction independence for cofibrant approximations
 
-Lemma 6.1.2(1): equality after an ambient weak equivalence implies left
+Lemma 6.1.3(1): equality after an ambient weak equivalence implies left
 homotopy in the source of a cofibrant approximation. The proof factors the
 full boundary first, so CFA3 is used only on a pushout of two cofibrations.
-Lemma 6.1.3(1) follows using common resolutions and cancellation, without
+Lemma 6.1.4(1) follows using common resolutions and cancellation, without
 first replacing weak-equivalence denominators by trivial cofibrations.
 -/
 
@@ -89,7 +89,7 @@ theorem leftHomotopy_of_map_postcomp_eq_of_cofibration
       dsimp [d] at he
       simpa [q, Category.assoc] using congrArg (fun k ↦ k ≫ j) he }
 
-/-- Lemma 6.1.2(1): equality after an ambient weak equivalence implies
+/-- Lemma 6.1.3(1): equality after an ambient weak equivalence implies
 left homotopy in the source. The ambient target need not be cofibrant. -/
 theorem leftHomotopy_of_map_postcomp_eq
     {A B : C} [HasBinaryCoproduct A A] (f g : A ⟶ B)
@@ -128,7 +128,7 @@ theorem map_eq_of_map_postcomp_eq
     (f := CofibrantObject.homMk f) (g := CofibrantObject.homMk g)
     (leftHomotopy_of_map_postcomp_eq F f g b h)
 
-/-- Lemma 6.1.3(1): fractions with the same ambient numerator and denominator
+/-- Lemma 6.1.4(1): fractions with the same ambient numerator and denominator
 have the same value under every functor inverting source weak equivalences.
 The common-resolution argument avoids reducing denominators to trivial
 cofibrations; the two resulting triangles commute up to left homotopy. -/

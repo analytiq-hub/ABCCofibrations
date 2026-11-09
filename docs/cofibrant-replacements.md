@@ -16,8 +16,8 @@ Theorems here concerning that inclusion do not yet formalize the paper's
 general statements for arbitrary cofibrant approximation functors.
 
 The ambient cancellation proof follows the cylinder-boundary pushout argument
-of Lemma 6.1.2(1), specialized to inclusion; we also prove the stronger variant
-starting with strict homotopy after the weak equivalence. For Lemma 6.1.3(1),
+of Lemma 6.1.3(1), specialized to inclusion; we also prove the stronger variant
+starting with strict homotopy after the weak equivalence. For Lemma 6.1.4(1),
 we retain the paper's pushout proof for trivial-cofibration denominators and
 also use a common cofibrant extension to handle general weak-equivalence
 denominators directly. The replacement functor is built with explicit object
@@ -103,7 +103,7 @@ connectedness alone is not a proof of full faithfulness.
 
 ## Cancellation into an ambient object
 
-Lemma 6.1.2(1), specialized to the inclusion of cofibrant objects, says that
+Lemma 6.1.3(1), specialized to the inclusion of cofibrant objects, says that
 for cofibrant $A,B$ and a weak equivalence $b:B\xrightarrow{\sim}B'$,
 
 $$
@@ -135,7 +135,7 @@ The functor statement is `map_eq_of_postcomp_ambient_weakEquivalence` in
 
 ## Independence of fraction choices
 
-Lemma 6.1.3(1), specialized to inclusion of cofibrant objects, is now also
+Lemma 6.1.4(1), specialized to inclusion of cofibrant objects, is now also
 formalized. Suppose $A',B',D',D''$ are cofibrant and we have two cospans
 
 $$

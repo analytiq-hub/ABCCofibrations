@@ -41,5 +41,9 @@ import ABCCofibrations.RightHomotopy
 import ABCCofibrations.HomotopyOpposite
 import ABCCofibrations.RightHomotopyCancellation
 import ABCCofibrations.RightHomotopyFractions
+import ABCCofibrations.RightHomotopyCategory
+import ABCCofibrations.RightHomotopyWeakEquivalences
+import ABCCofibrations.RightHomotopyCategoryOpposite
+import ABCCofibrations.RightHomotopyOre
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

@@ -460,6 +460,56 @@ inside the proof.
 | Pullback Ore square | `exists_trivialFibration_ore_square` |
 | Left fractions convert to right fractions | `exists_rightFraction_of_trivialFibration_leftFraction` |
 
-The next refinement is to represent morphisms in a localization of fibrant
-objects by right fractions with trivial-fibration denominators, including
-common denominators and composition.
+## Right fractions with trivial-fibration denominators
+
+[TrivialFibrationFractions.lean](../../ABCCofibrations/TrivialFibrationFractions.lean)
+represents arrows in a localization of fibrant objects by right fractions.
+For any localization $L$ at trivial fibrations, or at all weak equivalences,
+and any $\alpha:L(X)\to L(Y)$ there are a fibrant $Z$, a trivial fibration
+$s:Z\to X$, and $f:Z\to Y$ with
+
+$$
+L(s)\,\alpha=L(f).
+$$
+
+Moreover:
+
+* two trivial-fibration denominators with a common target have a common
+  refinement by trivial fibrations, $is=jt$;
+* over such a refinement, two right fractions agree under a functor
+  inverting trivial fibrations exactly when the restricted numerators
+  $i f$ and $j g$ have equal images;
+* two composable right fractions have a composite right fraction, valid for
+  every such functor at once;
+* parallel fractions, and any finite family of localized arrows, share one
+  trivial-fibration denominator;
+* the numerators can simultaneously be fibrations, and for a single arrow
+  the boundary $(f,s):Z\to Y\times X$ can also be a fibration, for any chosen
+  product.
+
+**Differences from the paper:** these are the duals of the left-fraction
+results for trivial cofibrations, which support the calculus of Theorem
+6.4.2 and the fraction statements of 6.4.4–6.4.5 on fibrant objects. None is
+proved independently. The equivalence
+$(\mathcal C_{fib})^{op}\simeq(\mathcal C^{op})_{cof}$ of
+[the duality note](fibration-duality.md#opposite-fibrant-objects-as-cofibrant-objects)
+identifies trivial fibrations with opposite trivial cofibrations, sends a
+localization of fibrant objects to a localization of opposite cofibrant
+objects, and exchanges right and left fractions together with their values.
+Each theorem applies the corresponding cofibration-side statement and reads
+the result back. The only native argument is the comparison of the chosen
+product $Y\times X$ with the opposite coproduct, by
+`oppositeCoprodProductIsoPair`. No cancellation axiom for the
+trivial-fibration class is claimed.
+
+| Statement | Declaration in `ABCCofibrations.ABCPrefibrationCategory` |
+| --- | --- |
+| Trivial fibrations are opposite trivial cofibrations | `trivialCofibrations_functor_map_op_iff`, `fibrantTrivialFibrations_inverse_map_unop` |
+| Transported localization | `isLocalization_trivialFibrations_inverse_comp_op` |
+| Common refinement of denominators | `exists_common_trivialFibration_denominator` |
+| Equality over a common refinement | `trivialFibration_fraction_map_eq_iff`, `trivialFibration_fraction_map_eq_of_common_refinement` |
+| Composition | `exists_trivialFibration_fraction_comp` |
+| Representation | `exists_trivialFibration_fraction`, `exists_rightFraction_trivialFibration` |
+| Representation for weak-equivalence localization | `exists_trivialFibration_fraction_of_weakEquivalence_localization`, `exists_rightFraction_of_weakEquivalence_localization` |
+| Common denominators | `exists_parallel_trivialFibration_fractions`, `exists_common_fraction_of_weakEquivalence_localization`, `exists_common_fraction_of_finite_family`, `exists_finite_common_fraction_of_weakEquivalence_localization` |
+| Fibration numerators and product boundary | `exists_fibration_fraction_with_prod`, `exists_fibration_fraction_of_weakEquivalence_localization`, `exists_common_fibration_fraction_of_finite_family`, `exists_finite_common_fibration_fraction` |

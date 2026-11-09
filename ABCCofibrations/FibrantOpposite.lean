@@ -8,6 +8,9 @@ module
 public import ABCCofibrations.FibrationBasic
 public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
+public import Mathlib.CategoryTheory.Localization.Opposite
+public import Mathlib.CategoryTheory.Localization.Equivalence
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 
 /-!
 # Opposite fibrant objects are cofibrant objects of the opposite
@@ -123,27 +126,128 @@ theorem weakEquivalences_cofibrantObject_op_inverseImage :
   exact (weakEquivalence_iff _).symm.trans
     ((weakEquivalence_fibrantObjectOpEquivalence_functor_map_iff f).trans (weakEquivalence_iff _))
 
+/-! ### Transporting morphism classes, localizations, and fractions
+
+Let `W` be a class of morphisms of fibrant objects and `W'` a class of
+cofibrant objects of `Cᵒᵖ` corresponding to it under the equivalence. Then
+inverting functors, localization functors, and fractions correspond. These
+general statements are instantiated for weak equivalences and for trivial
+(co)fibrations. -/
+
+section Transport
+
+variable (W : MorphismProperty (FibrantObject C)) (W' : MorphismProperty (CofibrantObject Cᵒᵖ))
+  (hW : ∀ {X Y : FibrantObject C} (f : X ⟶ Y),
+    W' (fibrantObjectOpEquivalence.functor.map f.op) ↔ W f)
+
+include hW in
+/-- Membership of a cofibrant-side arrow is membership of its transport. -/
+theorem mem_iff_inverse_map_unop {X Y : CofibrantObject Cᵒᵖ} (g : X ⟶ Y) :
+    W' g ↔ W (fibrantObjectOpEquivalence.inverse.map g).unop :=
+  hW (fibrantObjectOpEquivalence.inverse.map g).unop
+
+include hW in
+/-- A functor on fibrant objects inverts `W` exactly when its transport to
+cofibrant objects of `Cᵒᵖ` inverts `W'`. -/
+theorem isInvertedBy_inverse_comp_op_iff_of {D : Type*} [Category D] (F : FibrantObject C ⥤ D) :
+    W'.IsInvertedBy (fibrantObjectOpEquivalence.inverse ⋙ F.op) ↔ W.IsInvertedBy F := by
+  constructor
+  · intro h X Y f hf
+    have : IsIso (F.map f).op := h _ ((hW f).2 hf)
+    exact isIso_of_op (F.map f)
+  · intro h X Y g hg
+    have := h _ ((mem_iff_inverse_map_unop W W' hW g).1 hg)
+    change IsIso (F.map (fibrantObjectOpEquivalence.inverse.map g).unop).op
+    infer_instance
+
+include hW in
+/-- The transport of a localization of fibrant objects at `W` is a
+localization of cofibrant objects of `Cᵒᵖ` at `W'`. -/
+theorem isLocalization_inverse_comp_op {D : Type*} [Category D]
+    (L : FibrantObject C ⥤ D) [L.IsLocalization W] :
+    (fibrantObjectOpEquivalence.inverse ⋙ L.op).IsLocalization W' :=
+  Functor.IsLocalization.of_equivalence_source L.op W.op _ W' fibrantObjectOpEquivalence
+    (fun _ _ f hf ↦ W'.le_isoClosure _ ((hW f.unop).2 hf))
+    ((isInvertedBy_inverse_comp_op_iff_of W W' hW L).2 (Localization.inverts L W))
+    ((Functor.associator _ _ _).symm ≪≫
+      Functor.isoWhiskerRight fibrantObjectOpEquivalence.unitIso.symm _ ≪≫ L.op.leftUnitor)
+
+variable {W W'}
+
+/-- A right fraction of fibrant objects, reversed, is a left fraction of
+cofibrant objects of `Cᵒᵖ`. -/
+@[simps]
+def rightFractionOp {X Y : FibrantObject C} (φ : W.RightFraction X Y) :
+    W'.LeftFraction (fibrantObjectOpEquivalence.functor.obj (Opposite.op Y))
+      (fibrantObjectOpEquivalence.functor.obj (Opposite.op X)) where
+  f := fibrantObjectOpEquivalence.functor.map φ.f.op
+  s := fibrantObjectOpEquivalence.functor.map φ.s.op
+  hs := (hW φ.s).2 φ.hs
+
+/-- A left fraction of cofibrant objects of `Cᵒᵖ`, reversed, is a right
+fraction of fibrant objects. -/
+@[simps]
+def leftFractionUnop {X Y : FibrantObject C}
+    (ψ : W'.LeftFraction (fibrantObjectOpEquivalence.functor.obj (Opposite.op Y))
+      (fibrantObjectOpEquivalence.functor.obj (Opposite.op X))) :
+    W.RightFraction X Y where
+  X' := (fibrantObjectOpEquivalence.inverse.obj ψ.Y').unop
+  s := (fibrantObjectOpEquivalence.inverse.map ψ.s).unop
+  hs := (mem_iff_inverse_map_unop W W' hW ψ.s).1 ψ.hs
+  f := (fibrantObjectOpEquivalence.inverse.map ψ.f).unop
+
+include hW in
+/-- Evaluating the reversed fraction on the transported functor gives the
+opposite of the original value. -/
+theorem rightFractionOp_map {D : Type*} [Category D] {X Y : FibrantObject C}
+    (φ : W.RightFraction X Y) (F : FibrantObject C ⥤ D) (hF : W.IsInvertedBy F) :
+    (rightFractionOp hW φ).map (fibrantObjectOpEquivalence.inverse ⋙ F.op)
+        ((isInvertedBy_inverse_comp_op_iff_of W W' hW F).2 hF) =
+      (φ.map F hF).op := by
+  have := hF _ φ.hs
+  change (F.map φ.f).op ≫ inv (F.map φ.s).op = (inv (F.map φ.s) ≫ F.map φ.f).op
+  rw [op_comp, op_inv]
+
+include hW in
+/-- Evaluating the reversed left fraction gives the unopposite of the value
+of the original left fraction on the transported functor. -/
+theorem leftFractionUnop_map {D : Type*} [Category D] {X Y : FibrantObject C}
+    (ψ : W'.LeftFraction (fibrantObjectOpEquivalence.functor.obj (Opposite.op Y))
+      (fibrantObjectOpEquivalence.functor.obj (Opposite.op X)))
+    (F : FibrantObject C ⥤ D) (hF : W.IsInvertedBy F) :
+    (leftFractionUnop hW ψ).map F hF =
+      (ψ.map (fibrantObjectOpEquivalence.inverse ⋙ F.op)
+        ((isInvertedBy_inverse_comp_op_iff_of W W' hW F).2 hF)).unop := by
+  have := hF _ (leftFractionUnop hW ψ).hs
+  apply Quiver.Hom.op_inj
+  change (inv (F.map (leftFractionUnop hW ψ).s) ≫ F.map (leftFractionUnop hW ψ).f).op =
+    (F.map (leftFractionUnop hW ψ).f).op ≫ inv (F.map (leftFractionUnop hW ψ).s).op
+  rw [op_comp, op_inv]
+
+end Transport
+
+/-- Weak equivalences correspond under the equivalence. -/
+theorem weakEquivalences_functor_map_op_iff {X Y : FibrantObject C} (f : X ⟶ Y) :
+    weakEquivalences (CofibrantObject Cᵒᵖ) (fibrantObjectOpEquivalence.functor.map f.op) ↔
+      weakEquivalences (FibrantObject C) f :=
+  (weakEquivalence_iff _).symm.trans
+    ((weakEquivalence_fibrantObjectOpEquivalence_functor_map_iff f.op).trans
+      (weakEquivalence_iff _))
+
 /-- A functor on fibrant objects inverts weak equivalences exactly when its
 transport to cofibrant objects of `Cᵒᵖ` does. -/
 theorem isInvertedBy_inverse_comp_op_iff {D : Type*} [Category D] (F : FibrantObject C ⥤ D) :
     (weakEquivalences (CofibrantObject Cᵒᵖ)).IsInvertedBy
         (fibrantObjectOpEquivalence.inverse ⋙ F.op) ↔
-      (weakEquivalences (FibrantObject C)).IsInvertedBy F := by
-  constructor
-  · intro h X Y f hf
-    have hf' : weakEquivalences (CofibrantObject Cᵒᵖ)
-        (fibrantObjectOpEquivalence.functor.map f.op) :=
-      (weakEquivalence_iff _).1
-        ((weakEquivalence_fibrantObjectOpEquivalence_functor_map_iff f.op).2 ⟨hf⟩)
-    have : IsIso (F.map f).op := h _ hf'
-    exact isIso_of_op (F.map f)
-  · intro h X Y g hg
-    have hg' : weakEquivalences (FibrantObject C)
-        (fibrantObjectOpEquivalence.inverse.map g).unop :=
-      (weakEquivalence_iff _).1
-        ((weakEquivalence_fibrantObjectOpEquivalence_inverse_map_iff g).2 ⟨hg⟩)
-    have := h _ hg'
-    change IsIso (F.map (fibrantObjectOpEquivalence.inverse.map g).unop).op
-    infer_instance
+      (weakEquivalences (FibrantObject C)).IsInvertedBy F :=
+  isInvertedBy_inverse_comp_op_iff_of _ _ weakEquivalences_functor_map_op_iff F
+
+/-- Any localization of fibrant objects at weak equivalences transports to
+a localization of cofibrant objects of `Cᵒᵖ` at weak equivalences. -/
+instance isLocalization_weakEquivalences_inverse_comp_op {D : Type*} [Category D]
+    (L : FibrantObject C ⥤ D) [L.IsLocalization (weakEquivalences (FibrantObject C))] :
+    (fibrantObjectOpEquivalence.inverse ⋙ L.op).IsLocalization
+      (weakEquivalences (CofibrantObject Cᵒᵖ)) :=
+  isLocalization_inverse_comp_op _ _ weakEquivalences_functor_map_op_iff L
 
 end ABCCofibrations.ABCPrefibrationCategory

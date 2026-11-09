@@ -102,6 +102,11 @@ The equivalence preserves and reflects weak equivalences. Consequently a
 functor $F:\mathcal C_{fib}\to\mathcal D$ inverts weak equivalences exactly
 when its transport $(\mathcal C^{op})_{cof}\to\mathcal D^{op}$ does, so a
 cofibration-side theorem about inverting functors applies to $F$ directly.
+More generally, for any class $W$ of fibrant-object arrows and any class $W'$
+of opposite cofibrant arrows with $W'(f^{op})\iff W(f)$, a localization of
+$\mathcal C_{fib}$ at $W$ transports to a localization of
+$(\mathcal C^{op})_{cof}$ at $W'$, and a right fraction for $W$ is the same as
+a left fraction for $W'$, with opposite values under every inverting functor.
 The module depends only on F1–F4 and is imported below all localization
 modules.
 
@@ -113,7 +118,9 @@ formal bridge is new packaging; it adds no hypotheses.
 | The equivalence and its functors | `fibrantObjectOpEquivalence`, `fibrantObjectOpFunctor`, `cofibrantObjectUnopFunctor` |
 | Underlying objects and arrows | `fibrantObjectOpEquivalence_functor_obj_obj`, `_functor_map_hom`, `_inverse_obj_unop_obj`, `_inverse_map_unop_hom`, `_functor_map_op` |
 | Weak equivalences correspond | `weakEquivalence_fibrantObjectOpEquivalence_functor_map_iff`, `weakEquivalence_fibrantObjectOpEquivalence_inverse_map_iff`, `weakEquivalences_cofibrantObject_op_inverseImage` |
-| Inverting functors correspond | `isInvertedBy_inverse_comp_op_iff` |
+| Inverting functors correspond | `isInvertedBy_inverse_comp_op_iff`, `isInvertedBy_inverse_comp_op_iff_of` |
+| Localizations correspond | `isLocalization_inverse_comp_op`, `isLocalization_weakEquivalences_inverse_comp_op` |
+| Right fractions correspond to opposite left fractions | `rightFractionOp`, `leftFractionUnop`, `rightFractionOp_map`, `leftFractionUnop_map` |
 
 ## Fibrant approximations and right-derived existence
 

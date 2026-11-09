@@ -50,5 +50,6 @@ import ABCCofibrations.RightHomotopyOre
 import ABCCofibrations.RightHomotopyLocalization
 import ABCCofibrations.BrownFibration
 import ABCCofibrations.TrivialFibrationLocalization
+import ABCCofibrations.TrivialFibrationFractions
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

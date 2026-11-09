@@ -242,9 +242,10 @@ precise scope of the formal verification.
 
 `exists_compatible_brown_factorization` now proves compatibility of the two
 Brown factorizations and a cofibration for the combined relative pushout
-comparison. This is a weaker replacement; the full lemma remains unresolved.
-The strengthened original statement must be corrected or clarified before
-using its separate-comparison claims in §1.4.
+comparison. This is the corrected statement of the note: the original
+separate-comparison claims are false by the checked counterexample, so they
+are not formalized and must not be used. No further work on 1.3.4(1) is
+planned.
 
 ### F. Extension and cylinder entry point
 
@@ -588,15 +589,22 @@ Suggested next construction:
     (the earlier plan reference to 6.4.1(2) was imprecise). It is already
     installed for the native quotient, and is not claimed here for the
     trivial-fibration class.
-    **Next:** right-fraction representations of morphisms in a localization
-    of fibrant objects, with trivial-fibration denominators, common
-    denominators, and composition, dual to `TrivialCofibrationFractions.lean`.
-    Foundation audits and Chapter 1 backlog items remain separate.
+    **Complete:** right-fraction representations in a localization of
+    fibrant objects (`TrivialFibrationFractions.lean`): trivial-fibration
+    denominators, common refinements, equality over a refinement,
+    composition, finite common denominators, and fibration numerators with
+    fibrant product boundary. Every result transports the corresponding
+    statement of `TrivialCofibrationFractions.lean` through
+    `fibrantObjectOpEquivalence`, using the general localization and
+    fraction transport added to `FibrantOpposite.lean`.
+    With this, the fibration-side localization theory of Chapter 6 mirrors
+    the cofibration side. **Next:** the foundation audit (Milestone 0) and
+    the Chapter 1 backlog (§1.6–1.8).
 
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 The cofibration proofs use CF1–CF4, and the dual fibration proofs use F1–F4. The latest full check is
-`lake build ABCCofibrations`: 2014 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 2020 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.4.
@@ -627,7 +635,9 @@ Completed localization infrastructure:
 - `FibrantOpposite.lean`: the equivalence
   `(FibrantObject C)ᵒᵖ ≌ CofibrantObject Cᵒᵖ`, with definitional
   underlying-object/arrow equations, correspondence of weak equivalences,
-  and of weak-equivalence-inverting functors. Depends only on F1–F4.
+  and of weak-equivalence-inverting functors; general transport of
+  localizations and of right/left fractions for corresponding classes.
+  Depends only on F1–F4.
 - `RightHomotopyLocalization.lean`: quotient factorization and localization
   universal property; equivalences between quotient, fibrant-object, and
   ambient localizations; native inclusion comparison 6.1.6(2); faithfulness
@@ -635,6 +645,10 @@ Completed localization infrastructure:
   The homotopy-inversion lemma is transported from the cofibration side.
 - `BrownFibration.lean`: Brown's functor lemma on fibrant objects, by
   transport through the opposite precofibration category.
+- `TrivialFibrationFractions.lean`: right fractions with trivial-fibration
+  denominators, common refinements and denominators, composition, and
+  fibration numerators with product boundary, all transported from the
+  cofibration side.
 - `TrivialFibrationLocalization.lean`: equivalence of localization at
   trivial fibrations and at weak equivalences of fibrant objects, with
   compatible canonical functors, and the pullback Ore square for
@@ -1025,3 +1039,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-09 | Faithfulness and arbitrary fibrant-localization equality | `RightHomotopyLocalization.lean` proves that weak-equivalence classes are epimorphisms, the quotient comparison is faithful, and any fibrant-object localization identifies exactly right-homotopic representatives. The note records the native dual argument and distinguishes faithfulness from fullness. Full build passed (2010 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: localization at trivial fibrations and its comparison with weak-equivalence localization. |
 | 2026-11-09 | Trivial-fibration localization | `BrownFibration.lean` proves Brown's functor lemma for fibrant objects by transporting the cofibrant lemma across the opposite category. `TrivialFibrationLocalization.lean` identifies localization at trivial fibrations with localization at all weak equivalences, compatibly with the canonical functors, and proves the pullback Ore square. The note records that this is the dual of the cofibrant comparison and not a separate numbered theorem. Full build passed (2014 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: right-fraction representations with trivial-fibration denominators. |
 | 2026-11-09 | Duality and reuse cleanup | `LocalizationTransfer.lean` proves the quotient-lift and same-inverting-classes localization lemmas once; the left/right homotopy-quotient comparisons and both trivial-(co)fibration comparisons are now applications, with their duplicated proofs removed. `FibrantOpposite.lean` adds `(FibrantObject C)ᵒᵖ ≌ CofibrantObject Cᵒᵖ`, and `map_eq_of_fibrant_rightHomotopy` is now a transport of `map_eq_of_cofibrant_leftHomotopy`. Public statements unchanged; notes updated. Full build passed (2018 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |
+| 2026-11-09 | Trivial-fibration right fractions | `TrivialFibrationFractions.lean` proves representation by right fractions with trivial-fibration denominators, common refinements, equality over a refinement, composition, finite common denominators, and fibration numerators with product boundary. Each result transports `TrivialCofibrationFractions.lean` through `fibrantObjectOpEquivalence`, using new general localization/fraction transport in `FibrantOpposite.lean`. Plan wording on Lemma 1.3.4(1) corrected: the original claim is refuted and the corrected statement proved. Full build passed (2020 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: foundation audit and Chapter 1 backlog. |

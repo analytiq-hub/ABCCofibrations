@@ -29,8 +29,8 @@ As inspected on 2026-11-07:
   both distinguished classes.
 - The project pins Lean and mathlib to `v4.36.0-rc2`.
 
-The baseline `lake build` passed on 2026-11-07. The definitions still need a
-completed audit of correspondence with the paper.
+The baseline `lake build` passed on 2026-11-07. The audit of correspondence
+with the paper was completed on 2026-11-09 ([axiom-correspondence.md](axiom-correspondence.md)).
 
 ## Working method
 
@@ -53,13 +53,23 @@ into the library.
 
 ## Milestone 0 — Audit the foundations
 
-- [ ] Compare every field of the existing classes with Definition 1.1.1.
+- [x] Compare every field of the existing classes with Definition 1.1.1.
   Record a field-to-axiom correspondence, including which clauses are derived.
-- [ ] Check cofibrancy hypotheses, the scope of CF5, and the sequential diagrams
+- [x] Check cofibrancy hypotheses, the scope of CF5, and the sequential diagrams
   used for CF6. Check empty families and universe restrictions explicitly.
-- [ ] Review interaction with mathlib's morphism-property instances; avoid
+- [x] Review interaction with mathlib's morphism-property instances; avoid
   overlapping instances and unnecessary global choices.
-- [ ] Build the existing library and record the baseline result.
+- [x] Build the existing library and record the baseline result.
+
+**Complete (2026-11-09).** See [axiom-correspondence.md](axiom-correspondence.md).
+The classes are equivalent to Definition 1.1.1; no definition changed. New
+checked results in `Basic.lean`: `isCofibrant_iff_of_isInitial`,
+`isCofibrant_coproduct_of_isEmpty`, `isCofibrant_obj_of_sequence`,
+`cofibration_map_of_le`, `weakEquivalence_map_of_le`, `cf5_existence_iff`,
+`isCofibrant_of_isColimit`, `cofibration_of_isColimit`,
+`weakEquivalence_of_isColimit`, `sequential_cofibration_of_isColimit`, and
+`sequential_weakEquivalence_of_isColimit`. Remaining, moved to §1.6: transfer
+of CF5 to index types that are only `Small.{w}`.
 
 Deliverable: a trustworthy foundation and a short correspondence note in `docs/`.
 Change the current definitions only when this review identifies a concrete issue.
@@ -91,15 +101,18 @@ the `ABCCofibrations.ABCPrecofibrationCategory` namespace.
 ### A. Foundation audit and interface decisions
 
 - [x] Run the baseline build: `lake build` passed on 2026-11-07.
-- [ ] Create `docs/axiom-correspondence.md`, mapping every field to Definition
+- [x] Create `docs/axiom-correspondence.md`, mapping every field to Definition
   1.1.1 and explaining the separately supplied category structures and initial
   object. For clauses represented by derived results, cite those declarations.
-- [ ] Check that the converse presentation of CF5 follows using identities,
-  and document how target cofibrancy is derived from composition.
-- [ ] Check universe behavior on empty, finite, and countable indexing types.
-  Distinguish the natural-number diagram category from the coproduct universe.
-- [ ] Review transport to another chosen initial object and to isomorphic
-  representatives of the colimits used in the axioms.
+- [x] Check that the converse presentation of CF5 follows using identities,
+  and document how target cofibrancy is derived from composition
+  (`cf5_existence_iff`, `cofibrant_target`).
+- [x] Check universe behavior on empty, finite, and countable indexing types.
+  Distinguish the natural-number diagram category from the coproduct universe
+  (`isCofibrant_coproduct_of_isEmpty`; finite case in `Coproducts.lean`).
+- [x] Review transport to another chosen initial object and to isomorphic
+  representatives of the colimits used in the axioms
+  (`isCofibrant_iff_of_isInitial`, the `…_of_isColimit` theorems).
 
 Interface decision already established by inspection: mathlib's coproduct
 inclusion instances in `ModelCategory/IsCofibrant.lean` require unrestricted
@@ -109,7 +122,8 @@ Likewise, do not assert unrestricted `ContainsIdentities` or `RespectsIso` for
 cofibrations without a separate justification covering noncofibrant sources.
 
 Completion criterion: every axiom clause has a recorded correspondence, with
-any discrepancy fixed and checked by a build. Until then the audit remains open.
+any discrepancy fixed and checked by a build. Met on 2026-11-09; no
+discrepancy was found.
 
 ### B. Binary coproduct foundation — implemented
 
@@ -598,8 +612,9 @@ Suggested next construction:
     `fibrantObjectOpEquivalence`, using the general localization and
     fraction transport added to `FibrantOpposite.lean`.
     With this, the fibration-side localization theory of Chapter 6 mirrors
-    the cofibration side. **Next:** the foundation audit (Milestone 0) and
-    the Chapter 1 backlog (§1.6–1.8).
+    the cofibration side. The foundation audit (Milestone 0) is now also
+    complete. **Next:** the Chapter 1 backlog (§1.6–1.8), starting with the
+    elementary consequences of CF5 and CF6.
 
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
@@ -1040,3 +1055,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-09 | Trivial-fibration localization | `BrownFibration.lean` proves Brown's functor lemma for fibrant objects by transporting the cofibrant lemma across the opposite category. `TrivialFibrationLocalization.lean` identifies localization at trivial fibrations with localization at all weak equivalences, compatibly with the canonical functors, and proves the pullback Ore square. The note records that this is the dual of the cofibrant comparison and not a separate numbered theorem. Full build passed (2014 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: right-fraction representations with trivial-fibration denominators. |
 | 2026-11-09 | Duality and reuse cleanup | `LocalizationTransfer.lean` proves the quotient-lift and same-inverting-classes localization lemmas once; the left/right homotopy-quotient comparisons and both trivial-(co)fibration comparisons are now applications, with their duplicated proofs removed. `FibrantOpposite.lean` adds `(FibrantObject C)ᵒᵖ ≌ CofibrantObject Cᵒᵖ`, and `map_eq_of_fibrant_rightHomotopy` is now a transport of `map_eq_of_cofibrant_leftHomotopy`. Public statements unchanged; notes updated. Full build passed (2018 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |
 | 2026-11-09 | Trivial-fibration right fractions | `TrivialFibrationFractions.lean` proves representation by right fractions with trivial-fibration denominators, common refinements, equality over a refinement, composition, finite common denominators, and fibration numerators with product boundary. Each result transports `TrivialCofibrationFractions.lean` through `fibrantObjectOpEquivalence`, using new general localization/fraction transport in `FibrantOpposite.lean`. Plan wording on Lemma 1.3.4(1) corrected: the original claim is refuted and the corrected statement proved. Full build passed (2020 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: foundation audit and Chapter 1 backlog. |
+| 2026-11-09 | Foundation audit (Milestone 0) | `docs/axiom-correspondence.md` maps every clause of Definition 1.1.1 and F1–F4 to Lean fields or derived results; no discrepancy, no definition changed. `Basic.lean` adds independence of the chosen initial object, the empty-coproduct case from CF1, all CF6 composites from successive maps, the CF5 existence equivalence, and CF5/CF6 for arbitrary colimit representatives. Full build passed (2020 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: Chapter 1 §1.6. |

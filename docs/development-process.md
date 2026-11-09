@@ -73,6 +73,41 @@ available only for cofibrant objects. Accept callers' chosen coproducts and
 pushouts where practical. Avoid introducing global instances that assert
 stronger closure or existence properties than the axioms provide.
 
+### Duality first, native interfaces
+
+Prove a mathematical result once, transport its dual through opposite
+categories, and expose a theorem in native fibration notation. This is the
+default for the fibration theory. Apply an existing cofibration theorem to
+the opposite category rather than independently reconstructing its argument.
+Use mathlib's duality interfaces where available.
+
+Keep public interfaces in mathlib's native types, including `FibrantObject`,
+`PathObject`, and right homotopy. Native interfaces do not require independent
+mathematical proofs. Establish reusable comparison functors, equivalences,
+and preservation/reflection lemmas for the relevant morphism classes. Account
+explicitly for chosen terminal/initial objects and products/coproducts;
+do not assume they are definitionally identified by taking opposites.
+
+Short native proofs are appropriate for constructing these adapters or
+handling a specific choice of universal object. Explain their role in the
+module or mathematical note. If direct native reasoning is substantially
+simpler than transport, record that reason and keep the proof confined to
+that interface. Do not use a native interface as a blanket justification
+for duplicating an existing theorem's proof.
+
+When left and right developments repeat general categorical machinery, first
+look for a mathlib theorem. Otherwise extract a shared lemma at the level of
+categories, morphism properties, congruences, or localizers. In particular,
+quotient/localization universal properties should not need separate proofs
+for cofibrations and fibrations. Keep the abstraction scoped to actual reuse;
+do not build a general transport framework solely to shorten a small adapter.
+
+During review, identify the source theorem used for each substantial dual
+result, separate transport from new mathematics, and check for copied proof
+blocks with only arrows or names reversed. Refactoring should preserve the
+public statements, useful computation/comparison equations, and their exact
+hypotheses. Check existing callers and the full build afterward.
+
 ## 3. Translate the statement before developing the proof
 
 Write the Lean statement with its mathematical interpretation in view. Check

@@ -295,17 +295,25 @@ All new names below are in `ABCCofibrations.ABCPrefibrationCategory`.
 
 [RightHomotopyLocalization.lean](../../ABCCofibrations/RightHomotopyLocalization.lean)
 first proves that every weak-equivalence-inverting functor on fibrant
-objects identifies right-homotopic maps. For a strict homotopy, the weak
-equivalence into its path object makes the two projections have equal
-images. The trivial fibration changing the source can then be cancelled.
+objects identifies right-homotopic maps. This is not proved again with path
+objects. Given $F:\mathcal C_{fib}\to\mathcal D$, the equivalence
+$(\mathcal C_{fib})^{op}\simeq(\mathcal C^{op})_{cof}$ of
+[the duality note](fibration-duality.md#opposite-fibrant-objects-as-cofibrant-objects)
+turns $F$ into a weak-equivalence-inverting functor
+$(\mathcal C^{op})_{cof}\to\mathcal D^{op}$; `rightHomotopy_iff_op` turns
+$f\simeq_r g$ into $f^{op}\simeq_l g^{op}$; and the cofibration-side
+theorem `map_eq_of_cofibrant_leftHomotopy` (cylinder projection and
+target-enlargement cancellation) gives $F(f)^{op}=F(g)^{op}$.
 This yields a unique factorization through the native right-homotopy quotient.
 
 Consequently, the quotient functor is a localized equivalence of localizers.
 Localizing its source at weak equivalences before taking the quotient, or
 localizing the quotient at its descended weak equivalences, gives equivalent
 categories. We also construct the direct comparison from the quotient to
-fibrant-object localization and prove its strict localization universal
-property. In particular, this comparison is a localization functor.
+fibrant-object localization. Its strict localization universal property,
+and hence that it is a localization functor, is the shared quotient-lift
+lemma of [the localization transfer note](localization-transfer.md),
+which is also used for the left-homotopy quotient.
 
 The native fibrant inclusion is already a general fibrant approximation.
 Its induced functor on canonical localizations is therefore an equivalence,
@@ -320,9 +328,11 @@ $$
 $$
 
 **Differences from the paper:** the mathematical comparison is the dual of
-the cofibration-side construction, with no extra axioms. We give a native
-factorization/universal-property proof so the result applies directly to
-mathlib's fibrant-object and quotient types. Mathlib's general theorem on
+the cofibration-side construction, with no extra axioms. The homotopy
+inversion lemma is transported from the cofibration side; the universal
+property is an instance of a lemma shared with the cofibration side. Only
+the statements are native, so they apply directly to mathlib's
+fibrant-object and quotient types. Mathlib's general theorem on
 relations factoring through localization supplies the first equivalence;
 the previously established general fibrant-approximation theorem supplies
 the second. No second construction of object replacements is required.
@@ -382,6 +392,74 @@ or identify the unlocalized quotient with the localization.
 | Faithfulness of the direct comparison | `rightHomotopyCategoryToLocalization_faithful` |
 | Equality iff right homotopy for arbitrary fibrant localization | `map_eq_iff_fibrant_rightHomotopy` |
 
-The next localization refinement is to invert only trivial fibrations on
-fibrant objects and compare that construction with weak-equivalence
-localization, using the already available Brown functor lemma.
+## Localization at trivial fibrations
+
+The implementations are
+[BrownFibration.lean](../../ABCCofibrations/BrownFibration.lean) and
+[TrivialFibrationLocalization.lean](../../ABCCofibrations/TrivialFibrationLocalization.lean).
+On the fibrant subcategory, inverting trivial fibrations is the same as
+inverting every weak equivalence. Let $F$ be a functor from
+$\mathcal C_{fib}$ into a category whose weak equivalences satisfy two out
+of three. If $F$ sends trivial fibrations to weak equivalences, then $F$
+sends every weak equivalence to a weak equivalence. A functor into an
+arbitrary category therefore inverts all weak equivalences if and only if
+it inverts trivial fibrations.
+
+The canonical localization at trivial fibrations satisfies the strict
+universal property of localization at weak equivalences. This step uses no
+fibration theory: it is the shared statement that two morphism classes, each
+inverted by the localization functor of the other, have the same
+localizations ([localization transfer note](localization-transfer.md)),
+which is also used for trivial cofibrations. The two
+localizations are equivalent, and the equivalence commutes with the
+canonical functors:
+
+$$
+\mathcal C_{fib}\bigl[(\mathrm{trivial\ fibrations})^{-1}\bigr]
+\simeq
+\mathcal C_{fib}[W^{-1}].
+$$
+
+Any chosen localization at weak equivalences is consequently also a
+localization at trivial fibrations.
+
+The proof applies the already established cofibrant Brown lemma to the
+opposite functor. A trivial fibration is a trivial cofibration in the
+opposite precofibration category, and two out of three passes to that
+opposite. This is Brown factorization 1.3.1(2). The paper records it as
+dual to 1.3.1(1) and does not repeat the factorization diagram; neither
+does the formalization.
+
+Pullback along a trivial fibration of fibrant objects remains a trivial
+fibration. The resulting square converts a left fraction whose denominator
+is a trivial fibration into a right fraction. This is the Ore existence
+condition only. It does not include cancellation, and it does not install
+the full right calculus of Theorem 6.4.2. That calculus is already
+available for the native right-homotopy quotient.
+
+**Differences from the paper.** The statements are the native duals of the
+cofibrant localization comparison. The paper uses Brown factorization inside
+later arguments, such as the proof of Theorem 6.2.2, rather than isolating
+an equivalence of localization categories. No target saturation, model
+structure, or functorial factorization is assumed. The fibrant subcategory
+is mathlib's `FibrantObject`, and the opposite comparison is invoked only
+inside the proof.
+
+| Statement | Declaration in `ABCCofibrations.ABCPrefibrationCategory` |
+| --- | --- |
+| Trivial fibrations between fibrant objects are detected on underlying maps | `fibrantTrivialFibrations`, `mem_fibrantTrivialFibrations_iff` |
+| Brown's lemma for an ambient functor | `map_weakEquivalence_of_map_trivialFibrations` |
+| Brown's lemma on fibrant objects | `map_weakEquivalence_fibrant_of_map_trivialFibrations` |
+| Inverting trivial fibrations inverts all weak equivalences | `isInvertedBy_of_inverts_trivialFibrations` |
+| The two inversion conditions agree | `inverts_weakEquivalences_iff_inverts_trivialFibrations` |
+| Each localization functor inverts the other class | `fibrantTrivialFibrations_isInvertedBy_weakEquivalences_Q`, `weakEquivalences_isInvertedBy_fibrantTrivialFibrations_Q` |
+| Strict universal property for weak equivalences | `trivialFibrationLocalizationUniversalProperty` |
+| Trivial-fibration localization presents weak equivalences | `trivialFibrationLocalization_isLocalization` |
+| Equivalence of the two canonical localizations | `trivialFibrationLocalizationEquivalence`, `trivialFibrationLocalizationEquivalence_fac` |
+| A weak-equivalence localization is a trivial-fibration localization | `isLocalization_trivialFibrations_of_weakEquivalences` |
+| Pullback Ore square | `exists_trivialFibration_ore_square` |
+| Left fractions convert to right fractions | `exists_rightFraction_of_trivialFibration_leftFraction` |
+
+The next refinement is to represent morphisms in a localization of fibrant
+objects by right fractions with trivial-fibration denominators, including
+common denominators and composition.

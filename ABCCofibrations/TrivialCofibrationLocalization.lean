@@ -6,7 +6,7 @@ Authors: ABCCofibrations contributors
 module
 
 public import ABCCofibrations.BrownFunctor
-public import Mathlib.CategoryTheory.Localization.Predicate
+public import ABCCofibrations.LocalizationTransfer
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 
 /-!
@@ -89,29 +89,43 @@ theorem inverts_weakEquivalences_iff_inverts_trivialCofibrations
   exact isInvertedBy_of_inverts_trivialCofibrations F
     (fun i hi hw ↦ h i ⟨hi.mem, hw.mem⟩)
 
+omit [ABCPrecofibrationCategory C] in
+/-- Localization at all weak equivalences inverts the trivial cofibrations. -/
+theorem cofibrantTrivialCofibrations_isInvertedBy_weakEquivalences_Q :
+    (cofibrantTrivialCofibrations (C := C)).IsInvertedBy
+      (weakEquivalences (CofibrantObject C)).Q :=
+  MorphismProperty.IsInvertedBy.of_le _ _ _
+    (weakEquivalences (CofibrantObject C)).Q_inverts
+    cofibrantTrivialCofibrations_le_weakEquivalences
+
+/-- Localization at trivial cofibrations inverts all weak equivalences, by
+Brown's lemma. -/
+theorem weakEquivalences_isInvertedBy_cofibrantTrivialCofibrations_Q :
+    (weakEquivalences (CofibrantObject C)).IsInvertedBy
+      (cofibrantTrivialCofibrations (C := C)).Q :=
+  (inverts_weakEquivalences_iff_inverts_trivialCofibrations _).2
+    (cofibrantTrivialCofibrations (C := C)).Q_inverts
+
 /-- The canonical localization at trivial cofibrations also satisfies the
-strict universal property for localization at all weak equivalences. -/
+strict universal property for localization at all weak equivalences. The
+two classes have the same inverting functors, so this is an instance of the
+shared `Localization.strictUniversalPropertyFixedTargetQOfIsInvertedBy`. -/
 noncomputable def trivialCofibrationLocalizationUniversalProperty :
     Localization.StrictUniversalPropertyFixedTarget
       (cofibrantTrivialCofibrations (C := C)).Q
-      (weakEquivalences (CofibrantObject C)) D where
-  inverts := (inverts_weakEquivalences_iff_inverts_trivialCofibrations _).2
-    (cofibrantTrivialCofibrations (C := C)).Q_inverts
-  lift F hF := Localization.Construction.lift F
-    ((inverts_weakEquivalences_iff_inverts_trivialCofibrations F).1 hF)
-  fac _ _ := Localization.Construction.fac _ _
-  uniq F₁ F₂ h := Localization.Construction.uniq F₁ F₂ h
+      (weakEquivalences (CofibrantObject C)) D :=
+  Localization.strictUniversalPropertyFixedTargetQOfIsInvertedBy
+    cofibrantTrivialCofibrations_isInvertedBy_weakEquivalences_Q
+    weakEquivalences_isInvertedBy_cofibrantTrivialCofibrations_Q D
 
 /-- Localizing cofibrant objects at trivial cofibrations is a localization
 at all weak equivalences as well. -/
 instance trivialCofibrationLocalization_isLocalization :
     (cofibrantTrivialCofibrations (C := C)).Q.IsLocalization
       (weakEquivalences (CofibrantObject C)) :=
-  Functor.IsLocalization.mk' _ _
-    (trivialCofibrationLocalizationUniversalProperty
-      (D := (cofibrantTrivialCofibrations (C := C)).Localization))
-    (trivialCofibrationLocalizationUniversalProperty
-      (D := (weakEquivalences (CofibrantObject C)).Localization))
+  Localization.isLocalization_of_isInvertedBy_Q
+    cofibrantTrivialCofibrations_isInvertedBy_weakEquivalences_Q
+    weakEquivalences_isInvertedBy_cofibrantTrivialCofibrations_Q _
 
 /-- The canonical equivalence between localization at trivial cofibrations
 and localization at all weak equivalences of cofibrant objects. -/
@@ -130,14 +144,14 @@ noncomputable def trivialCofibrationLocalizationEquivalence_fac :
     (weakEquivalences (CofibrantObject C)).Q (weakEquivalences (CofibrantObject C))
 
 /-- Any localization at weak equivalences is also a localization at
-trivial cofibrations, by Brown's lemma and uniqueness of localization. -/
+trivial cofibrations, by Brown's lemma and the shared same-inverting-classes
+transfer. -/
 theorem isLocalization_trivialCofibrations_of_weakEquivalences
     (L : CofibrantObject C ⥤ D)
     [L.IsLocalization (weakEquivalences (CofibrantObject C))] :
-    L.IsLocalization (cofibrantTrivialCofibrations (C := C)) := by
-  let T := cofibrantTrivialCofibrations (C := C)
-  let W := weakEquivalences (CofibrantObject C)
-  exact Functor.IsLocalization.of_equivalence_target T.Q T L
-    (Localization.uniq T.Q L W) (Localization.compUniqFunctor T.Q L W)
+    L.IsLocalization (cofibrantTrivialCofibrations (C := C)) :=
+  Localization.isLocalization_of_isInvertedBy_Q
+    weakEquivalences_isInvertedBy_cofibrantTrivialCofibrations_Q
+    cofibrantTrivialCofibrations_isInvertedBy_weakEquivalences_Q L
 
 end ABCCofibrations.ABCPrecofibrationCategory

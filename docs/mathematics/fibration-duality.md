@@ -81,6 +81,40 @@ All names except the abbreviation are in
 | Restricted pullbacks | `hasPullback` |
 | Base change | `fibration_of_isPullback`, `weakEquivalence_of_isPullback` |
 
+## Opposite fibrant objects as cofibrant objects
+
+[FibrantOpposite.lean](../../ABCCofibrations/FibrantOpposite.lean) constructs
+an equivalence of categories
+
+$$
+(\mathcal C_{fib})^{op}\;\simeq\;(\mathcal C^{op})_{cof}
+$$
+
+between the opposite of mathlib's `FibrantObject C` and mathlib's
+`CofibrantObject Cᵒᵖ`. On objects and arrows it is literally $A\mapsto A^{op}$
+and $f\mapsto f^{op}$; the unit and counit are identities. Only the fibrancy
+and cofibrancy proofs move, through the terminal/initial comparison above.
+Mathlib's `ObjectProperty.opEquivalence` would instead land in the full
+subcategory of $(\text{fibrant})^{op}$, a property that is only
+propositionally equal to cofibrancy in $\mathcal C^{op}$; the direct
+construction keeps the underlying-object and arrow equations definitional.
+The equivalence preserves and reflects weak equivalences. Consequently a
+functor $F:\mathcal C_{fib}\to\mathcal D$ inverts weak equivalences exactly
+when its transport $(\mathcal C^{op})_{cof}\to\mathcal D^{op}$ does, so a
+cofibration-side theorem about inverting functors applies to $F$ directly.
+The module depends only on F1–F4 and is imported below all localization
+modules.
+
+**Difference from the paper:** the paper uses this duality implicitly. The
+formal bridge is new packaging; it adds no hypotheses.
+
+| Statement | Declaration in `ABCCofibrations.ABCPrefibrationCategory` |
+| --- | --- |
+| The equivalence and its functors | `fibrantObjectOpEquivalence`, `fibrantObjectOpFunctor`, `cofibrantObjectUnopFunctor` |
+| Underlying objects and arrows | `fibrantObjectOpEquivalence_functor_obj_obj`, `_functor_map_hom`, `_inverse_obj_unop_obj`, `_inverse_map_unop_hom`, `_functor_map_op` |
+| Weak equivalences correspond | `weakEquivalence_fibrantObjectOpEquivalence_functor_map_iff`, `weakEquivalence_fibrantObjectOpEquivalence_inverse_map_iff`, `weakEquivalences_cofibrantObject_op_inverseImage` |
+| Inverting functors correspond | `isInvertedBy_inverse_comp_op_iff` |
+
 ## Fibrant approximations and right-derived existence
 
 [FibrantApproximation.lean](../../ABCCofibrations/FibrantApproximation.lean)

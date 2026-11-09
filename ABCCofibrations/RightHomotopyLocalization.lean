@@ -7,6 +7,8 @@ module
 
 public import ABCCofibrations.RightHomotopyOre
 public import ABCCofibrations.FibrantSubcategory
+public import ABCCofibrations.FibrantOpposite
+public import ABCCofibrations.LocalizationTransfer
 
 /-!
 # Localization of the native right-homotopy quotient
@@ -28,37 +30,24 @@ variable {C : Type u} [Category.{v} C] [CategoryWithFibrations C]
   {D : Type*} [Category D]
 
 /-- Every functor on fibrant objects inverting weak equivalences identifies
-right-homotopic maps. -/
+right-homotopic maps. This is `map_eq_of_cofibrant_leftHomotopy` applied in
+`Cᵒᵖ` to the transported functor `(FibrantObject C)ᵒᵖ ≌ CofibrantObject Cᵒᵖ ⥤ Dᵒᵖ`;
+`rightHomotopy_iff_op` identifies the two homotopy relations. -/
 theorem map_eq_of_fibrant_rightHomotopy
     (F : FibrantObject C ⥤ D)
     (hF : (weakEquivalences (FibrantObject C)).IsInvertedBy F)
     {X Y : FibrantObject C} {f g : X ⟶ Y}
     (h : fibrantRightHomotopyRel f g) : F.map f = F.map g := by
   let := hasBinaryProduct Y.obj Y.obj
-  change RightHomotopyRel f.hom g.hom at h
-  obtain ⟨X', a, ha, haw, P, hP, ⟨H⟩⟩ := h
-  let := ha
-  let := hP
-  let := pathObject_fibrant P
-  let := fibrant_source a
-  let p₀ : FibrantObject.mk P.P ⟶ Y := FibrantObject.homMk P.p₀
-  let p₁ : FibrantObject.mk P.P ⟶ Y := FibrantObject.homMk P.p₁
-  let i : Y ⟶ FibrantObject.mk P.P := FibrantObject.homMk P.ι
-  let a' : FibrantObject.mk X' ⟶ X := FibrantObject.homMk a
-  let H' : FibrantObject.mk X' ⟶ FibrantObject.mk P.P := FibrantObject.homMk H.h
-  have hiw : weakEquivalences (FibrantObject C) i :=
-    (show WeakEquivalence P.ι from inferInstance).mem
-  let := hF i hiw
-  let := hF a' haw.mem
-  have hi₀ : i ≫ p₀ = 𝟙 Y := by ext; exact P.ι_p₀
-  have hi₁ : i ≫ p₁ = 𝟙 Y := by ext; exact P.ι_p₁
-  have hp : F.map p₀ = F.map p₁ := by
-    apply (cancel_epi (F.map i)).1
-    rw [← F.map_comp, ← F.map_comp, hi₀, hi₁]
-  have h₀ : H' ≫ p₀ = a' ≫ f := by ext; exact H.h₀
-  have h₁ : H' ≫ p₁ = a' ≫ g := by ext; exact H.h₁
-  apply (cancel_epi (F.map a')).1
-  rw [← F.map_comp, ← F.map_comp, ← h₀, ← h₁, F.map_comp, F.map_comp, hp]
+  let := ABCPrecofibrationCategory.hasBinaryCoproduct (Opposite.op Y.obj) (Opposite.op Y.obj)
+  have h' : ABCPrecofibrationCategory.cofibrantLeftHomotopyRel
+      (fibrantObjectOpEquivalence.functor.map f.op)
+      (fibrantObjectOpEquivalence.functor.map g.op) :=
+    (rightHomotopy_iff_op f.hom g.hom).1 h
+  apply Quiver.Hom.op_inj
+  exact ABCPrecofibrationCategory.map_eq_of_cofibrant_leftHomotopy
+    (fibrantObjectOpEquivalence.inverse ⋙ F.op)
+    ((isInvertedBy_inverse_comp_op_iff F).2 hF) h'
 
 /-- Factor a weak-equivalence-inverting functor through right-homotopy classes. -/
 noncomputable def liftFromRightHomotopyCategory
@@ -82,6 +71,7 @@ theorem liftFromRightHomotopyCategory_unique
     (G : RightHomotopyCategory C ⥤ D) (hG : toRightHomotopyCategory ⋙ G = F) :
     G = liftFromRightHomotopyCategory F hF :=
   CategoryTheory.Quotient.lift_unique _ _ _ G hG
+
 /-- The canonical comparison from right-homotopy classes to localization at
 weak equivalences of fibrant objects. -/
 noncomputable def rightHomotopyCategoryToLocalization :
@@ -151,33 +141,22 @@ noncomputable def rightHomotopyLocalizationEquivalence :
 /-- The comparison inverts the weak equivalences of the homotopy quotient. -/
 theorem rightHomotopyCategoryToLocalization_inverts :
     (weakEquivalences (RightHomotopyCategory C)).IsInvertedBy
-      (rightHomotopyCategoryToLocalization (C := C)) := by
-  rintro ⟨X⟩ ⟨Y⟩ f hf
-  obtain ⟨g, hg, rfl⟩ := hf
-  change IsIso ((weakEquivalences (FibrantObject C)).Q.map g)
-  exact (weakEquivalences (FibrantObject C)).Q_inverts g hg
+      (rightHomotopyCategoryToLocalization (C := C)) :=
+  Localization.quotientLift_inverts
+    (MorphismProperty.eq_inverseImage_quotientFunctor _ _) _
+    rightHomotopyCategoryToLocalization_fac
 
 /-- The comparison has the strict localization universal property: every
 functor on right-homotopy classes which inverts weak equivalences factors
-uniquely through it. -/
+uniquely through it. This is the general quotient-lift statement of
+`LocalizationTransfer.lean`, shared with the left-homotopy quotient. -/
 noncomputable def rightHomotopyComparisonStrictUniversalProperty :
     Localization.StrictUniversalPropertyFixedTarget
       (rightHomotopyCategoryToLocalization (C := C))
-      (weakEquivalences (RightHomotopyCategory C)) D where
-  inverts := rightHomotopyCategoryToLocalization_inverts
-  lift F hF := Localization.Construction.lift (toRightHomotopyCategory ⋙ F)
-    (fun _ _ f hf ↦ hF (toRightHomotopyCategory.map f)
-      ((MorphismProperty.quotient_iff _ _ f).2 hf))
-  fac F hF := by
-    apply CategoryTheory.Quotient.lift_unique' (fibrantRightHomotopyRel (C := C))
-    change toRightHomotopyCategory ⋙ (rightHomotopyCategoryToLocalization ⋙
-      Localization.Construction.lift (toRightHomotopyCategory ⋙ F) _) =
-      toRightHomotopyCategory ⋙ F
-    rw [← Functor.assoc, rightHomotopyCategoryToLocalization_fac]
-    exact Localization.Construction.fac (W := weakEquivalences (FibrantObject C)) _ _
-  uniq F₁ F₂ h := by
-    apply Localization.Construction.uniq
-    rw [← rightHomotopyCategoryToLocalization_fac, Functor.assoc, h, Functor.assoc]
+      (weakEquivalences (RightHomotopyCategory C)) D :=
+  Localization.strictUniversalPropertyFixedTargetQuotientLift
+    (MorphismProperty.eq_inverseImage_quotientFunctor _ _) _
+    rightHomotopyCategoryToLocalization_fac D
 
 /-- The comparison is a localization of the homotopy quotient at its weak
 equivalences. This does not assert that the comparison is an equivalence
@@ -185,13 +164,9 @@ without localizing those weak equivalences. -/
 instance rightHomotopyCategoryToLocalization_isLocalization :
     (rightHomotopyCategoryToLocalization (C := C)).IsLocalization
       (weakEquivalences (RightHomotopyCategory C)) :=
-  Functor.IsLocalization.mk' _ _
-    (rightHomotopyComparisonStrictUniversalProperty
-      (D := (weakEquivalences (FibrantObject C)).Localization))
-    (rightHomotopyComparisonStrictUniversalProperty
-      (D := (weakEquivalences (RightHomotopyCategory C)).Localization))
-
-
+  Localization.isLocalization_quotientLift
+    (MorphismProperty.eq_inverseImage_quotientFunctor _ _) _
+    rightHomotopyCategoryToLocalization_fac
 
 /-- Weak equivalences act as epimorphisms on right-homotopy classes. -/
 theorem epi_toRightHomotopyCategory_map

@@ -9,6 +9,7 @@ public import ABCCofibrations.HomotopyWeakEquivalences
 public import ABCCofibrations.HomotopyOre
 public import ABCCofibrations.TrivialCofibrationLocalization
 public import Mathlib.CategoryTheory.Localization.Quotient
+public import ABCCofibrations.LocalizationTransfer
 
 /-!
 # Comparing left-homotopy classes with localization
@@ -228,33 +229,22 @@ noncomputable def leftHomotopyLocalizationEquivalence :
 /-- The comparison inverts the weak equivalences of the homotopy quotient. -/
 theorem leftHomotopyCategoryToLocalization_inverts :
     (weakEquivalences (LeftHomotopyCategory C)).IsInvertedBy
-      (leftHomotopyCategoryToLocalization (C := C)) := by
-  rintro ⟨X⟩ ⟨Y⟩ f hf
-  obtain ⟨g, hg, rfl⟩ := hf
-  change IsIso ((weakEquivalences (CofibrantObject C)).Q.map g)
-  exact (weakEquivalences (CofibrantObject C)).Q_inverts g hg
+      (leftHomotopyCategoryToLocalization (C := C)) :=
+  Localization.quotientLift_inverts
+    (MorphismProperty.eq_inverseImage_quotientFunctor _ _) _
+    leftHomotopyCategoryToLocalization_fac
 
 /-- The comparison has the strict localization universal property: every
 functor on left-homotopy classes which inverts weak equivalences factors
-uniquely through it. -/
+uniquely through it. This is the general quotient-lift statement of
+`LocalizationTransfer.lean`, shared with the right-homotopy quotient. -/
 noncomputable def leftHomotopyComparisonStrictUniversalProperty :
     Localization.StrictUniversalPropertyFixedTarget
       (leftHomotopyCategoryToLocalization (C := C))
-      (weakEquivalences (LeftHomotopyCategory C)) D where
-  inverts := leftHomotopyCategoryToLocalization_inverts
-  lift F hF := Localization.Construction.lift (toLeftHomotopyCategory ⋙ F)
-    (fun _ _ f hf ↦ hF (toLeftHomotopyCategory.map f)
-      ((MorphismProperty.quotient_iff _ _ f).2 hf))
-  fac F hF := by
-    apply CategoryTheory.Quotient.lift_unique' (cofibrantLeftHomotopyRel (C := C))
-    change toLeftHomotopyCategory ⋙ (leftHomotopyCategoryToLocalization ⋙
-      Localization.Construction.lift (toLeftHomotopyCategory ⋙ F) _) =
-      toLeftHomotopyCategory ⋙ F
-    rw [← Functor.assoc, leftHomotopyCategoryToLocalization_fac]
-    exact Localization.Construction.fac (W := weakEquivalences (CofibrantObject C)) _ _
-  uniq F₁ F₂ h := by
-    apply Localization.Construction.uniq
-    rw [← leftHomotopyCategoryToLocalization_fac, Functor.assoc, h, Functor.assoc]
+      (weakEquivalences (LeftHomotopyCategory C)) D :=
+  Localization.strictUniversalPropertyFixedTargetQuotientLift
+    (MorphismProperty.eq_inverseImage_quotientFunctor _ _) _
+    leftHomotopyCategoryToLocalization_fac D
 
 /-- The comparison is a localization of the homotopy quotient at its weak
 equivalences. This does not assert that the comparison is an equivalence
@@ -262,11 +252,9 @@ without localizing those weak equivalences. -/
 instance leftHomotopyCategoryToLocalization_isLocalization :
     (leftHomotopyCategoryToLocalization (C := C)).IsLocalization
       (weakEquivalences (LeftHomotopyCategory C)) :=
-  Functor.IsLocalization.mk' _ _
-    (leftHomotopyComparisonStrictUniversalProperty
-      (D := (weakEquivalences (CofibrantObject C)).Localization))
-    (leftHomotopyComparisonStrictUniversalProperty
-      (D := (weakEquivalences (LeftHomotopyCategory C)).Localization))
+  Localization.isLocalization_quotientLift
+    (MorphismProperty.eq_inverseImage_quotientFunctor _ _) _
+    leftHomotopyCategoryToLocalization_fac
 
 /-- The comparison is faithful. The calculus of fractions detects equality
 after postcomposition by a weak equivalence, which is a monomorphism in the

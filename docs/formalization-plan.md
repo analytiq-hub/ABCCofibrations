@@ -577,18 +577,29 @@ Suggested next construction:
     Faithfulness and the equality criterion for arbitrary fibrant-object
     localizations are now proved: weak-equivalence classes are epimorphisms,
     so the right-calculus equality test cancels its denominator.
-    **Next:** native localization at trivial fibrations and comparison with
-    weak-equivalence localization, via Brown's functor lemma.
+    **Complete:** native localization at trivial fibrations agrees with
+    weak-equivalence localization. `BrownFibration.lean` transports the
+    cofibrant Brown lemma across the opposite category, and
+    `TrivialFibrationLocalization.lean` builds the equivalence of
+    localizations, compatible with the canonical functors. The pullback
+    Ore square converts a left fraction with trivial-fibration denominator
+    into a right fraction; it is not yet a cancellation axiom.
     The relevant abstract right-calculus statement is Theorem 6.4.2
-    (the earlier plan reference to 6.4.1(2) was imprecise). Foundation audits and Chapter 1 backlog items remain separate.
+    (the earlier plan reference to 6.4.1(2) was imprecise). It is already
+    installed for the native quotient, and is not claimed here for the
+    trivial-fibration class.
+    **Next:** right-fraction representations of morphisms in a localization
+    of fibrant objects, with trivial-fibration denominators, common
+    denominators, and composition, dual to `TrivialCofibrationFractions.lean`.
+    Foundation audits and Chapter 1 backlog items remain separate.
 
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 The cofibration proofs use CF1–CF4, and the dual fibration proofs use F1–F4. The latest full check is
-`lake build ABCCofibrations`: 2010 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 2014 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
-`references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.2.
+`references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.4.
 The [reference library](../references/README.md) contains fixed-version PDFs,
 searchable text, unpacked arXiv sources where available, and provenance.
 These are reading aids, not library dependencies.
@@ -609,10 +620,25 @@ Completed localization infrastructure:
   example, image cofibrancy, induced localizer morphism, object and arrow
   resolutions, common extensions, and connected resolution categories.
   The localized-equivalence consequence is proved in the module below.
+- `LocalizationTransfer.lean`: shared categorical lemmas, used on both
+  sides: a factorization of `W.Q` through a compatible quotient is a
+  localization of the quotient, and two classes each inverted by the
+  other's localization functor have the same localizations.
+- `FibrantOpposite.lean`: the equivalence
+  `(FibrantObject C)ᵒᵖ ≌ CofibrantObject Cᵒᵖ`, with definitional
+  underlying-object/arrow equations, correspondence of weak equivalences,
+  and of weak-equivalence-inverting functors. Depends only on F1–F4.
 - `RightHomotopyLocalization.lean`: quotient factorization and localization
   universal property; equivalences between quotient, fibrant-object, and
   ambient localizations; native inclusion comparison 6.1.6(2); faithfulness
   and the equality criterion for arbitrary fibrant-object localizations.
+  The homotopy-inversion lemma is transported from the cofibration side.
+- `BrownFibration.lean`: Brown's functor lemma on fibrant objects, by
+  transport through the opposite precofibration category.
+- `TrivialFibrationLocalization.lean`: equivalence of localization at
+  trivial fibrations and at weak equivalences of fibrant objects, with
+  compatible canonical functors, and the pullback Ore square for
+  trivial-fibration fractions.
 - `RightHomotopyCategory.lean`, `RightHomotopyWeakEquivalences.lean`: native
   quotient, exact equality relation, and descended weak-equivalence laws.
 - `RightHomotopyCategoryOpposite.lean`: equivalence with the opposite left
@@ -775,6 +801,103 @@ The original unrestricted separate-comparison claims of Lemma 1.3.4(1) have
 been replaced by the correction note; they must not be assumed in subsequent
 proofs.
 
+## Duality and reuse cleanup (2026-11-09)
+
+Apply the [duality-first style rule](development-process.md#duality-first-native-interfaces)
+before extending duplicated localization machinery. This is a refactoring
+backlog, not a claim that the current proofs have incorrect hypotheses.
+Keep the native public APIs and the existing mathematical results.
+
+**Status (2026-11-09): items 1–3 completed.** The duplicated proofs were
+removed and their callers migrated; see the completion record after the list.
+
+1. **Share quotient/localization machinery.** Audit mathlib's existing
+   `HomRel.FactorsThroughLocalization` and quotient-localizer interfaces
+   before extracting any helper. Replace the parallel constructions in
+   `HomotopyLocalization.lean` and `RightHomotopyLocalization.lean`, especially
+   `leftHomotopyComparisonStrictUniversalProperty` and
+   `rightHomotopyComparisonStrictUniversalProperty`, by applications of one
+   general result about a congruence and a morphism property. Retain the
+   factorization equations and canonical comparisons used by callers.
+2. **Transport the homotopy-inversion lemma.** Establish a reusable equivalence
+   between `(FibrantObject C)ᵒᵖ` and `CofibrantObject Cᵒᵖ`, recording the
+   underlying-arrow equations and weak-equivalence correspondence. Use this
+   and `rightHomotopy_iff_op` to make `map_eq_of_fibrant_rightHomotopy` a
+   wrapper around `map_eq_of_cofibrant_leftHomotopy`. The current proof
+   independently repeats the path/cylinder cancellation argument. Avoid
+   defining the foundational bridge in a module that already depends on
+   these localization proofs.
+3. **Share change-of-inverted-class machinery.** The universal-property
+   constructions in `TrivialCofibrationLocalization.lean` and the current
+   `TrivialFibrationLocalization.lean` should reuse a general result for
+   two morphism classes with the same inverting functors. Keep Brown's
+   fibration lemma as an opposite application of the cofibration lemma;
+   keep the native membership lemmas and compatibility isomorphisms.
+
+Completion record:
+
+1. `LocalizationTransfer.lean` proves
+   `Localization.quotientLift_inverts`,
+   `Localization.strictUniversalPropertyFixedTargetQuotientLift`, and
+   `Localization.isLocalization_quotientLift` for an arbitrary relation and
+   compatible morphism classes. Mathlib's `HomRel.FactorsThroughLocalization`
+   was inspected first: it proves the converse direction (quotient functor
+   followed by a localization of the quotient) and is still used for the
+   localized equivalences; it does not supply the strict universal property
+   of the lift of `W.Q`. Both `leftHomotopyComparisonStrictUniversalProperty`
+   and `rightHomotopyComparisonStrictUniversalProperty`, the `_inverts`
+   theorems, and the `_isLocalization` instances are now one-line
+   applications; their hand-written proofs were deleted. Names and
+   statements are unchanged.
+2. `FibrantOpposite.lean` (imports only `FibrationBasic.lean` and mathlib)
+   constructs `fibrantObjectOpEquivalence : (FibrantObject C)ᵒᵖ ≌
+   CofibrantObject Cᵒᵖ` with `rfl` object/arrow equations,
+   `weakEquivalence_fibrantObjectOpEquivalence_functor_map_iff`,
+   `weakEquivalence_fibrantObjectOpEquivalence_inverse_map_iff`,
+   `weakEquivalences_cofibrantObject_op_inverseImage`, and
+   `isInvertedBy_inverse_comp_op_iff`.
+   `map_eq_of_fibrant_rightHomotopy` is now `map_eq_of_cofibrant_leftHomotopy`
+   applied to `fibrantObjectOpEquivalence.inverse ⋙ F.op`, with
+   `rightHomotopy_iff_op` translating the hypothesis; the native path-object
+   cancellation proof was deleted.
+3. `Localization.strictUniversalPropertyFixedTargetQOfIsInvertedBy` and
+   `Localization.isLocalization_of_isInvertedBy_Q` (no mathlib equivalent
+   was found) replace both hand-written universal-property proofs. Each side
+   now supplies only its two inversion facts
+   (`cofibrantTrivialCofibrations_isInvertedBy_weakEquivalences_Q`,
+   `weakEquivalences_isInvertedBy_cofibrantTrivialCofibrations_Q`, and the
+   fibrant analogues) from Brown's lemma. `trivial(Co)fibrationLocalizationUniversalProperty`,
+   the `_isLocalization` instances,
+   `isLocalization_trivial(Co)fibrations_of_weakEquivalences`, and the
+   canonical comparison equivalences with their `_fac` isomorphisms keep
+   their names and statements. `BrownFibration.lean` is unchanged: the
+   fibrant Brown lemma is still the cofibrant lemma applied in `Cᵒᵖ`.
+
+Public API: only additions (the declarations above); no existing statement,
+name, or hypothesis changed. Full build passed (2018 jobs) without warnings;
+`git diff --check` is clean; `#print axioms` for the refactored results
+lists only `propext`, `Classical.choice`, and `Quot.sound`.
+
+Remaining, deliberately not changed: the native faithfulness proof and
+`map_eq_iff_fibrant_rightHomotopy` in `RightHomotopyLocalization.lean` are
+short mathlib-calculus glue around transported cancellation, mirroring the
+left side; transporting them through `fibrantObjectOpEquivalence` would not
+shorten them materially. The chosen-object adapters listed below remain.
+
+Do not rewrite all native proofs indiscriminately. The chosen-object
+comparisons in `FibrationBasic.lean` and `HomotopyOpposite.lean` are necessary
+transport infrastructure. The small native terminal/pullback constructions
+in `FibrantSubcategory.lean` and diagonal factorization in `PathObject.lean`
+may remain documented adapters. Revisit them only if the new foundational
+bridge makes reuse materially simpler, without creating import cycles.
+Cancellation, the strict Ore construction, and the right-fraction criteria
+already reuse the cofibration-side theorems and are not primary cleanup targets.
+
+For each cleanup increment, preserve public theorem statements and comparison
+equations, compile the existing callers, run the full library build, and
+update the notes to reflect the changed proof organization. Do not add
+mathematical assumptions to make the transport convenient.
+
 ## Parallel workstream — mathematical exposition
 
 Maintain readable mathematical explanations alongside the Lean library. These
@@ -900,3 +1023,5 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-09 | Native right-homotopy quotient and calculus | The native quotient on `FibrantObject C` has equality exactly right homotopy and descended weak-equivalence laws. Its equivalence with the opposite left quotient preserves and reflects weak equivalences. The transported strict Ore square completes 6.4.3(2)(a), and native cancellation supplies a right calculus of fractions. Full build passed (2008 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: compare localization of the quotient with fibrant-object and ambient localizations. |
 | 2026-11-09 | Right-homotopy quotient localization and ambient comparison | `RightHomotopyLocalization.lean` proves the unique quotient factorization for inverting functors, the strict localization universal property, equivalence between quotient and fibrant-object localizations, and the native fibrant inclusion equivalence 6.1.6(2). Their composite gives ambient localization. The note explains the native universal-property proof and reuse of the general approximation theorem. Full build passed (2010 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: faithfulness and the arbitrary fibrant-localization equality criterion. |
 | 2026-11-09 | Faithfulness and arbitrary fibrant-localization equality | `RightHomotopyLocalization.lean` proves that weak-equivalence classes are epimorphisms, the quotient comparison is faithful, and any fibrant-object localization identifies exactly right-homotopic representatives. The note records the native dual argument and distinguishes faithfulness from fullness. Full build passed (2010 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: localization at trivial fibrations and its comparison with weak-equivalence localization. |
+| 2026-11-09 | Trivial-fibration localization | `BrownFibration.lean` proves Brown's functor lemma for fibrant objects by transporting the cofibrant lemma across the opposite category. `TrivialFibrationLocalization.lean` identifies localization at trivial fibrations with localization at all weak equivalences, compatibly with the canonical functors, and proves the pullback Ore square. The note records that this is the dual of the cofibrant comparison and not a separate numbered theorem. Full build passed (2014 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: right-fraction representations with trivial-fibration denominators. |
+| 2026-11-09 | Duality and reuse cleanup | `LocalizationTransfer.lean` proves the quotient-lift and same-inverting-classes localization lemmas once; the left/right homotopy-quotient comparisons and both trivial-(co)fibration comparisons are now applications, with their duplicated proofs removed. `FibrantOpposite.lean` adds `(FibrantObject C)ᵒᵖ ≌ CofibrantObject Cᵒᵖ`, and `map_eq_of_fibrant_rightHomotopy` is now a transport of `map_eq_of_cofibrant_leftHomotopy`. Public statements unchanged; notes updated. Full build passed (2018 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |

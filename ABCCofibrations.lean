@@ -10,6 +10,7 @@ import ABCCofibrations.HomotopyOre
 import ABCCofibrations.HomotopyCategory
 import ABCCofibrations.BrownFunctor
 import ABCCofibrations.HomotopyWeakEquivalences
+import ABCCofibrations.LocalizationTransfer
 import ABCCofibrations.TrivialCofibrationLocalization
 import ABCCofibrations.TrivialCofibrationFractions
 import ABCCofibrations.HomotopyLocalization
@@ -30,6 +31,7 @@ import ABCCofibrations.CofibrantApproximationDerived
 import ABCCofibrations.CofibrantSubcategory
 import ABCCofibrations.DerivedApproximationEquivalence
 import ABCCofibrations.FibrationBasic
+import ABCCofibrations.FibrantOpposite
 import ABCCofibrations.FibrantApproximation
 import ABCCofibrations.FibrantSubcategory
 import ABCCofibrations.RightDerivedFunctor
@@ -46,5 +48,7 @@ import ABCCofibrations.RightHomotopyWeakEquivalences
 import ABCCofibrations.RightHomotopyCategoryOpposite
 import ABCCofibrations.RightHomotopyOre
 import ABCCofibrations.RightHomotopyLocalization
+import ABCCofibrations.BrownFibration
+import ABCCofibrations.TrivialFibrationLocalization
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

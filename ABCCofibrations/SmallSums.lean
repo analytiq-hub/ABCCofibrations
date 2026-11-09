@@ -84,6 +84,37 @@ theorem weakEquivalence_coproduct_map_finite_of_weakEquivalence
   weakEquivalence_sigmaMap_of_trivialCofibrations hasCoproduct_finite
     (fun g _ _ hX hg hgw ↦ weakEquivalence_coproduct_map_finite g hX hg hgw) f hA hB hw
 
+variable (C) in
+/-- CF5(1), as a standalone hypothesis on a precofibration category: small
+families of cofibrant objects have cofibrant coproducts, and small sums of
+cofibrations with cofibrant domains are cofibrations. -/
+structure CoproductCofibrationAxiom : Prop where
+  hasCoproduct {ι : Type w} (A : ι → C) (hA : ∀ i, IsCofibrant (A i)) : HasCoproduct A
+  coproduct_cofibrant {ι : Type w} (A : ι → C) (hA : ∀ i, IsCofibrant (A i))
+    [HasCoproduct A] : IsCofibrant (∐ A)
+  coproduct_cofibration {ι : Type w} {A B : ι → C} (f : ∀ i, A i ⟶ B i)
+    (hA : ∀ i, IsCofibrant (A i)) (hf : ∀ i, Cofibration (f i))
+    [HasCoproduct A] [HasCoproduct B] : Cofibration (Limits.Sigma.map f)
+
+variable (C) in
+/-- CF5(2), as a standalone hypothesis: small sums of trivial cofibrations
+with cofibrant domains are weak equivalences. -/
+def TrivialCoproductAxiom : Prop :=
+  ∀ {ι : Type w} {A B : ι → C} (f : ∀ i, A i ⟶ B i) [HasCoproduct A] [HasCoproduct B],
+    (∀ i, IsCofibrant (A i)) → (∀ i, Cofibration (f i)) → (∀ i, WeakEquivalence (f i)) →
+      WeakEquivalence (Limits.Sigma.map f)
+
+/-- Lemma 1.6.2(1), small case: assuming CF1–CF5 (but not CF6), a small sum
+of weak equivalences between cofibrant objects is a weak equivalence. -/
+theorem weakEquivalence_coproduct_map_of_weakEquivalence
+    (h1 : CoproductCofibrationAxiom.{w} C) (h2 : TrivialCoproductAxiom.{w} C)
+    {ι : Type w} {A B : ι → C} (f : ∀ i, A i ⟶ B i) [HasCoproduct A] [HasCoproduct B]
+    (hA : ∀ i, IsCofibrant (A i)) (hB : ∀ i, IsCofibrant (B i))
+    (hw : ∀ i, WeakEquivalence (f i)) :
+    WeakEquivalence (Limits.Sigma.map f) :=
+  weakEquivalence_sigmaMap_of_trivialCofibrations h1.hasCoproduct
+    (fun g _ _ hX hg hgw ↦ h2 g hX hg hgw) f hA hB hw
+
 end ABCCofibrations.ABCPrecofibrationCategory
 
 namespace ABCCofibrations.ABCCofibrationCategory
@@ -93,15 +124,26 @@ open ABCPrecofibrationCategory
 variable {C : Type u} [Category.{v} C] [CategoryWithCofibrations C]
   [CategoryWithWeakEquivalences C] [HasInitial C]
 
-/-- Lemma 1.6.2(1), small case: under CF5, a small sum of weak equivalences
-between cofibrant objects is a weak equivalence. -/
+/-- CF5(1) of a cofibration category, in the standalone form. -/
+theorem coproductCofibrationAxiom [ABCCofibrationCategory.{w} C] :
+    CoproductCofibrationAxiom.{w} C :=
+  ⟨hasCoproductOfCofibrant, coproduct_cofibrant, coproduct_cofibration⟩
+
+/-- CF5(2) of a cofibration category, in the standalone form. -/
+theorem trivialCoproductAxiom [ABCCofibrationCategory.{w} C] :
+    TrivialCoproductAxiom.{w} C :=
+  fun f _ _ hA hf hw ↦ coproduct_weakEquivalence f hA hf hw
+
+/-- Lemma 1.6.2(1), small case, in a cofibration category. The general form
+`ABCPrecofibrationCategory.weakEquivalence_coproduct_map_of_weakEquivalence`
+assumes only CF1–CF5. -/
 theorem weakEquivalence_coproduct_map_of_weakEquivalence [ABCCofibrationCategory.{w} C]
     {ι : Type w} {A B : ι → C} (f : ∀ i, A i ⟶ B i) [HasCoproduct A] [HasCoproduct B]
     (hA : ∀ i, IsCofibrant (A i)) (hB : ∀ i, IsCofibrant (B i))
     (hw : ∀ i, WeakEquivalence (f i)) :
     WeakEquivalence (Limits.Sigma.map f) :=
-  weakEquivalence_sigmaMap_of_trivialCofibrations hasCoproductOfCofibrant
-    (fun g _ _ hX hg hgw ↦ coproduct_weakEquivalence g hX hg hgw) f hA hB hw
+  ABCPrecofibrationCategory.weakEquivalence_coproduct_map_of_weakEquivalence
+    coproductCofibrationAxiom trivialCoproductAxiom f hA hB hw
 
 /-- Lemma 1.6.3(1), the equivalent formulation of CF5: in a precofibration
 category in which coproducts of small cofibrant families exist, CF5(2) for

@@ -19,6 +19,9 @@ themselves are compared with the Lean fields in
 * Only the cofibration statements (1) are formalized. The fibration
   statements (2) are dual; they are not yet stated natively, because F5–F6
   are not part of `ABCPrefibrationCategory`.
+* The small case of Lemma 1.6.2(1) is stated with CF5(1) and CF5(2) as
+  standalone hypotheses (`CoproductCofibrationAxiom`,
+  `TrivialCoproductAxiom`), so it assumes CF1–CF5 and not CF6.
 * Lemmas 1.6.4(1) and 1.6.5(1) are stated with CF6(1) and CF6(2) as
   standalone hypotheses (`SequentialCofibrationAxiom`,
   `TrivialSequentialAxiom`), so they assume CF1–CF4 and CF6 only, as in the
@@ -162,7 +165,9 @@ only `Small.{w}` is not yet packaged.
 | --- | --- |
 | Common argument, fixed index type | `ABCPrecofibrationCategory.weakEquivalence_sigmaMap_of_trivialCofibrations` |
 | Lemma 1.6.2(1), finite | `ABCPrecofibrationCategory.weakEquivalence_coproduct_map_finite_of_weakEquivalence` |
-| Lemma 1.6.2(1), small | `ABCCofibrationCategory.weakEquivalence_coproduct_map_of_weakEquivalence` |
+| CF5(1), CF5(2) as hypotheses | `ABCPrecofibrationCategory.CoproductCofibrationAxiom`, `ABCPrecofibrationCategory.TrivialCoproductAxiom` |
+| Lemma 1.6.2(1), small (CF1–CF5 only) | `ABCPrecofibrationCategory.weakEquivalence_coproduct_map_of_weakEquivalence` |
+| Lemma 1.6.2(1), small, in a cofibration category | `ABCCofibrationCategory.weakEquivalence_coproduct_map_of_weakEquivalence` |
 | Lemma 1.6.3(1) | `ABCCofibrationCategory.cf5_trivial_iff` |
 | CF6(1), CF6(2) as hypotheses | `ABCPrecofibrationCategory.SequentialCofibrationAxiom`, `ABCPrecofibrationCategory.TrivialSequentialAxiom` |
 | Colimit of a CF6 sequence is cofibrant | `ABCPrecofibrationCategory.isCofibrant_colimit_of_sequence` |

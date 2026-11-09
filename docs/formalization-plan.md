@@ -446,6 +446,13 @@ of any derived counit on the image of the approximation.
 Theorem 6.2.3(1) is now also proved under its full structural hypothesis
 in `DerivedApproximationEquivalence.lean`. `CofibrantSubcategory.lean` supplies
 the restricted CF1–CF4 structure and the inclusion approximation instance.
+`FibrationBasic.lean` starts the dual theory by transporting F1–F4 and
+their elementary consequences through opposite categories.
+`FibrantApproximation.lean` now transports the approximation localization
+equivalence and right derivability structure and proves total right-derived
+existence with invertible unit on image objects (6.2.2(2), with the weaker
+composite preservation hypothesis). The fibrant-subcategory instances and
+the native statements of 6.2.1(2) and 6.2.3(2) are next.
 
 Suggested next construction:
 
@@ -499,16 +506,26 @@ Suggested next construction:
     property for any total left derived functor. The cofibrant subcategory
     has its inherited CF1–CF4 structure, and its inclusion is a general
     cofibrant approximation.
-13. **Next:** prepare the dual fibration/right-derived infrastructure via
-    opposite categories before the Quillen adjunction theorem 6.2.5. Check
-    Maltsiniotis's absolute-derived-functor argument and the exact mathlib
-    adjunction interfaces before choosing the proof. Foundation audits and
-    Chapter 1 backlog items remain separate.
+13. **In progress:** prepare the dual fibration/right-derived infrastructure
+    via opposite categories before the Quillen adjunction theorem 6.2.5.
+    `FibrationBasic.lean` now defines F1–F4 as CF1–CF4 on the opposite and
+    provides the native fibrancy bridge, terminal fibrancy, composition,
+    two out of three, fibrant replacements, F4 factorization, and restricted
+    F3 pullbacks. See [the duality note](mathematics/fibration-duality.md),
+    including the difference from the paper's presentation.
+    Fibrant approximations and right-derived existence are complete in
+    `FibrantApproximation.lean`, including the unit computation on image
+    objects. **Next:** package the fibrant subcategory and its inclusion,
+    then obtain 6.2.1(2) and 6.2.3(2).
+    Mathlib's `Functor.Derived.Adjunction` already supplies Maltsiniotis's
+    formal argument; prove the required preservation under postcomposition
+    before applying it. Foundation audits and Chapter 1 backlog items
+    remain separate.
 
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 All current proofs use CF1–CF4. The latest full check is
-`lake build ABCCofibrations`: 1960 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 1970 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.2.
@@ -532,6 +549,12 @@ Completed localization infrastructure:
   example, image cofibrancy, induced localizer morphism, object and arrow
   resolutions, common extensions, and connected resolution categories.
   The localized-equivalence consequence is proved in the module below.
+- `FibrantApproximation.lean`: approximation by opposites, localization
+  equivalence, right derivability structure, and right-derived existence
+  with invertible unit on approximation image objects.
+- `FibrationBasic.lean`: prefibration categories via opposites, the
+  fibrant/cofibrant object bridge, native F1–F4 consequences and fibrant
+  replacements, using the existing proofs on the opposite category.
 - `CofibrantSubcategory.lean`: CF1–CF4 on the full subcategory of cofibrant
   objects and the general approximation instance for its inclusion.
 - `DerivedApproximationEquivalence.lean`: Theorem 6.2.3(1) under its structural
@@ -772,3 +795,5 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-08 | General cofibrant approximation localization equivalence | `CofibrantApproximationLocalization.lean` constructs the inverse and both natural comparison isomorphisms, proves Theorem 6.1.7(1), and then obtains the general left derivability structure. Corrected v4 lemma citations: cancellation is 6.1.3(1), fraction independence is 6.1.4(1). Full build passed (1954 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: the full structural hypotheses of 6.2.2(1) and 6.2.3(1). |
 | 2026-11-08 | Derived functors from general approximations | `CofibrantApproximationDerived.lean` proves Theorem 6.2.2(1) under its full hypothesis on the composite, pointwise existence, and invertibility of any derived counit on approximation image objects. No target two-out-of-three or saturation axiom is added. Full build passed (1956 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: cofibrant-subcategory structure and the structural version of 6.2.3(1). |
 | 2026-11-08 | Cofibrant subcategory and structural derived equivalence | CF1–CF4 restrict to `CofibrantObject C`, and its inclusion is a general cofibrant approximation. `DerivedApproximationEquivalence.lean` proves Theorem 6.2.3(1), with existence and equivalence of any total left derived functor. Full build passed (1960 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: opposite-category/right-derived infrastructure and audit the shorter Maltsiniotis route before Quillen adjunction. |
+| 2026-11-08 | Prefibration foundation by duality | `FibrationBasic.lean` defines F1–F4 through the opposite precofibration category and proves the fibrant/cofibrant bridge plus native F1–F4 consequences and fibrant replacements. The new note explains differences from the paper and records mathlib's Maltsiniotis derived-adjunction interface. Full build passed (1962 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: fibrant approximations and right-derived existence. |
+| 2026-11-08 | Fibrant approximations and total right-derived existence | `FibrantApproximation.lean` dualizes the approximation class, transports localization equivalence and right derivability, and proves 6.2.2(2) under the weaker composite preservation hypothesis with invertibility of any derived unit on image objects. The note records differences from v4. Full build passed (1970 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: fibrant-subcategory instances and 6.2.1(2)/6.2.3(2). |

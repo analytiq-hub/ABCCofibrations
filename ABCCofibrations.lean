@@ -29,5 +29,7 @@ import ABCCofibrations.CofibrantApproximationLocalization
 import ABCCofibrations.CofibrantApproximationDerived
 import ABCCofibrations.CofibrantSubcategory
 import ABCCofibrations.DerivedApproximationEquivalence
+import ABCCofibrations.FibrationBasic
+import ABCCofibrations.FibrantApproximation
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

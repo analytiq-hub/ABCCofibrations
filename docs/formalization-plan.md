@@ -378,6 +378,11 @@ theorem, with its source statement and prerequisites documented.
   claims of 1.3.4(1). Remaining: Lemma 1.6.1, `Small`-index transfer of CF5,
   and the fibration statements (which need F5–F6).
 - [ ] Treat over and under categories (§1.7), making object restrictions explicit.
+  **In progress:** Proposition 1.7.1(1), CF1–CF4 part, is proved in
+  `OverUnder.lean` for `Over A` and, with `A` cofibrant, `Under A`; see
+  [the §1.7 note](mathematics/over-under.md). Remaining: CF5–CF6 (coproducts
+  in `Under A` need CF5 plus a pushout) and the fibration statement (2) by
+  duality.
 - [ ] Formalize the properness results (§1.8) needed by subsequent work.
 - [ ] Review Chapter 1 coverage and list any omitted statements with reasons.
 
@@ -625,7 +630,7 @@ Suggested next construction:
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 The cofibration proofs use CF1–CF4, and the dual fibration proofs use F1–F4. The latest full check is
-`lake build ABCCofibrations`: 2030 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 2214 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.4.
@@ -666,6 +671,8 @@ Completed localization infrastructure:
   The homotopy-inversion lemma is transported from the cofibration side.
 - `BrownFibration.lean`: Brown's functor lemma on fibrant objects, by
   transport through the opposite precofibration category.
+- `OverUnder.lean`: induced classes on `Under A`; Proposition 1.7.1(1),
+  CF1–CF4 part, for `Over A` and for `Under A` with `A` cofibrant.
 - `SequentialColimits.lean`: CF6(1)/(2) as standalone hypotheses; the
   Reedy step and Lemma 1.6.4(1) (colimits of degreewise weak equivalences of
   CF6 sequences), and Lemma 1.6.5(1) (equivalent forms of CF6(2)).
@@ -1071,3 +1078,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-09 | Sums of weak equivalences (§1.6) | `SmallSums.lean` proves Lemma 1.6.2(1) for finite (CF1–CF4) and small (CF5) families and Lemma 1.6.3(1), all from `weakEquivalence_sigmaMap_of_trivialCofibrations`. Checked that the proof of 1.6.4(1) needs only the cofibration-edge relative Brown lemma, not the refuted claims of 1.3.4(1). Full build passed (2022 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: Lemma 1.6.4(1). |
 | 2026-11-09 | Colimits of CF6 sequences (§1.6) | `SequentialColimits.lean` proves Lemma 1.6.4(1) (Reedy step by pushout pasting plus inductively chosen compatible Brown factorizations) and Lemma 1.6.5(1), with CF6 stated as standalone hypotheses so only CF1–CF4 and CF6 are used. The inductive step uses `exists_relative_brown_of_cofibration_edges`, not the refuted separate claims of 1.3.4(1). Full build passed (2030 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: §1.7 over/under categories, or Lemma 1.6.1. |
 | 2026-11-09 | CF5 hypotheses for Lemma 1.6.2(1) | `SmallSums.lean` adds standalone `CoproductCofibrationAxiom` and `TrivialCoproductAxiom`; the small case of 1.6.2(1) now assumes CF1–CF5 only, with the cofibration-category version kept as a wrapper of the same name. Full build passed, without warnings. |
+| 2026-11-09 | Over and under categories (§1.7) | `OverUnder.lean` defines the induced classes on `Under A` (a mathlib TODO) and proves Proposition 1.7.1(1), CF1–CF4 part: `Over A` is a precofibration category, and so is `Under A` for cofibrant `A`. Pushouts are created by the forgetful functors. Full build passed (2214 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: §1.8 properness, then the CF5–CF6 and dual parts of 1.7.1. |

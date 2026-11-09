@@ -1,6 +1,7 @@
 import ABCCofibrations.Basic
 import ABCCofibrations.Coproducts
 import ABCCofibrations.Factorization
+import ABCCofibrations.SmallSums
 import ABCCofibrations.Gluing
 import ABCCofibrations.Extension
 import ABCCofibrations.Cylinder

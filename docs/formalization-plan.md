@@ -369,7 +369,13 @@ theorem, with its source statement and prerequisites documented.
 ## Milestone 4 — Complete the selected Chapter 1 foundations
 
 - [ ] Develop the consequences of CF5 and CF6 in §1.6, including useful APIs for
-  coproducts and sequential composites.
+  coproducts and sequential composites. **In progress:** Lemmas 1.6.2(1) and
+  1.6.3(1) are proved in `SmallSums.lean` from one shared argument; see
+  [the §1.6 note](mathematics/cf5-cf6-consequences.md). **Next:** Lemma
+  1.6.4(1), whose proof uses only the cofibration-edge relative Brown
+  factorization `exists_relative_brown_of_cofibration_edges` (not the refuted
+  separate claims of 1.3.4(1)), then 1.6.5(1). Lemma 1.6.1 and `Small`-index
+  transfer of CF5 remain open.
 - [ ] Treat over and under categories (§1.7), making object restrictions explicit.
 - [ ] Formalize the properness results (§1.8) needed by subsequent work.
 - [ ] Review Chapter 1 coverage and list any omitted statements with reasons.
@@ -613,13 +619,12 @@ Suggested next construction:
     fraction transport added to `FibrantOpposite.lean`.
     With this, the fibration-side localization theory of Chapter 6 mirrors
     the cofibration side. The foundation audit (Milestone 0) is now also
-    complete. **Next:** the Chapter 1 backlog (§1.6–1.8), starting with the
-    elementary consequences of CF5 and CF6.
+    complete. Chapter 1 §1.6 is in progress (Milestone 4).
 
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 The cofibration proofs use CF1–CF4, and the dual fibration proofs use F1–F4. The latest full check is
-`lake build ABCCofibrations`: 2020 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 2022 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.4.
@@ -660,6 +665,9 @@ Completed localization infrastructure:
   The homotopy-inversion lemma is transported from the cofibration side.
 - `BrownFibration.lean`: Brown's functor lemma on fibrant objects, by
   transport through the opposite precofibration category.
+- `SmallSums.lean`: Lemmas 1.6.2(1) (finite and small sums of weak
+  equivalences between cofibrant objects) and 1.6.3(1) (equivalent form of
+  CF5), from one shared Brown-factorization argument.
 - `TrivialFibrationFractions.lean`: right fractions with trivial-fibration
   denominators, common refinements and denominators, composition, and
   fibration numerators with product boundary, all transported from the
@@ -1056,3 +1064,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-09 | Duality and reuse cleanup | `LocalizationTransfer.lean` proves the quotient-lift and same-inverting-classes localization lemmas once; the left/right homotopy-quotient comparisons and both trivial-(co)fibration comparisons are now applications, with their duplicated proofs removed. `FibrantOpposite.lean` adds `(FibrantObject C)ᵒᵖ ≌ CofibrantObject Cᵒᵖ`, and `map_eq_of_fibrant_rightHomotopy` is now a transport of `map_eq_of_cofibrant_leftHomotopy`. Public statements unchanged; notes updated. Full build passed (2018 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |
 | 2026-11-09 | Trivial-fibration right fractions | `TrivialFibrationFractions.lean` proves representation by right fractions with trivial-fibration denominators, common refinements, equality over a refinement, composition, finite common denominators, and fibration numerators with product boundary. Each result transports `TrivialCofibrationFractions.lean` through `fibrantObjectOpEquivalence`, using new general localization/fraction transport in `FibrantOpposite.lean`. Plan wording on Lemma 1.3.4(1) corrected: the original claim is refuted and the corrected statement proved. Full build passed (2020 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: foundation audit and Chapter 1 backlog. |
 | 2026-11-09 | Foundation audit (Milestone 0) | `docs/axiom-correspondence.md` maps every clause of Definition 1.1.1 and F1–F4 to Lean fields or derived results; no discrepancy, no definition changed. `Basic.lean` adds independence of the chosen initial object, the empty-coproduct case from CF1, all CF6 composites from successive maps, the CF5 existence equivalence, and CF5/CF6 for arbitrary colimit representatives. Full build passed (2020 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: Chapter 1 §1.6. |
+| 2026-11-09 | Sums of weak equivalences (§1.6) | `SmallSums.lean` proves Lemma 1.6.2(1) for finite (CF1–CF4) and small (CF5) families and Lemma 1.6.3(1), all from `weakEquivalence_sigmaMap_of_trivialCofibrations`. Checked that the proof of 1.6.4(1) needs only the cofibration-edge relative Brown lemma, not the refuted claims of 1.3.4(1). Full build passed (2022 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: Lemma 1.6.4(1). |

@@ -45,5 +45,6 @@ import ABCCofibrations.RightHomotopyCategory
 import ABCCofibrations.RightHomotopyWeakEquivalences
 import ABCCofibrations.RightHomotopyCategoryOpposite
 import ABCCofibrations.RightHomotopyOre
+import ABCCofibrations.RightHomotopyLocalization
 import ABCCofibrations.RelativeBrownObstruction
 import ABCCofibrations.Examples

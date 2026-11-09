@@ -467,7 +467,9 @@ proves right-fraction representation and common-denominator equality.
 Different-denominator equality 6.4.4(2)(b) and both refinements in
 6.4.5(2) are now proved as well. The native right-homotopy quotient, its weak-equivalence laws, the
 equivalence with the opposite left quotient, and the right calculus of
-fractions are now proved. Next compare their localizations.
+fractions are now proved. `RightHomotopyLocalization.lean` now compares
+the quotient localization with fibrant-object localization and ambient
+localization, including the native inclusion equivalence 6.1.6(2).
 
 Suggested next construction:
 
@@ -566,15 +568,19 @@ Suggested next construction:
     transports 6.4.3(2)(a) and supplies the right calculus of fractions,
     using cancellation for extensionality. Together with the prior
     cancellation results, 6.4.3(2) is complete.
-    **Next:** compare localization of the right-homotopy quotient with
-    localization of fibrant objects, then with ambient localization.
+    `RightHomotopyLocalization.lean` now proves those comparisons: the
+    quotient has the strict localization universal property, localizing it
+    agrees with localizing fibrant objects, and the native fibrant
+    inclusion gives the ambient comparison (6.1.6(2)).
+    **Next:** faithfulness of the quotient-to-localization comparison and
+    the equality criterion for arbitrary fibrant-subcategory localizations.
     The relevant abstract right-calculus statement is Theorem 6.4.2
     (the earlier plan reference to 6.4.1(2) was imprecise). Foundation audits and Chapter 1 backlog items remain separate.
 
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 The cofibration proofs use CF1–CF4, and the dual fibration proofs use F1–F4. The latest full check is
-`lake build ABCCofibrations`: 2008 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 2010 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.2.
@@ -598,6 +604,9 @@ Completed localization infrastructure:
   example, image cofibrancy, induced localizer morphism, object and arrow
   resolutions, common extensions, and connected resolution categories.
   The localized-equivalence consequence is proved in the module below.
+- `RightHomotopyLocalization.lean`: quotient factorization and localization
+  universal property; equivalences between quotient, fibrant-object, and
+  ambient localizations; native inclusion comparison 6.1.6(2).
 - `RightHomotopyCategory.lean`, `RightHomotopyWeakEquivalences.lean`: native
   quotient, exact equality relation, and descended weak-equivalence laws.
 - `RightHomotopyCategoryOpposite.lean`: equivalence with the opposite left
@@ -883,3 +892,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-09 | Native/opposite homotopy bridge and right fractions | `HomotopyOpposite.lean` proves the chosen-product/coproduct comparison and strict/general homotopy equivalence, transferring transitivity, postcomposition, and 6.3.1(2). `RightHomotopyCancellation.lean` transfers weak-equivalence cancellation. `RightHomotopyFractions.lean` proves 6.4.4(2)(a) with trivial-fibration denominators and common-denominator equality. Full build passed (2000 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: different-denominator equality 6.4.4(2)(b) and full-boundary refinement 6.4.5(2). |
 | 2026-11-09 | Right-fraction equality and product-boundary refinement | `RightHomotopyFractions.lean` proves 6.4.4(2)(b) for arbitrary weak-equivalence denominators, 6.4.5(2)(a) with fibrant product boundary, and 6.4.5(2)(b) with trivial-fibration common refinements and exact denominator equality. Alongside the previous localization criterion, the right-side 6.4.4 and 6.4.5 statements are complete. The note explains the opposite transport and equation-based evaluation interface. Full build passed (2000 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: native right-homotopy quotient and calculus of fractions. |
 | 2026-11-09 | Native right-homotopy quotient and calculus | The native quotient on `FibrantObject C` has equality exactly right homotopy and descended weak-equivalence laws. Its equivalence with the opposite left quotient preserves and reflects weak equivalences. The transported strict Ore square completes 6.4.3(2)(a), and native cancellation supplies a right calculus of fractions. Full build passed (2008 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: compare localization of the quotient with fibrant-object and ambient localizations. |
+| 2026-11-09 | Right-homotopy quotient localization and ambient comparison | `RightHomotopyLocalization.lean` proves the unique quotient factorization for inverting functors, the strict localization universal property, equivalence between quotient and fibrant-object localizations, and the native fibrant inclusion equivalence 6.1.6(2). Their composite gives ambient localization. The note explains the native universal-property proof and reuse of the general approximation theorem. Full build passed (2010 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: faithfulness and the arbitrary fibrant-localization equality criterion. |

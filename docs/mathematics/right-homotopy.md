@@ -275,8 +275,8 @@ the earlier opposite cylinder construction, while the quotient and
 representative arguments are native. Combined with the previously proved
 cancellation statements, the fibration-side statements in 6.4.3(2) are now
 proved. We do not assert that the quotient itself is already a localization:
-its weak equivalences still need to be inverted. Comparing that localization
-with the localization of fibrant objects is the next step.
+its weak equivalences still need to be inverted. That localization is now compared with fibrant-object and ambient
+localizations below.
 
 All new names below are in `ABCCofibrations.ABCPrefibrationCategory`.
 
@@ -290,3 +290,59 @@ All new names below are in `ABCCofibrations.ABCPrefibrationCategory`.
 | Preservation and reflection of weak equivalences | `weakEquivalence_rightHomotopyCategoryToOpposite_map_iff` |
 | Native strict Ore square | `exists_strict_right_homotopy_ore` |
 | Right calculus of fractions | `weakEquivalences_rightHomotopyCategory_hasRightCalculusOfFractions` |
+
+## Localization of the quotient and comparison with the ambient category
+
+[RightHomotopyLocalization.lean](../../ABCCofibrations/RightHomotopyLocalization.lean)
+first proves that every weak-equivalence-inverting functor on fibrant
+objects identifies right-homotopic maps. For a strict homotopy, the weak
+equivalence into its path object makes the two projections have equal
+images. The trivial fibration changing the source can then be cancelled.
+This yields a unique factorization through the native right-homotopy quotient.
+
+Consequently, the quotient functor is a localized equivalence of localizers.
+Localizing its source at weak equivalences before taking the quotient, or
+localizing the quotient at its descended weak equivalences, gives equivalent
+categories. We also construct the direct comparison from the quotient to
+fibrant-object localization and prove its strict localization universal
+property. In particular, this comparison is a localization functor.
+
+The native fibrant inclusion is already a general fibrant approximation.
+Its induced functor on canonical localizations is therefore an equivalence,
+giving the native formulation of Theorem 6.1.6(2). Any ambient localization
+restricts to a localization of fibrant objects. Composing these equivalences
+gives
+
+$$
+\bigl(\pi_r(\mathcal C_{fib})\bigr)[W^{-1}]
+\simeq \mathcal C_{fib}[W^{-1}]
+\simeq \mathcal C[W^{-1}].
+$$
+
+**Differences from the paper:** the mathematical comparison is the dual of
+the cofibration-side construction, with no extra axioms. We give a native
+factorization/universal-property proof so the result applies directly to
+mathlib's fibrant-object and quotient types. Mathlib's general theorem on
+relations factoring through localization supplies the first equivalence;
+the previously established general fibrant-approximation theorem supplies
+the second. No second construction of object replacements is required.
+The quotient itself is still distinguished from its localization.
+
+| Statement | Declaration in `ABCCofibrations.ABCPrefibrationCategory` |
+| --- | --- |
+| Right homotopy is killed by any inverting functor | `map_eq_of_fibrant_rightHomotopy` |
+| Unique factorization through the quotient | `liftFromRightHomotopyCategory`, `_fac`, `_unique` |
+| Quotient as a morphism of localizers | `rightHomotopyQuotientLocalizerMorphism` |
+| Fibrant-object versus quotient localization | `rightHomotopyLocalizationEquivalence` |
+| Direct quotient comparison | `rightHomotopyCategoryToLocalization` |
+| Its strict localization universal property | `rightHomotopyComparisonStrictUniversalProperty` |
+| It is a localization | `rightHomotopyCategoryToLocalization_isLocalization` |
+| Native fibrant inclusion comparison | `fibrantLocalizationToAmbient` |
+| Theorem 6.1.6(2), native equivalence | `fibrantAmbientLocalizationEquivalence` |
+| Restricting arbitrary ambient localization | `fibrantInclusion_comp_isLocalization` |
+| Quotient localization versus ambient localization | `rightHomotopyAmbientLocalizationEquivalence` |
+
+Faithfulness of the direct quotient-to-localization comparison and the
+representative-level equality criterion for an arbitrary localization of
+the fibrant subcategory remain to be packaged. The ambient equality criterion
+6.3.1(2) was already proved by the opposite comparison.

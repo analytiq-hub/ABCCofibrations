@@ -342,7 +342,46 @@ The quotient itself is still distinguished from its localization.
 | Restricting arbitrary ambient localization | `fibrantInclusion_comp_isLocalization` |
 | Quotient localization versus ambient localization | `rightHomotopyAmbientLocalizationEquivalence` |
 
-Faithfulness of the direct quotient-to-localization comparison and the
-representative-level equality criterion for an arbitrary localization of
-the fibrant subcategory remain to be packaged. The ambient equality criterion
-6.3.1(2) was already proved by the opposite comparison.
+Faithfulness of the direct comparison and the equality criterion for any
+fibrant-subcategory localization are now proved below. The ambient equality
+criterion 6.3.1(2) was already proved by the opposite comparison.
+
+## Faithfulness and equality in arbitrary fibrant-object localizations
+
+A weak equivalence in the native quotient is an epimorphism: choose a
+representative and cancel it from a right homotopy using the earlier
+precomposition-cancellation theorem. Thus, if two quotient arrows become
+equal under the direct comparison to fibrant-object localization, the
+right calculus of fractions gives a weak-equivalence precomposition making
+them equal already. That precomposition is an epimorphism, so it cancels.
+The comparison is therefore faithful.
+
+For any localization $F$ of the fibrant subcategory, and any native arrows
+$f,g:X\to Y$, we now have
+
+$$
+F(f)=F(g)\quad\Longleftrightarrow\quad f\simeq_r g.
+$$
+
+Equality in $F$ transfers to equality in the canonical localization by the
+localization universal property. Faithfulness of the quotient comparison
+then gives equality of homotopy classes. Conversely, every functor inverting
+weak equivalences identifies right-homotopic maps.
+
+**Difference from the paper:** this is the native fibrant-subcategory form
+of the equality criterion 6.4.4(2)(c), stated for any localization functor.
+The ambient form was already proved. The proof mirrors the cofibration-side
+argument, using epimorphisms and the right calculus in place of
+monomorphisms and the left calculus. Faithfulness does not assert fullness
+or identify the unlocalized quotient with the localization.
+
+| Statement | Declaration in `ABCCofibrations.ABCPrefibrationCategory` |
+| --- | --- |
+| Weak-equivalence representatives give epimorphisms | `epi_toRightHomotopyCategory_map` |
+| Any descended weak equivalence is an epimorphism | `epi_of_weakEquivalence_rightHomotopyCategory` |
+| Faithfulness of the direct comparison | `rightHomotopyCategoryToLocalization_faithful` |
+| Equality iff right homotopy for arbitrary fibrant localization | `map_eq_iff_fibrant_rightHomotopy` |
+
+The next localization refinement is to invert only trivial fibrations on
+fibrant objects and compare that construction with weak-equivalence
+localization, using the already available Brown functor lemma.

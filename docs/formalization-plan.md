@@ -470,6 +470,8 @@ equivalence with the opposite left quotient, and the right calculus of
 fractions are now proved. `RightHomotopyLocalization.lean` now compares
 the quotient localization with fibrant-object localization and ambient
 localization, including the native inclusion equivalence 6.1.6(2).
+Its direct comparison is now faithful, and equality in arbitrary
+fibrant-object localizations is exactly right homotopy.
 
 Suggested next construction:
 
@@ -572,8 +574,11 @@ Suggested next construction:
     quotient has the strict localization universal property, localizing it
     agrees with localizing fibrant objects, and the native fibrant
     inclusion gives the ambient comparison (6.1.6(2)).
-    **Next:** faithfulness of the quotient-to-localization comparison and
-    the equality criterion for arbitrary fibrant-subcategory localizations.
+    Faithfulness and the equality criterion for arbitrary fibrant-object
+    localizations are now proved: weak-equivalence classes are epimorphisms,
+    so the right-calculus equality test cancels its denominator.
+    **Next:** native localization at trivial fibrations and comparison with
+    weak-equivalence localization, via Brown's functor lemma.
     The relevant abstract right-calculus statement is Theorem 6.4.2
     (the earlier plan reference to 6.4.1(2) was imprecise). Foundation audits and Chapter 1 backlog items remain separate.
 
@@ -606,7 +611,8 @@ Completed localization infrastructure:
   The localized-equivalence consequence is proved in the module below.
 - `RightHomotopyLocalization.lean`: quotient factorization and localization
   universal property; equivalences between quotient, fibrant-object, and
-  ambient localizations; native inclusion comparison 6.1.6(2).
+  ambient localizations; native inclusion comparison 6.1.6(2); faithfulness
+  and the equality criterion for arbitrary fibrant-object localizations.
 - `RightHomotopyCategory.lean`, `RightHomotopyWeakEquivalences.lean`: native
   quotient, exact equality relation, and descended weak-equivalence laws.
 - `RightHomotopyCategoryOpposite.lean`: equivalence with the opposite left
@@ -893,3 +899,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-09 | Right-fraction equality and product-boundary refinement | `RightHomotopyFractions.lean` proves 6.4.4(2)(b) for arbitrary weak-equivalence denominators, 6.4.5(2)(a) with fibrant product boundary, and 6.4.5(2)(b) with trivial-fibration common refinements and exact denominator equality. Alongside the previous localization criterion, the right-side 6.4.4 and 6.4.5 statements are complete. The note explains the opposite transport and equation-based evaluation interface. Full build passed (2000 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: native right-homotopy quotient and calculus of fractions. |
 | 2026-11-09 | Native right-homotopy quotient and calculus | The native quotient on `FibrantObject C` has equality exactly right homotopy and descended weak-equivalence laws. Its equivalence with the opposite left quotient preserves and reflects weak equivalences. The transported strict Ore square completes 6.4.3(2)(a), and native cancellation supplies a right calculus of fractions. Full build passed (2008 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: compare localization of the quotient with fibrant-object and ambient localizations. |
 | 2026-11-09 | Right-homotopy quotient localization and ambient comparison | `RightHomotopyLocalization.lean` proves the unique quotient factorization for inverting functors, the strict localization universal property, equivalence between quotient and fibrant-object localizations, and the native fibrant inclusion equivalence 6.1.6(2). Their composite gives ambient localization. The note explains the native universal-property proof and reuse of the general approximation theorem. Full build passed (2010 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: faithfulness and the arbitrary fibrant-localization equality criterion. |
+| 2026-11-09 | Faithfulness and arbitrary fibrant-localization equality | `RightHomotopyLocalization.lean` proves that weak-equivalence classes are epimorphisms, the quotient comparison is faithful, and any fibrant-object localization identifies exactly right-homotopic representatives. The note records the native dual argument and distinguishes faithfulness from fullness. Full build passed (2010 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: localization at trivial fibrations and its comparison with weak-equivalence localization. |

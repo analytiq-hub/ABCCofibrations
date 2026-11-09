@@ -192,6 +192,64 @@ instance rightHomotopyCategoryToLocalization_isLocalization :
       (D := (weakEquivalences (RightHomotopyCategory C)).Localization))
 
 
+
+/-- Weak equivalences act as epimorphisms on right-homotopy classes. -/
+theorem epi_toRightHomotopyCategory_map
+    {X Y : FibrantObject C} (f : X ⟶ Y) [WeakEquivalence f.hom] :
+    Epi ((toRightHomotopyCategory (C := C)).map f) := by
+  constructor
+  rintro ⟨Z⟩ ⟨g⟩ ⟨h⟩ he
+  change Y ⟶ Z at g h
+  apply (toRightHomotopyCategory_map_eq_iff g h).2
+  have hh : fibrantRightHomotopyRel (f ≫ g) (f ≫ h) := by
+    apply (toRightHomotopyCategory_map_eq_iff _ _).1
+    change toRightHomotopyCategory.map f ≫ toRightHomotopyCategory.map g =
+      toRightHomotopyCategory.map f ≫ toRightHomotopyCategory.map h at he
+    rw [← Functor.map_comp, ← Functor.map_comp] at he
+    exact he
+  let := hasBinaryProduct Z.obj Z.obj
+  exact RightHomotopyRel.of_precomp_weakEquivalence f.hom hh
+
+/-- Every descended weak equivalence is an epimorphism in the quotient. -/
+instance epi_of_weakEquivalence_rightHomotopyCategory
+    {X Y : RightHomotopyCategory C} (f : X ⟶ Y) [WeakEquivalence f] : Epi f := by
+  have hw := ‹WeakEquivalence f›
+  obtain ⟨X⟩ := X
+  obtain ⟨Y⟩ := Y
+  obtain ⟨g, hg⟩ := (toRightHomotopyCategory (C := C)).map_surjective f
+  have hgw : WeakEquivalence (toRightHomotopyCategory.map g) := by rw [hg]; exact hw
+  let : WeakEquivalence g.hom := (weakEquivalence_toRightHomotopyCategory_map_iff g).1 hgw
+  rw [← hg]
+  exact epi_toRightHomotopyCategory_map g
+
+/-- Localization is faithful on the right-homotopy quotient: the right
+calculus detects equality after a weak-equivalence precomposition, and
+that denominator is already an epimorphism. -/
+instance rightHomotopyCategoryToLocalization_faithful :
+    (rightHomotopyCategoryToLocalization (C := C)).Faithful where
+  map_injective {X Y} f g h := by
+    obtain ⟨Z, s, hs, he⟩ :=
+      (MorphismProperty.map_eq_iff_precomp
+        (rightHomotopyCategoryToLocalization (C := C))
+        (weakEquivalences (RightHomotopyCategory C)) f g).1 h
+    let : WeakEquivalence s := ⟨hs⟩
+    exact (cancel_epi s).1 he
+
+/-- For any localization of the fibrant subcategory, equality of images
+of representative maps is exactly native right homotopy. -/
+theorem map_eq_iff_fibrant_rightHomotopy
+    (F : FibrantObject C ⥤ D) [F.IsLocalization (weakEquivalences (FibrantObject C))]
+    {X Y : FibrantObject C} (f g : X ⟶ Y) :
+    F.map f = F.map g ↔ fibrantRightHomotopyRel f g := by
+  constructor
+  · intro h
+    apply (toRightHomotopyCategory_map_eq_iff f g).1
+    apply (rightHomotopyCategoryToLocalization (C := C)).map_injective
+    change (weakEquivalences (FibrantObject C)).Q.map f =
+      (weakEquivalences (FibrantObject C)).Q.map g
+    exact AreEqualizedByLocalization.mk (weakEquivalences (FibrantObject C)) f g F h
+  · exact map_eq_of_fibrant_rightHomotopy F (Localization.inverts F _)
+
 /-- The comparison from localization of fibrant objects to ambient localization. -/
 noncomputable def fibrantLocalizationToAmbient :
     (weakEquivalences (FibrantObject C)).Localization ⥤ (weakEquivalences C).Localization :=

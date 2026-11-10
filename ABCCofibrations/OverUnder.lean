@@ -6,6 +6,7 @@ Authors: ABCCofibrations contributors
 module
 
 public import ABCCofibrations.Basic
+public import ABCCofibrations.ToDualRegistrations
 public import Mathlib.AlgebraicTopology.ModelCategory.Over
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 public import Mathlib.CategoryTheory.Limits.Comma
@@ -19,8 +20,11 @@ is a precofibration category, and so is the under category `Under A` when
 is a weak equivalence or cofibration when its underlying map is.
 
 Mathlib already equips `Over A` with the induced classes
-(`Mathlib.AlgebraicTopology.ModelCategory.Over`). The induced classes on
-`Under A`, which mathlib lists as a TODO, are defined here in the same way.
+(`Mathlib.AlgebraicTopology.ModelCategory.Over`). The induced cofibrations and
+weak equivalences on `Under A`, which mathlib lists as a TODO, are generated
+from mathlib's `Over` instances by `to_dual`: the dual of the fibrations of
+`Over A` are the cofibrations of `Under A`, and weak equivalences are
+self-dual. The temporary dictionary entries are in `ToDualRegistrations.lean`.
 Pushouts in both categories are computed in the ambient category: the
 forgetful functors create pushouts. No colimits beyond those of CF3 are
 assumed.
@@ -38,15 +42,15 @@ section UnderClasses
 
 variable {C : Type u} [Category.{v} C] (S : C)
 
-/-- Cofibrations of `Under S` are the maps whose underlying map is one. -/
-instance underCategoryWithCofibrations [CategoryWithCofibrations C] :
-    CategoryWithCofibrations (Under S) where
-  cofibrations := (cofibrations C).under
-
-/-- Weak equivalences of `Under S` are the maps whose underlying map is one. -/
-instance underCategoryWithWeakEquivalences [CategoryWithWeakEquivalences C] :
-    CategoryWithWeakEquivalences (Under S) where
-  weakEquivalences := (weakEquivalences C).under
+/- The induced classes on `Under S`, generated from mathlib's instances on
+`Over S`. The bodies are `{ cofibrations := (cofibrations C).under }` and
+`{ weakEquivalences := (weakEquivalences C).under }`. -/
+attribute [to_dual ABCCofibrations.underCategoryWithCofibrations
+  /-- Cofibrations of `Under S` are the maps whose underlying map is one. -/]
+  instCategoryWithFibrationsOver
+attribute [to_dual ABCCofibrations.underCategoryWithWeakEquivalences
+  /-- Weak equivalences of `Under S` are the maps whose underlying map is one. -/]
+  instCategoryWithWeakEquivalencesOver
 
 variable {S}
 

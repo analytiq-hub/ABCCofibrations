@@ -95,6 +95,14 @@ simpler than transport, record that reason and keep the proof confined to
 that interface. Do not use a native interface as a blanket justification
 for duplicating an existing theorem's proof.
 
+Mathlib's `to_dual` attribute is an alternative for declarations whose dual
+pairs are registered in its dictionary. In this project it is used only where
+the dual is a mathlib-style construction (currently the `Under` classes),
+with any missing entries registered temporarily in
+`ToDualRegistrations.lean`. Do not reformulate the fibration theory around it:
+`ABCPrefibrationCategory` is defined through the opposite category, and
+`to_dual` would need native parallel classes.
+
 When left and right developments repeat general categorical machinery, first
 look for a mathlib theorem. Otherwise extract a shared lemma at the level of
 categories, morphism properties, congruences, or localizers. In particular,

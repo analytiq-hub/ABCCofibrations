@@ -9,6 +9,9 @@ import ABCCofibrations.EquivalenceTransfer
 import ABCCofibrations.FibrationCategory
 import ABCCofibrations.FibrationConsequences
 import ABCCofibrations.FibrationExtension
+import ABCCofibrations.CF3Equivalence
+import ABCCofibrations.CofibrantObjectCategory
+import ABCCofibrations.QuillenModelCategory
 import ABCCofibrations.OverUnderCofibrationCategory
 import ABCCofibrations.OverUnderFibration
 import ABCCofibrations.Gluing

@@ -377,13 +377,14 @@ theorem, with its source statement and prerequisites documented.
   `exists_relative_brown_of_cofibration_edges`, not the refuted separate
   claims of 1.3.4(1). Remaining: Lemma 1.6.1, `Small`-index transfer of CF5,
   and the fibration statements (which need F5–F6).
-- [ ] Treat over and under categories (§1.7), making object restrictions explicit.
-  **In progress:** Proposition 1.7.1(1), CF1–CF4 part, is proved in
+- [x] Treat over and under categories (§1.7), making object restrictions explicit.
+  **Done:** Proposition 1.7.1 in full. The CF5–CF6 parts are in
+  `OverUnderCofibrationCategory.lean`, and the F5–F6 parts follow by
+  transport (`ABCFibrationCategory`). Proposition 1.7.1(1), CF1–CF4 part, is proved in
   `OverUnder.lean` for `Over A` and, with `A` cofibrant, `Under A`; see
   [the §1.7 note](mathematics/over-under.md). The F1–F4 part of the fibration
   statement (2) is proved in `OverUnderFibration.lean` by transport along
-  mathlib's op-equivalences. Remaining: CF5–CF6 (coproducts in `Under A` need
-  CF5 plus a pushout).
+  mathlib's op-equivalences.
 - [x] Formalize the properness results (§1.8) needed by subsequent work.
   **Done:** all of §1.8, both the cofibration statements (`Properness.lean`)
   and the fibration statements by duality (`RightProperness.lean`): PCF/PF,
@@ -637,7 +638,7 @@ Suggested next construction:
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 The cofibration proofs use CF1–CF4, and the dual fibration proofs use F1–F4. The latest full check is
-`lake build ABCCofibrations`: 2224 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 2228 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.4.
@@ -691,6 +692,12 @@ Completed localization infrastructure:
   an equivalence of categories identifying cofibrations and weak equivalences.
 - `OverUnderFibration.lean`: Proposition 1.7.1(2), F1–F4 part: `Under A` is a
   prefibration category, and so is `Over A` for fibrant `A`.
+- `FibrationCategory.lean`: `ABCFibrationCategory` (F1–F6) as a cofibration
+  category on the opposite category.
+- `OverUnderCofibrationCategory.lean`: transfer of CF5–CF6 along forgetful
+  functors and equivalences; coproducts in `Under A`; Proposition 1.7.1(1)
+  for cofibration categories, and (in `OverUnderFibration.lean`) 1.7.1(2) for
+  fibration categories.
 - `ToDualRegistrations.lean`: temporary local `to_dual` dictionary entries
   (model-category classes, `MorphismProperty` cast, `Over ↔ Under`). Remove when
   mathlib registers these (after mathlib4#40940 and a `MorphismProperty`
@@ -1108,3 +1115,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-10 | Properness, Theorem 1.8.4(1)(b)–(d) | `Properness.lean` proves stability of left proper maps under pushout and composition and for isomorphisms, the left proper factorization (b), pushout stability of trivial left proper maps (c), the precofibration structure on `LeftProperCofibrations C` (d), and Proposition 1.8.5(1). Full build passed (2218 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |
 | 2026-11-10 | Properness, completion of §1.8 | `Properness.lean` adds Propositions 1.8.6(1) and 1.8.7(1), with the paper's cocompleteness replaced by the existence of the pushouts used. `RightProperness.lean` defines PF and right proper maps through the opposite category, with pullback formulations, and proves Theorem 1.8.4(2)(a)–(d) and Propositions 1.8.5(2)–1.8.7(2) by duality. Full build passed (2220 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: the fibration statement of Proposition 1.7.1 and the remaining §1.6–1.7 items. |
 | 2026-11-10 | Over and under categories, statement (2) | `EquivalenceTransfer.lean` transports a precofibration structure along an equivalence identifying cofibrations and weak equivalences. `OverUnder.lean` generates the induced fibrations on `Under A` by `to_dual`. `OverUnderFibration.lean` proves Proposition 1.7.1(2), F1–F4 part, via mathlib's `Over.opEquivOpUnder` and `Under.opEquivOpOver` (the class identifications hold by `rfl`). Full build passed (2224 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: CF5–CF6 for over and under categories, and the remaining §1.6 items. |
+| 2026-11-10 | Over and under categories, CF5–CF6 | `OverUnderCofibrationCategory.lean` transfers CF5–CF6 along forgetful functors that create the relevant colimits, constructs coproducts in `Under A` as pushouts, and proves Proposition 1.7.1(1) for cofibration categories. `FibrationCategory.lean` defines `ABCFibrationCategory`; with transport along equivalences, `OverUnderFibration.lean` proves 1.7.1(2) for fibration categories. `SmallSums.lean` now exposes its definitions. Full build passed (2228 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |

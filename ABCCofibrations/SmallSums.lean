@@ -26,7 +26,7 @@ $\coprod f'_i$ and $\coprod s_i$ are weak equivalences, so $\coprod r_i$ is
 by two out of three, and hence so is $\coprod f_i$.
 -/
 
-public section
+@[expose] public section
 
 universe w v u
 

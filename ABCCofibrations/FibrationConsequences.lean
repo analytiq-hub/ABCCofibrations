@@ -287,4 +287,132 @@ theorem weakEquivalence_limMap_of_sequences {F G : ℕᵒᵖ ⥤ C} (τ : F ⟶ 
 
 end ABCFibrationCategory
 
+namespace ABCPrefibrationCategory
+
+open ABCPrecofibrationCategory
+
+variable (C : Type u) [Category.{v} C] [CategoryWithFibrations C]
+  [CategoryWithWeakEquivalences C] [HasTerminal C]
+
+/-- Axiom F6(2): the limit projection of an inverse sequence of trivial
+fibrations ending at a fibrant object is a weak equivalence. -/
+def TrivialInverseSequentialAxiom : Prop :=
+  ∀ (F : ℕᵒᵖ ⥤ C), IsFibrant (F.obj (op 0)) → (∀ n, Fibration (F.map (succHom n).op)) →
+    (∀ n, WeakEquivalence (F.map (succHom n).op)) → ∀ [HasLimit F],
+      WeakEquivalence (limit.π F (op 0))
+
+/-- The conclusion of Lemma 1.6.4(2), as a property of the category. -/
+def LimitWeakEquivalenceProperty : Prop :=
+  ∀ {F G : ℕᵒᵖ ⥤ C} (τ : F ⟶ G), IsFibrant (F.obj (op 0)) →
+    (∀ n, Fibration (F.map (succHom n).op)) → IsFibrant (G.obj (op 0)) →
+      (∀ n, Fibration (G.map (succHom n).op)) → (∀ n, WeakEquivalence (τ.app (op n))) →
+        ∀ [HasLimit F] [HasLimit G], WeakEquivalence (limMap τ)
+
+/-- The conclusion of Lemma 1.6.4(2) for maps of inverse sequences which are
+trivial fibrations in every degree. -/
+def LimitTrivialFibrationProperty : Prop :=
+  ∀ {F G : ℕᵒᵖ ⥤ C} (τ : F ⟶ G), IsFibrant (F.obj (op 0)) →
+    (∀ n, Fibration (F.map (succHom n).op)) → IsFibrant (G.obj (op 0)) →
+      (∀ n, Fibration (G.map (succHom n).op)) →
+        (∀ n, Fibration (τ.app (op n)) ∧ WeakEquivalence (τ.app (op n))) →
+          ∀ [HasLimit F] [HasLimit G], WeakEquivalence (limMap τ)
+
+variable {C} [ABCPrefibrationCategory C]
+
+theorem trivialInverseSequentialAxiom_iff :
+    TrivialInverseSequentialAxiom C ↔ TrivialSequentialAxiom Cᵒᵖ := by
+  constructor
+  · intro h F h0 hf hw _
+    have := h F.leftOp ((isFibrant_iff_isCofibrant_op _).2 h0)
+      (fun n ↦ (fibration_unop_iff _).2 (hf n)) (fun n ↦ (weakEquivalences_unop_iff _).2 (hw n))
+    have := (weakEquivalences_op_iff _).2 this
+    have := ABCPrecofibrationCategory.weakEquivalence_of_isIso
+      (colimitRightOpIsoUnopLimit F.leftOp).inv
+    have key : WeakEquivalence (colimit.ι F.leftOp.rightOp 0) := by
+      rw [← Category.comp_id (colimit.ι F.leftOp.rightOp 0),
+        ← Iso.hom_inv_id (colimitRightOpIsoUnopLimit F.leftOp), ← Category.assoc,
+        ι_comp_colimitRightOpIsoUnopLimit_hom]
+      infer_instance
+    exact key
+  · intro h F h0 hf hw _
+    have := h F.rightOp ((isFibrant_iff_isCofibrant_op _).1 h0)
+      (fun n ↦ (cofibration_op_iff _).2 (hf n)) (fun n ↦ (weakEquivalences_op_iff _).2 (hw n))
+    have := ABCPrecofibrationCategory.weakEquivalence_of_isIso
+      (colimitRightOpIsoUnopLimit F).hom
+    have key : WeakEquivalence (limit.π F (op 0)).op := by
+      rw [← ι_comp_colimitRightOpIsoUnopLimit_hom]
+      infer_instance
+    exact (weakEquivalences_op_iff _).1 key
+
+theorem limitWeakEquivalenceProperty_iff :
+    LimitWeakEquivalenceProperty C ↔ ColimitWeakEquivalenceProperty Cᵒᵖ := by
+  constructor
+  · intro h F G τ hF0 hF hG0 hG hw _ _
+    have := h (NatTrans.leftOp τ) ((isFibrant_iff_isCofibrant_op _).2 hG0)
+      (fun n ↦ (fibration_unop_iff _).2 (hG n)) ((isFibrant_iff_isCofibrant_op _).2 hF0)
+      (fun n ↦ (fibration_unop_iff _).2 (hF n)) (fun n ↦ (weakEquivalences_unop_iff _).2 (hw n))
+    have := (weakEquivalences_op_iff _).2 this
+    rw [op_limMap] at this
+    have := ABCPrecofibrationCategory.weakEquivalence_of_isIso
+      (colimitRightOpIsoUnopLimit F.leftOp).hom
+    have := ABCPrecofibrationCategory.weakEquivalence_of_isIso
+      (colimitRightOpIsoUnopLimit G.leftOp).inv
+    have key : WeakEquivalence ((colimitRightOpIsoUnopLimit F.leftOp).hom ≫
+        ((colimitRightOpIsoUnopLimit F.leftOp).inv ≫ colimMap (NatTrans.rightOp
+          (NatTrans.leftOp τ)) ≫ (colimitRightOpIsoUnopLimit G.leftOp).hom) ≫
+          (colimitRightOpIsoUnopLimit G.leftOp).inv) := inferInstance
+    simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id, Iso.hom_inv_id_assoc] at key
+    exact key
+  · intro h F G τ hF0 hF hG0 hG hw _ _
+    have := h (NatTrans.rightOp τ) ((isFibrant_iff_isCofibrant_op _).1 hG0)
+      (fun n ↦ (cofibration_op_iff _).2 (hG n)) ((isFibrant_iff_isCofibrant_op _).1 hF0)
+      (fun n ↦ (cofibration_op_iff _).2 (hF n)) (fun n ↦ (weakEquivalences_op_iff _).2 (hw n))
+    have := ABCPrecofibrationCategory.weakEquivalence_of_isIso (colimitRightOpIsoUnopLimit G).inv
+    have := ABCPrecofibrationCategory.weakEquivalence_of_isIso (colimitRightOpIsoUnopLimit F).hom
+    rw [← weakEquivalences_op_iff, op_limMap]
+    infer_instance
+
+theorem limitTrivialFibrationProperty_iff :
+    LimitTrivialFibrationProperty C ↔ ColimitTrivialCofibrationProperty Cᵒᵖ := by
+  constructor
+  · intro h F G τ hF0 hF hG0 hG hw _ _
+    have := h (NatTrans.leftOp τ) ((isFibrant_iff_isCofibrant_op _).2 hG0)
+      (fun n ↦ (fibration_unop_iff _).2 (hG n)) ((isFibrant_iff_isCofibrant_op _).2 hF0)
+      (fun n ↦ (fibration_unop_iff _).2 (hF n))
+      (fun n ↦ ⟨(fibration_unop_iff _).2 (hw n).1, (weakEquivalences_unop_iff _).2 (hw n).2⟩)
+    have := (weakEquivalences_op_iff _).2 this
+    rw [op_limMap] at this
+    have := ABCPrecofibrationCategory.weakEquivalence_of_isIso
+      (colimitRightOpIsoUnopLimit F.leftOp).hom
+    have := ABCPrecofibrationCategory.weakEquivalence_of_isIso
+      (colimitRightOpIsoUnopLimit G.leftOp).inv
+    have key : WeakEquivalence ((colimitRightOpIsoUnopLimit F.leftOp).hom ≫
+        ((colimitRightOpIsoUnopLimit F.leftOp).inv ≫ colimMap (NatTrans.rightOp
+          (NatTrans.leftOp τ)) ≫ (colimitRightOpIsoUnopLimit G.leftOp).hom) ≫
+          (colimitRightOpIsoUnopLimit G.leftOp).inv) := inferInstance
+    simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id, Iso.hom_inv_id_assoc] at key
+    exact key
+  · intro h F G τ hF0 hF hG0 hG hw _ _
+    have := h (NatTrans.rightOp τ) ((isFibrant_iff_isCofibrant_op _).1 hG0)
+      (fun n ↦ (cofibration_op_iff _).2 (hG n)) ((isFibrant_iff_isCofibrant_op _).1 hF0)
+      (fun n ↦ (cofibration_op_iff _).2 (hF n))
+      (fun n ↦ ⟨(cofibration_op_iff _).2 (hw n).1, (weakEquivalences_op_iff _).2 (hw n).2⟩)
+    have := ABCPrecofibrationCategory.weakEquivalence_of_isIso (colimitRightOpIsoUnopLimit G).inv
+    have := ABCPrecofibrationCategory.weakEquivalence_of_isIso (colimitRightOpIsoUnopLimit F).hom
+    rw [← weakEquivalences_op_iff, op_limMap]
+    infer_instance
+
+/-- **Lemma 1.6.5(2)**, the equivalent formulations of F6(2): given F1–F4 and
+F6(1) (that is, CF6(1) in the opposite category), the following are equivalent:
+(a) F6(2); (b) the conclusion of Lemma 1.6.4(2); (c) the conclusion of Lemma
+1.6.4(2) for degreewise trivial fibrations. -/
+theorem trivialInverseSequentialAxiom_tfae (h1 : SequentialCofibrationAxiom Cᵒᵖ) :
+    List.TFAE [TrivialInverseSequentialAxiom C, LimitWeakEquivalenceProperty C,
+      LimitTrivialFibrationProperty C] := by
+  have e := trivialSequentialAxiom_tfae h1
+  rwa [← trivialInverseSequentialAxiom_iff, ← limitWeakEquivalenceProperty_iff,
+    ← limitTrivialFibrationProperty_iff] at e
+
+end ABCPrefibrationCategory
+
 end ABCCofibrations

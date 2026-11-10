@@ -20,7 +20,8 @@ themselves are compared with the Lean fields in
   with products and limits of inverse sequences, and proved from (1) in the
   opposite category; see
   [the fibration-duality note](fibration-duality.md#fibration-statements-of-12-14-and-16).
-  The fibration statement 1.6.5(2) is not yet stated.
+  The fibration statement 1.6.5(2) is stated natively with inverse sequences
+  (`ABCPrefibrationCategory.trivialInverseSequentialAxiom_tfae`).
 * The small case of Lemma 1.6.2(1) is stated with CF5(1) and CF5(2) as
   standalone hypotheses (`CoproductCofibrationAxiom`,
   `TrivialCoproductAxiom`), so it assumes CF1–CF5 and not CF6.
@@ -159,7 +160,6 @@ transfinite-composition API should be inspected first.
 **Small index types.** Transfer of CF5 from `Type w` to index types that are
 only `Small.{w}` is not yet packaged.
 
-**Fibration statement 1.6.5(2)** is not yet stated natively.
 
 ## Lean correspondence
 
@@ -182,3 +182,4 @@ only `Small.{w}` is not yet packaged.
 | Lemma 1.6.3(2) | `ABCPrefibrationCategory.f5_trivial_iff` |
 | F6: limits of inverse sequences | `ABCFibrationCategory.hasLimit_of_sequence`, `ABCFibrationCategory.isFibrant_limit_of_sequence` |
 | Lemma 1.6.4(2) | `ABCFibrationCategory.weakEquivalence_limMap_of_sequences` |
+| Lemma 1.6.5(2) | `ABCPrefibrationCategory.trivialInverseSequentialAxiom_tfae` |

@@ -13,6 +13,8 @@ import ABCCofibrations.CF3Equivalence
 import ABCCofibrations.CofibrantObjectCategory
 import ABCCofibrations.QuillenModelCategory
 import ABCCofibrations.OtherAxiomSystems
+import ABCCofibrations.AdjunctionKan
+import ABCCofibrations.AbelianLemmas
 import ABCCofibrations.OverUnderCofibrationCategory
 import ABCCofibrations.OverUnderFibration
 import ABCCofibrations.Gluing

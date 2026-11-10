@@ -26,9 +26,13 @@ B --h--> D₁ --r'-> D₂
 `r'` is a weak equivalence whenever `r` is.
 
 We prove that a precofibration category in which all objects are cofibrant is
-left proper (by excision, Lemma 1.4.2(1)), and Theorem 1.8.4(1)(a): in a left
-proper precofibration category, every cofibration with cofibrant domain is a
-left proper map.
+left proper (by excision, Lemma 1.4.2(1)); Theorem 1.8.4(1): in a left proper
+precofibration category, cofibrations with cofibrant domain are left proper,
+every map factors as a left proper map followed by a weak equivalence, trivial
+left proper maps are stable under pushout, and the left proper maps form a
+precofibration structure; and Propositions 1.8.5(1)–1.8.7(1). For 1.8.6 and
+1.8.7 the paper's cocompleteness assumption is replaced by the existence of the
+pushouts actually used. The fibration statements are in `RightProperness.lean`.
 -/
 
 @[expose] public section
@@ -91,7 +95,59 @@ theorem comp {A B B' : C} {f : A ⟶ B} {f₂ : B ⟶ B'} (hf : IsLeftProper f)
     exact (hf₂.of_isPushout kb).weakEquivalence IsPushout.of_id_fst
       (IsPushout.of_top' sq₂' sqR)
 
+/-- **Proposition 1.8.7(1).** If the weak equivalences are stable under
+retracts, a retract `f'` of a left proper map `f` is left proper, provided the
+pushouts along `f'` exist. (The paper assumes cocompleteness, which is used only
+for these pushouts.)
+
+Given the squares for `f'` along `g` and `r`, form the squares for `f` along
+`h.r.left ≫ g` and `r`. The pushouts of `f'` are retracts of those of `f`, so the
+map `r'` for `f'` is a retract of the map for `f`, a weak equivalence. -/
+theorem of_retract [(weakEquivalences C).IsStableUnderRetracts] {A B A' B' : C}
+    {f : A ⟶ B} {f' : A' ⟶ B'} (h : RetractArrow f' f) (hf : IsLeftProper f)
+    (hex : ∀ ⦃D : C⦄ (u : A' ⟶ D), HasPushout u f') : IsLeftProper f' where
+  hasPushout := hex
+  weakEquivalence {C₁ C₂ D₁ D₂ g r j₁ k j₂ r'} sq₁ sq₂ _ := by
+    -- The squares for `f`.
+    have := hf.hasPushout (h.r.left ≫ g)
+    let t := IsPushout.of_hasPushout (h.r.left ≫ g) f
+    have := (hf.of_isPushout t).hasPushout r
+    let s := IsPushout.of_hasPushout r (pushout.inl (h.r.left ≫ g) f)
+    have hrQ := hf.weakEquivalence t s
+    -- The first pushout of `f'` is a retract of that of `f`.
+    let α : D₁ ⟶ pushout (h.r.left ≫ g) f :=
+      sq₁.desc (pushout.inl _ _) (h.i.right ≫ pushout.inr _ _) (by
+        rw [← h.i_w_assoc, ← t.w]
+        simp)
+    let β : pushout (h.r.left ≫ g) f ⟶ D₁ :=
+      t.desc j₁ (h.r.right ≫ k) (by
+        rw [← h.r_w_assoc, ← sq₁.w, Category.assoc])
+    have hαβ : α ≫ β = 𝟙 D₁ := sq₁.hom_ext (by simp [α, β]) (by simp [α, β])
+    -- The second pushout of `f'` is a retract of that of `f`.
+    let α₂ : D₂ ⟶ pushout r (pushout.inl (h.r.left ≫ g) f) :=
+      sq₂.desc (pushout.inl _ _) (α ≫ pushout.inr _ _) (by
+        rw [← Category.assoc, sq₁.inl_desc, s.w])
+    let β₂ : pushout r (pushout.inl (h.r.left ≫ g) f) ⟶ D₂ :=
+      s.desc j₂ (β ≫ r') (by rw [← Category.assoc, t.inl_desc, sq₂.w])
+    have hαβ₂ : α₂ ≫ β₂ = 𝟙 D₂ := sq₂.hom_ext (by simp [α₂, β₂]) (by
+      simp [α₂, β₂, reassoc_of% hαβ])
+    let e : RetractArrow r' (pushout.inr r (pushout.inl (h.r.left ≫ g) f)) :=
+      { i := Arrow.homMk α α₂ (sq₂.inr_desc _ _ _).symm
+        r := Arrow.homMk β β₂ (s.inr_desc _ _ _).symm
+        retract := by ext <;> simp [hαβ, hαβ₂] }
+    exact ⟨(weakEquivalences C).of_retract e hrQ.mem⟩
+
 end IsLeftProper
+
+/-- **Proposition 1.8.7(1), trivial left proper maps.** If the weak
+equivalences are stable under retracts, a retract of a left proper weak
+equivalence is a left proper weak equivalence, provided its pushouts exist. -/
+theorem IsLeftProper.of_retract_of_weakEquivalence
+    [(weakEquivalences C).IsStableUnderRetracts] {A B A' B' : C}
+    {f : A ⟶ B} {f' : A' ⟶ B'} (h : RetractArrow f' f) (hf : IsLeftProper f)
+    [WeakEquivalence f] (hex : ∀ ⦃D : C⦄ (u : A' ⟶ D), HasPushout u f') :
+    IsLeftProper f' ∧ WeakEquivalence f' :=
+  ⟨hf.of_retract h hex, ⟨(weakEquivalences C).of_retract h (inferInstance : WeakEquivalence f).mem⟩⟩
 
 end LeftProperMap
 
@@ -230,6 +286,33 @@ theorem isLeftProper_iff_of_weakEquivalence [LeftProper C] {A B : C} (i : A ⟶ 
       rw [← sq₂.w]
       infer_instance
     exact weakEquivalence_of_precomp j₁ r'
+
+/-- **Proposition 1.8.6(1).** In a left proper precofibration category, if
+`f ≫ g` is left proper and `g` is a left proper weak equivalence, then `f` is
+left proper, provided the pushouts along `f` exist. (The paper assumes
+cocompleteness, which is used only for these pushouts.)
+
+Push the squares for `f` further down along `g`. The bottom map is a weak
+equivalence because `f ≫ g` is left proper, and the two new vertical maps are
+pushouts of `g`, hence weak equivalences by Theorem 1.8.4(1)(c); two out of
+three gives the middle map. -/
+theorem _root_.ABCCofibrations.IsLeftProper.of_comp [LeftProper C] {A₁ A₂ A₃ : C}
+    {f : A₁ ⟶ A₂} {g : A₂ ⟶ A₃} (hfg : IsLeftProper (f ≫ g)) (hg : IsLeftProper g)
+    [WeakEquivalence g] (hex : ∀ ⦃D : C⦄ (u : A₁ ⟶ D), HasPushout u f) : IsLeftProper f where
+  hasPushout := hex
+  weakEquivalence {B₁ C₁ B₂ C₂ u r j₁ h j₂ r'} sq₁ sq₂ _ := by
+    -- Push `g` out along `h`, then the result along `r'`.
+    have := hg.hasPushout h
+    let t₁ := IsPushout.of_hasPushout h g
+    obtain ⟨hg', _⟩ := hg.weakEquivalence_of_isPushout t₁
+    have := hg'.hasPushout r'
+    let t₂ := IsPushout.of_hasPushout r' (pushout.inl h g)
+    have := (hg'.weakEquivalence_of_isPushout t₂).2
+    have := hfg.weakEquivalence (sq₁.paste_vert t₁) (sq₂.paste_vert t₂)
+    have : WeakEquivalence (r' ≫ pushout.inl r' (pushout.inl h g)) := by
+      rw [t₂.w]
+      infer_instance
+    exact weakEquivalence_of_postcomp r' (pushout.inl r' (pushout.inl h g))
 
 section LeftProperCofibrations
 

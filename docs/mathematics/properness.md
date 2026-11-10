@@ -1,6 +1,9 @@
 # Properness (§1.8)
 
-The implementation is [Properness.lean](../../ABCCofibrations/Properness.lean).
+The implementation is [Properness.lean](../../ABCCofibrations/Properness.lean)
+(cofibration statements) and
+[RightProperness.lean](../../ABCCofibrations/RightProperness.lean) (fibration
+statements).
 The source is §1.8 of
 [*Cofibrations in Homotopy Theory*, v4](https://arxiv.org/abs/math/0610009v4)
 (`references/radulescu-banu-2009/source/chap-cofcat.tex`).
@@ -18,7 +21,21 @@ The source is §1.8 of
   `IsLeftProper` only uses a class of weak equivalences
   (`CategoryWithWeakEquivalences`), so it applies to category pairs as stated,
   and the results below assume a precofibration category.
-* Only the cofibration statements (1) are formalized so far.
+* The fibration statements (2) are obtained from the cofibration statements
+  (1) in the opposite category. `IsRightProper f` is *defined* as
+  `IsLeftProper f.op`, and PF as PCF in `Cᵒᵖ`; the pullback formulations of
+  Definitions 1.8.1(2) and 1.8.3(2) are proved as lemmas
+  (`IsRightProper.mk`, `IsRightProper.hasPullback`,
+  `IsRightProper.weakEquivalence`, `RightProper.mk`, …). With this choice,
+  Theorem 1.8.4(2)(d) in `Cᵒᵖ` is literally Theorem 1.8.4(1)(d).
+* Theorem 1.8.4(2)(c) says "stable under pushout" in the paper; the dual of
+  (1)(c), and what is proved, is stability under **pullback**. Likewise,
+  Proposition 1.8.6(2) repeats "left proper" from part (1); the dual statement
+  is proved.
+* Propositions 1.8.6 and 1.8.7 assume a cocomplete (resp. complete) category.
+  The proofs only use the pushouts (resp. pullbacks) along the map to be shown
+  proper, so that existence is taken as the hypothesis instead; all other
+  pushouts used exist because the maps involved are already proper.
 * The elementary facts that left proper maps compose, are stable under
   pushout, and include isomorphisms are asserted without proof in the paper;
   they are proved here, since part (d) depends on them.
@@ -101,15 +118,37 @@ is (c); for the converse, both vertical maps in the definition are pushouts of
 $i$ (the second by pasting), so two out of three gives $r'$.
 (`isLeftProper_iff_of_weakEquivalence`)
 
+**Proposition 1.8.6(1).** In a left proper precofibration category, if $gf$
+is left proper and $g$ is trivial left proper, then $f$ is left proper
+(given that pushouts along $f$ exist). Push the two squares for $f$ further
+along $g$: the bottom map $r''$ is a weak equivalence because $gf$ is left
+proper, the pushouts $g',g''$ of $g$ are weak equivalences by (1)(c), and
+$r'g''=g'r''$ gives $r'$ by two out of three.
+(`IsLeftProper.of_comp`)
+
+**Proposition 1.8.7(1).** If the weak equivalences are closed under retracts,
+a retract $f'$ of a left proper map $f$ is left proper (given that pushouts
+along $f'$ exist), and likewise for trivial left proper maps. This needs no
+precofibration structure. The paper says it "follows directly from the
+definitions"; the proof makes the retraction explicit: if $f'$ is a retract of
+$f$ via $A'\to A\to A'$, push $f$ along $A\to A'\xrightarrow{g}C_1$ and then
+along $r$. The two pushouts of $f'$ along $g$ and $r$ are retracts of these,
+so the map $r'$ for $f'$ is a retract of the corresponding map for $f$, which
+is a weak equivalence.
+(`IsLeftProper.of_retract`, `IsLeftProper.of_retract_of_weakEquivalence`)
+
+**Fibration statements.** Theorem 1.8.4(2)(a)–(d) and Propositions
+1.8.5(2)–1.8.7(2) follow from the statements (1) in $\mathcal C^{op}$.
+
 ## Remaining work
 
-Proposition 1.8.6(1) assumes cocompleteness and Proposition 1.8.7 concerns
-retracts; neither is formalized yet. The paper notes that CF5 and CF6 need not
-transfer to left proper maps. The fibration statements (2) are dual.
+None of §1.8 remains. The paper notes that CF5 and CF6 need not transfer to
+left proper maps; this is not a claim to formalize.
 
 ## Lean correspondence
 
-All names are in `ABCCofibrations` or `ABCCofibrations.ABCPrecofibrationCategory`.
+All names are in `ABCCofibrations`, `ABCCofibrations.ABCPrecofibrationCategory`, or
+`ABCCofibrations.ABCPrefibrationCategory`.
 
 | Statement | Declaration |
 | --- | --- |
@@ -122,3 +161,16 @@ All names are in `ABCCofibrations` or `ABCCofibrations.ABCPrecofibrationCategory
 | Theorem 1.8.4(1)(c) | `IsLeftProper.weakEquivalence_of_isPushout` |
 | Theorem 1.8.4(1)(d) | `LeftProperCofibrations`, `leftProperCofibrations_precofibrationCategory` |
 | Proposition 1.8.5(1) | `isLeftProper_iff_of_weakEquivalence` |
+| Proposition 1.8.6(1) | `IsLeftProper.of_comp` |
+| Proposition 1.8.7(1) | `IsLeftProper.of_retract`, `IsLeftProper.of_retract_of_weakEquivalence` |
+| Definition 1.8.1(2), PF | `RightProper` (with `RightProper.mk`, `.hasPullback`, `.weakEquivalence_of_isPullback`) |
+| Definition 1.8.3(2), right proper map | `IsRightProper` (with `IsRightProper.mk`, `.hasPullback`, `.weakEquivalence`) |
+| All objects fibrant implies right proper | `rightProper_of_forall_isFibrant` |
+| Theorem 1.8.4(2)(a) | `isRightProper_of_fibration` |
+| Stability under pullback and composition; isomorphisms | `IsRightProper.of_isPullback`, `IsRightProper.comp`, `isRightProper_of_isIso` |
+| Theorem 1.8.4(2)(b) | `exists_rightProper_factorization` |
+| Theorem 1.8.4(2)(c) | `IsRightProper.weakEquivalence_of_isPullback` |
+| Theorem 1.8.4(2)(d) | `RightProperFibrations`, `rightProperFibrations_prefibrationCategory` |
+| Proposition 1.8.5(2) | `isRightProper_iff_of_weakEquivalence` |
+| Proposition 1.8.6(2) | `IsRightProper.of_comp` |
+| Proposition 1.8.7(2) | `IsRightProper.of_retract`, `IsRightProper.of_retract_of_weakEquivalence` |

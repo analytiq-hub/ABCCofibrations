@@ -639,7 +639,7 @@ Suggested next construction:
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 The cofibration proofs use CF1–CF4, and the dual fibration proofs use F1–F4. The latest full check is
-`lake build ABCCofibrations`: 2234 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 2422 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.4.
@@ -703,6 +703,13 @@ Completed localization infrastructure:
   (pre)fibration categories: Lemmas 1.2.1(2), 1.6.2(2), 1.6.3(2), 1.6.4(2).
 - `FibrationExtension.lean`: excision (1.4.2(2)) and cogluing for weak
   equivalences (1.4.1(2)(b)).
+- `CF3Equivalence.lean`: Lemma 1.4.3 (equivalent forms of CF3(2) and F3(2)).
+- `CofibrantObjectCategory.lean`: Brown's categories of cofibrant objects,
+  Proposition 2.1.2.
+- `QuillenModelCategory.lean`: Propositions 2.2.3–2.2.5 for mathlib model
+  categories.
+- `OtherAxiomSystems.lean`: Baues and Waldhausen cofibration categories,
+  Propositions 2.3.2 and 2.4.2.
 - `ToDualRegistrations.lean`: temporary local `to_dual` dictionary entries
   (model-category classes, `MorphismProperty` cast, `Over ↔ Under`). Remove when
   mathlib registers these (after mathlib4#40940 and a `MorphismProperty`
@@ -1122,3 +1129,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-10 | Over and under categories, statement (2) | `EquivalenceTransfer.lean` transports a precofibration structure along an equivalence identifying cofibrations and weak equivalences. `OverUnder.lean` generates the induced fibrations on `Under A` by `to_dual`. `OverUnderFibration.lean` proves Proposition 1.7.1(2), F1–F4 part, via mathlib's `Over.opEquivOpUnder` and `Under.opEquivOpOver` (the class identifications hold by `rfl`). Full build passed (2224 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: CF5–CF6 for over and under categories, and the remaining §1.6 items. |
 | 2026-11-10 | Over and under categories, CF5–CF6 | `OverUnderCofibrationCategory.lean` transfers CF5–CF6 along forgetful functors that create the relevant colimits, constructs coproducts in `Under A` as pushouts, and proves Proposition 1.7.1(1) for cofibration categories. `FibrationCategory.lean` defines `ABCFibrationCategory`; with transport along equivalences, `OverUnderFibration.lean` proves 1.7.1(2) for fibration categories. `SmallSums.lean` now exposes its definitions. Full build passed (2228 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |
 | 2026-11-10 | Fibration statements of §1.2, §1.4, §1.6 | `FibrationConsequences.lean` proves Lemmas 1.2.1(2), 1.6.2(2) (finite and small), 1.6.3(2) and 1.6.4(2), comparing products and inverse-sequence limits with coproducts and colimits in the opposite category (`op_piMap`, `op_limMap`). `FibrationExtension.lean` proves excision 1.4.2(2) and cogluing 1.4.1(2)(b). Full build passed (2234 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: Lemma 1.4.1(2)(a), Lemma 1.6.5(2), Lemma 1.6.1, and the Chapter 1 coverage review. |
+| 2026-11-10 | Lemma 1.4.3 and Chapter 2 | `CF3Equivalence.lean` proves Lemma 1.4.3(1)–(2). `CofibrantObjectCategory.lean` defines Brown's categories of cofibrant objects and proves Proposition 2.1.2. `QuillenModelCategory.lean` proves Propositions 2.2.3–2.2.5 for mathlib model categories (with small coproducts and sequential colimits for CF5–CF6). `OtherAxiomSystems.lean` defines Baues and Waldhausen cofibration categories and proves Propositions 2.3.2 and 2.4.2. See [the note](mathematics/other-axiom-systems.md). Full build passed (2422 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |

@@ -16,9 +16,11 @@ themselves are compared with the Lean fields in
   are three applications of one proof.
 * "Small" means indexed by `Type w`, where `w` is the universe parameter of
   `ABCCofibrationCategory.{w}`.
-* Only the cofibration statements (1) are formalized. The fibration
-  statements (2) are dual; they are not yet stated natively, because F5–F6
-  are not part of `ABCPrefibrationCategory`.
+* The fibration statements (2) of Lemmas 1.6.2–1.6.4 are stated natively,
+  with products and limits of inverse sequences, and proved from (1) in the
+  opposite category; see
+  [the fibration-duality note](fibration-duality.md#fibration-statements-of-12-14-and-16).
+  The fibration statement 1.6.5(2) is not yet stated.
 * The small case of Lemma 1.6.2(1) is stated with CF5(1) and CF5(2) as
   standalone hypotheses (`CoproductCofibrationAxiom`,
   `TrivialCoproductAxiom`), so it assumes CF1–CF5 and not CF6.
@@ -157,7 +159,7 @@ transfinite-composition API should be inspected first.
 **Small index types.** Transfer of CF5 from `Type w` to index types that are
 only `Small.{w}` is not yet packaged.
 
-**Fibration statements (2)** of Lemmas 1.6.2–1.6.5 await F5–F6.
+**Fibration statement 1.6.5(2)** is not yet stated natively.
 
 ## Lean correspondence
 
@@ -175,3 +177,8 @@ only `Small.{w}` is not yet packaged.
 | Compatible Brown factorizations | `ABCPrecofibrationCategory.BrownData`, `BrownStep`, `BrownStep.nonempty` |
 | Lemma 1.6.4(1) | `ABCPrecofibrationCategory.weakEquivalence_colimMap_of_sequences`, `ABCCofibrationCategory.weakEquivalence_colimMap_of_sequences` |
 | Lemma 1.6.5(1) | `ABCPrecofibrationCategory.trivialSequentialAxiom_tfae` |
+| Lemma 1.6.2(2), finite | `ABCPrefibrationCategory.weakEquivalence_product_map_finite_of_weakEquivalence` |
+| Lemma 1.6.2(2), small | `ABCFibrationCategory.weakEquivalence_product_map_of_weakEquivalence` |
+| Lemma 1.6.3(2) | `ABCPrefibrationCategory.f5_trivial_iff` |
+| F6: limits of inverse sequences | `ABCFibrationCategory.hasLimit_of_sequence`, `ABCFibrationCategory.isFibrant_limit_of_sequence` |
+| Lemma 1.6.4(2) | `ABCFibrationCategory.weakEquivalence_limMap_of_sequences` |

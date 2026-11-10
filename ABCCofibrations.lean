@@ -7,6 +7,8 @@ import ABCCofibrations.ToDualRegistrations
 import ABCCofibrations.OverUnder
 import ABCCofibrations.EquivalenceTransfer
 import ABCCofibrations.FibrationCategory
+import ABCCofibrations.FibrationConsequences
+import ABCCofibrations.FibrationExtension
 import ABCCofibrations.OverUnderCofibrationCategory
 import ABCCofibrations.OverUnderFibration
 import ABCCofibrations.Gluing

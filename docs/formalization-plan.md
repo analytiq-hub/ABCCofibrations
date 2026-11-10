@@ -375,8 +375,9 @@ theorem, with its source statement and prerequisites documented.
   [the §1.6 note](mathematics/cf5-cf6-consequences.md). The proof of 1.6.4(1)
   uses only the cofibration-edge relative Brown factorization
   `exists_relative_brown_of_cofibration_edges`, not the refuted separate
-  claims of 1.3.4(1). Remaining: Lemma 1.6.1, `Small`-index transfer of CF5,
-  and the fibration statements (which need F5–F6).
+  claims of 1.3.4(1). The fibration statements 1.6.2(2)–1.6.4(2) are proved
+  in `FibrationConsequences.lean`. Remaining: Lemma 1.6.1, `Small`-index
+  transfer of CF5, and Lemma 1.6.5(2).
 - [x] Treat over and under categories (§1.7), making object restrictions explicit.
   **Done:** Proposition 1.7.1 in full. The CF5–CF6 parts are in
   `OverUnderCofibrationCategory.lean`, and the F5–F6 parts follow by
@@ -638,7 +639,7 @@ Suggested next construction:
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 The cofibration proofs use CF1–CF4, and the dual fibration proofs use F1–F4. The latest full check is
-`lake build ABCCofibrations`: 2228 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 2234 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.4.
@@ -698,6 +699,10 @@ Completed localization infrastructure:
   functors and equivalences; coproducts in `Under A`; Proposition 1.7.1(1)
   for cofibration categories, and (in `OverUnderFibration.lean`) 1.7.1(2) for
   fibration categories.
+- `FibrationConsequences.lean`: products and inverse sequences in
+  (pre)fibration categories: Lemmas 1.2.1(2), 1.6.2(2), 1.6.3(2), 1.6.4(2).
+- `FibrationExtension.lean`: excision (1.4.2(2)) and cogluing for weak
+  equivalences (1.4.1(2)(b)).
 - `ToDualRegistrations.lean`: temporary local `to_dual` dictionary entries
   (model-category classes, `MorphismProperty` cast, `Over ↔ Under`). Remove when
   mathlib registers these (after mathlib4#40940 and a `MorphismProperty`
@@ -1116,3 +1121,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-10 | Properness, completion of §1.8 | `Properness.lean` adds Propositions 1.8.6(1) and 1.8.7(1), with the paper's cocompleteness replaced by the existence of the pushouts used. `RightProperness.lean` defines PF and right proper maps through the opposite category, with pullback formulations, and proves Theorem 1.8.4(2)(a)–(d) and Propositions 1.8.5(2)–1.8.7(2) by duality. Full build passed (2220 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: the fibration statement of Proposition 1.7.1 and the remaining §1.6–1.7 items. |
 | 2026-11-10 | Over and under categories, statement (2) | `EquivalenceTransfer.lean` transports a precofibration structure along an equivalence identifying cofibrations and weak equivalences. `OverUnder.lean` generates the induced fibrations on `Under A` by `to_dual`. `OverUnderFibration.lean` proves Proposition 1.7.1(2), F1–F4 part, via mathlib's `Over.opEquivOpUnder` and `Under.opEquivOpOver` (the class identifications hold by `rfl`). Full build passed (2224 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: CF5–CF6 for over and under categories, and the remaining §1.6 items. |
 | 2026-11-10 | Over and under categories, CF5–CF6 | `OverUnderCofibrationCategory.lean` transfers CF5–CF6 along forgetful functors that create the relevant colimits, constructs coproducts in `Under A` as pushouts, and proves Proposition 1.7.1(1) for cofibration categories. `FibrationCategory.lean` defines `ABCFibrationCategory`; with transport along equivalences, `OverUnderFibration.lean` proves 1.7.1(2) for fibration categories. `SmallSums.lean` now exposes its definitions. Full build passed (2228 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |
+| 2026-11-10 | Fibration statements of §1.2, §1.4, §1.6 | `FibrationConsequences.lean` proves Lemmas 1.2.1(2), 1.6.2(2) (finite and small), 1.6.3(2) and 1.6.4(2), comparing products and inverse-sequence limits with coproducts and colimits in the opposite category (`op_piMap`, `op_limMap`). `FibrationExtension.lean` proves excision 1.4.2(2) and cogluing 1.4.1(2)(b). Full build passed (2234 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: Lemma 1.4.1(2)(a), Lemma 1.6.5(2), Lemma 1.6.1, and the Chapter 1 coverage review. |

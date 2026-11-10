@@ -80,6 +80,38 @@ All names except the abbreviation are in
 | F4 factorization | `factorization` |
 | Restricted pullbacks | `hasPullback` |
 | Base change | `fibration_of_isPullback`, `weakEquivalence_of_isPullback` |
+| Lemma 1.2.1(2), finite products | `hasProduct_finite`, `product_finite_fibrant`, `fibration_product_map_finite`, `weakEquivalence_product_map_finite` |
+| Lemma 1.4.1(2)(b), cogluing | `cogluing_weakEquivalence` |
+| Lemma 1.4.2(2), excision | `weakEquivalence_of_isPullback_of_fibration` |
+
+## Fibration statements of §1.2, §1.4 and §1.6
+
+These are in [FibrationConsequences.lean](../../ABCCofibrations/FibrationConsequences.lean)
+and [FibrationExtension.lean](../../ABCCofibrations/FibrationExtension.lean).
+Each is stated natively, with products, pullbacks and limits of inverse
+sequences in $\mathcal M$, and proved from the cofibration statement in
+$\mathcal M^{op}$.
+
+* **Products.** A product in $\mathcal M$ is a coproduct in
+  $\mathcal M^{op}$; mathlib's `opProductIsoCoproduct` identifies the chosen
+  objects, and `op_piMap` shows that $(\prod f_i)^{op}$ is a conjugate of
+  $\coprod f_i^{op}$ by these isomorphisms. Existence of products follows from
+  existence of the opposite coproducts (`hasProduct_of_hasCoproduct_op`).
+  This gives Lemma 1.2.1(2) and Lemmas 1.6.2(2), 1.6.3(2).
+* **Pullbacks.** A pullback square is a pushout square in $\mathcal M^{op}$
+  (`IsPullback.op`), which gives excision (1.4.2(2)) and the cogluing lemma
+  for weak equivalences (1.4.1(2)(b)), for any pullback representatives.
+* **Inverse sequences.** For $F:\mathbb N^{op}\to\mathcal M$, the colimit of
+  $F^{op}:\mathbb N\to\mathcal M^{op}$ is $(\lim F)^{op}$
+  (`colimitRightOpIsoUnopLimit`), and `op_limMap` shows that
+  $(\lim\tau)^{op}$ is a conjugate of $\operatorname{colim}\tau^{op}$. This
+  gives Lemma 1.6.4(2).
+
+Fibration categories (F1–F6) are `ABCFibrationCategory`, defined as
+cofibration categories on the opposite category
+([FibrationCategory.lean](../../ABCCofibrations/FibrationCategory.lean)).
+Lemma 1.4.1(2)(a), whose comparison maps are canonical maps into chosen
+pullbacks, is not yet stated.
 
 ## Opposite fibrant objects as cofibrant objects
 

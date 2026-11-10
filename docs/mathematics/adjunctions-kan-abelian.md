@@ -9,12 +9,16 @@ The implementation is in
 
 ## Differences from the paper
 
-* **Kan extension terminology.** Definition 4.3.1 calls a pair
-  $(L,\varepsilon:L\gamma\Rightarrow u)$ with the terminal universal property a
-  *left* Kan extension of $u$ along $\gamma$. Mathlib calls this a *right* Kan
-  extension (`Functor.IsRightKanExtension`), and dually. Each statement below
-  uses mathlib's notion and says which of the paper's it is. This is the same
-  convention as [the derived-functor note](derived-functors.md).
+* **Kan extension terminology: an error in the paper.** Definition 4.3.1
+  calls a pair $(L,\varepsilon:L\gamma\Rightarrow u)$ with the terminal
+  universal property a *left* Kan extension of $u$ along $\gamma$, and the dual
+  notion a right Kan extension. The standard names, used by mathlib
+  (`Functor.IsRightKanExtension`, `Functor.IsLeftKanExtension`) and in this
+  project, are the other way round: the terminal pair is a **right** Kan
+  extension. We treat the paper's naming as a mistake and state all results
+  with the standard names, so the paper's Propositions 4.3.2–4.3.3 and
+  Corollary 4.3.4 part (1) are about right Kan extensions here, and part (2)
+  about left Kan extensions.
 * The results of this part are classical and mostly short consequences of
   mathlib's adjunction and Kan extension API. They are stated in the paper's
   form; Corollary 4.3.4 is mathlib's `hasRightExtension_iff_postcomp₁` and
@@ -65,10 +69,11 @@ representative. Dually for pullbacks.
 | Proposition 4.2.1(2)(a) | `full_faithful_left_iff`, `full_faithful_right_iff` |
 | Proposition 4.2.1(2)(b) | `inverse_equivalences_iff` |
 | Proposition 4.2.2 | `isIso_iff_isIso_homEquiv_iff`, `isIso_of_isIso_homEquiv_iff`, `isIso_homEquiv_of_isIso_iff` |
-| Proposition 4.3.2(1), (2) | `isRightKanExtension_of_isLeftAdjoint`, `isLeftKanExtension_of_isRightAdjoint` |
-| Proposition 4.3.3(1) | `isRightKanExtension_comp_iff`, `hasRightKanExtension_comp_iff` |
-| Proposition 4.3.3(2) | `isLeftKanExtension_comp_iff`, `hasLeftKanExtension_comp_iff` |
-| Corollary 4.3.4(1) | `hasRightKanExtension_comp_equivalence_iff`, `isRightKanExtension_comp_equivalence_iff` |
-| Corollary 4.3.4(2) | `hasLeftKanExtension_comp_equivalence_iff`, `isLeftKanExtension_comp_equivalence_iff` |
+| Proposition 4.3.2(1), right Kan extensions | `isRightKanExtension_of_isLeftAdjoint` |
+| Proposition 4.3.2(2), left Kan extensions | `isLeftKanExtension_of_isRightAdjoint` |
+| Proposition 4.3.3(1), right Kan extensions | `isRightKanExtension_comp_iff`, `hasRightKanExtension_comp_iff` |
+| Proposition 4.3.3(2), left Kan extensions | `isLeftKanExtension_comp_iff`, `hasLeftKanExtension_comp_iff` |
+| Corollary 4.3.4(1), right Kan extensions | `hasRightKanExtension_comp_equivalence_iff`, `isRightKanExtension_comp_equivalence_iff` |
+| Corollary 4.3.4(2), left Kan extensions | `hasLeftKanExtension_comp_equivalence_iff`, `isLeftKanExtension_comp_equivalence_iff` |
 | Lemma 3.2.2(1)–(4) | `IsPushout.epi_iff`, `IsPushout.mono_of_mono`, `IsPullback.mono_iff`, `IsPullback.epi_of_epi` |
 | Lemma 3.2.6 | `Adjunction.rightExact_leftExact` |

@@ -15,10 +15,13 @@ Propositions 4.2.1, 4.2.2 and 4.3.2 of the paper. They are classical; the
 statements are given in the paper's form, and the proofs use mathlib's
 adjunction API.
 
-**Terminology.** The paper calls a pair `(L, ε : L ∘ γ ⇒ u)` with the terminal
-universal property a *left* Kan extension of `u` along `γ` (Definition 4.3.1);
-mathlib calls the same notion a *right* Kan extension
-(`Functor.IsRightKanExtension`). Dually for the paper's right Kan extensions.
+**Terminology.** We use mathlib's terminology, which is the standard one: a
+pair `(L, ε : L ∘ γ ⇒ u)` with the terminal universal property is a *right* Kan
+extension of `u` along `γ` (`Functor.IsRightKanExtension`), and dually a pair
+`(L, η : u ⇒ L ∘ γ)` with the initial universal property is a *left* Kan
+extension. Definition 4.3.1 of the paper swaps the two names; this is an error
+in the paper, and the statements below are its results with the names
+corrected.
 -/
 
 @[expose] public section
@@ -131,8 +134,7 @@ variable {A' : Type u₃} [Category.{v₃} A'] {γ : A ⥤ A'} {γ' : A' ⥤ A}
   {C : Type*} [Category C] (u : A ⥤ C)
 
 /-- **Proposition 4.3.2(1).** If `γ` has a left adjoint `γ'` with counit
-`ψ : γ'γ ⟶ 1`, then `(uγ', uψ)` is a left Kan extension of `u` along `γ` in the
-paper's sense (a right Kan extension in mathlib's terminology). -/
+`ψ : γ'γ ⟶ 1`, then `(uγ', uψ)` is a right Kan extension of `u` along `γ`. -/
 theorem isRightKanExtension_of_isLeftAdjoint (adj : γ' ⊣ γ) :
     (γ' ⋙ u).IsRightKanExtension (whiskerRight adj.counit u : γ ⋙ γ' ⋙ u ⟶ u) := by
   refine ⟨⟨IsTerminal.ofUniqueHom (fun G ↦ CostructuredArrow.homMk
@@ -151,8 +153,7 @@ theorem isRightKanExtension_of_isLeftAdjoint (adj : γ' ⊣ γ) :
       adj.left_triangle_components, u.map_id, Category.comp_id]
 
 /-- **Proposition 4.3.2(2).** If `γ` has a right adjoint `γ'` with unit
-`φ : 1 ⟶ γ'γ`, then `(uγ', uφ)` is a right Kan extension of `u` along `γ` in the
-paper's sense (a left Kan extension in mathlib's terminology). -/
+`φ : 1 ⟶ γ'γ`, then `(uγ', uφ)` is a left Kan extension of `u` along `γ`. -/
 theorem isLeftKanExtension_of_isRightAdjoint (adj : γ ⊣ γ') :
     (γ' ⋙ u).IsLeftKanExtension (whiskerRight adj.unit u : u ⟶ γ ⋙ γ' ⋙ u) := by
   refine ⟨⟨IsInitial.ofUniqueHom (fun G ↦ StructuredArrow.homMk
@@ -177,10 +178,9 @@ section Composition
 variable {A' : Type u₃} [Category.{v₃} A'] {A'' : Type*} [Category A'']
   {C : Type*} [Category C] {γ : A ⥤ A'} {γ' : A' ⥤ A''} {u : A ⥤ C}
 
-/-- **Proposition 4.3.3(1)**, the comparison. Let `(F', α)` be a left Kan
-extension of `u` along `γ` (paper's terminology). Then `(G, β)` is a left Kan
-extension of `F'` along `γ'` iff `(G, β ⋆ α)` is a left Kan extension of `u`
-along `γ'γ`. -/
+/-- **Proposition 4.3.3(1)**, the comparison. Let `(F', α)` be a right Kan
+extension of `u` along `γ`. Then `(G, β)` is a right Kan extension of `F'` along
+`γ'` iff `(G, β ⋆ α)` is a right Kan extension of `u` along `γ'γ`. -/
 theorem isRightKanExtension_comp_iff {F' : A' ⥤ C} (α : γ ⋙ F' ⟶ u)
     [F'.IsRightKanExtension α] {G : A'' ⥤ C} (β : γ' ⋙ G ⟶ F') :
     G.IsRightKanExtension β ↔
@@ -227,9 +227,9 @@ theorem isRightKanExtension_comp_iff {F' : A' ⥤ C} (α : γ ⋙ F' ⟶ u)
       dsimp at this ⊢
       simp [← this]
 
-/-- **Proposition 4.3.3(1).** If the left Kan extension `(F', α)` of `u` along
-`γ` exists (paper's terminology), then a left Kan extension of `F'` along `γ'`
-exists iff one of `u` along `γ'γ` does. -/
+/-- **Proposition 4.3.3(1).** If `(F', α)` is a right Kan extension of `u` along
+`γ`, then a right Kan extension of `F'` along `γ'` exists iff one of `u` along
+`γ'γ` does. -/
 theorem hasRightKanExtension_comp_iff {F' : A' ⥤ C} (α : γ ⋙ F' ⟶ u)
     [F'.IsRightKanExtension α] :
     HasRightKanExtension γ' F' ↔ HasRightKanExtension (γ ⋙ γ') u := by
@@ -248,10 +248,9 @@ theorem hasRightKanExtension_comp_iff {F' : A' ⥤ C} (α : γ ⋙ F' ⟶ u)
     have := (isRightKanExtension_comp_iff α β).2 (by rw [h]; infer_instance)
     exact HasRightKanExtension.mk _ β
 
-/-- **Proposition 4.3.3(2)**, the comparison. Let `(F', α)` be a right Kan
-extension of `u` along `γ` (paper's terminology). Then `(G, β)` is a right Kan
-extension of `F'` along `γ'` iff `(G, α ⋆ β)` is a right Kan extension of `u`
-along `γ'γ`. -/
+/-- **Proposition 4.3.3(2)**, the comparison. Let `(F', α)` be a left Kan
+extension of `u` along `γ`. Then `(G, β)` is a left Kan extension of `F'` along
+`γ'` iff `(G, α ⋆ β)` is a left Kan extension of `u` along `γ'γ`. -/
 theorem isLeftKanExtension_comp_iff {F' : A' ⥤ C} (α : u ⟶ γ ⋙ F')
     [F'.IsLeftKanExtension α] {G : A'' ⥤ C} (β : F' ⟶ γ' ⋙ G) :
     G.IsLeftKanExtension β ↔
@@ -298,9 +297,9 @@ theorem isLeftKanExtension_comp_iff {F' : A' ⥤ C} (α : u ⟶ γ ⋙ F')
       dsimp at this ⊢
       simp [← this]
 
-/-- **Proposition 4.3.3(2).** If the right Kan extension `(F', α)` of `u` along
-`γ` exists (paper's terminology), then a right Kan extension of `F'` along `γ'`
-exists iff one of `u` along `γ'γ` does. -/
+/-- **Proposition 4.3.3(2).** If `(F', α)` is a left Kan extension of `u` along
+`γ`, then a left Kan extension of `F'` along `γ'` exists iff one of `u` along
+`γ'γ` does. -/
 theorem hasLeftKanExtension_comp_iff {F' : A' ⥤ C} (α : u ⟶ γ ⋙ F')
     [F'.IsLeftKanExtension α] :
     HasLeftKanExtension γ' F' ↔ HasLeftKanExtension (γ ⋙ γ') u := by
@@ -326,14 +325,13 @@ section Equivalence
 variable {A' : Type u₃} [Category.{v₃} A'] {A'' : Type*} [Category A'']
   {C : Type*} [Category C] {γ : A ⥤ A'} (e : A' ≌ A'') {u : A ⥤ C}
 
-/-- **Corollary 4.3.4(1)**, existence. The left Kan extension of `u` along `γ`
-(paper's terminology) exists iff the one along `γ` followed by an equivalence
-does. -/
+/-- **Corollary 4.3.4(1)**, existence. A right Kan extension of `u` along `γ`
+exists iff one along `γ` followed by an equivalence does. -/
 theorem hasRightKanExtension_comp_equivalence_iff :
     HasRightKanExtension (γ ⋙ e.functor) u ↔ HasRightKanExtension γ u :=
   hasRightExtension_iff_postcomp₁ (Iso.refl _) u
 
-/-- **Corollary 4.3.4(1)**, comparison: `(F', α)` is a left Kan extension along
+/-- **Corollary 4.3.4(1)**, comparison: `(F', α)` is a right Kan extension along
 `γ` iff `(F' ∘ e⁻¹, α ⋆ ψ)` is one along `eγ`. -/
 theorem isRightKanExtension_comp_equivalence_iff {F' : A' ⥤ C} (α : γ ⋙ F' ⟶ u) :
     F'.IsRightKanExtension α ↔ (e.inverse ⋙ F').IsRightKanExtension

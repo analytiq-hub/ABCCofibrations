@@ -51,13 +51,14 @@ result. The total-derived statement applies this to the original functor
 followed by target localization; no target model structure, two-out-of-three
 axiom, or chosen saturation is assumed.
 
-There is a terminology issue to make explicit. Definition 5.6.1 in the paper
-calls the total left derived functor a “left Kan extension.” The proof of
-Theorem 5.7.1 specifies a transformation from the derived composite to the
-original localized functor and a **terminal** universal property. Mathlib calls
-that precise property a **right Kan extension**, while still naming the result
-a left derived functor. The formalization uses the transformation direction
-and terminal property spelled out below, matching that proof in the paper.
+Kan extension terminology: Definition 5.6.1 of the paper calls the total left
+derived functor a “left Kan extension”, and Definition 4.3.1 uses that name for
+the terminal pair $(L,\varepsilon:L\gamma\Rightarrow u)$. This is an error in
+the paper: the standard name for that notion, used by mathlib and throughout
+this project, is a **right Kan extension** (and the result is still called a
+left derived functor). The formalization uses the transformation direction
+and terminal property of the proof of Theorem 5.7.1, with the standard name;
+see also [the Kan extension note](adjunctions-kan-abelian.md).
 
 ## Statement and universal property
 

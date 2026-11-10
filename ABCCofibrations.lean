@@ -15,6 +15,7 @@ import ABCCofibrations.QuillenModelCategory
 import ABCCofibrations.OtherAxiomSystems
 import ABCCofibrations.AdjunctionKan
 import ABCCofibrations.AbelianLemmas
+import ABCCofibrations.ApproximationTheorem
 import ABCCofibrations.OverUnderCofibrationCategory
 import ABCCofibrations.OverUnderFibration
 import ABCCofibrations.Gluing

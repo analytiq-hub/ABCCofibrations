@@ -5,6 +5,8 @@ import ABCCofibrations.SmallSums
 import ABCCofibrations.SequentialColimits
 import ABCCofibrations.ToDualRegistrations
 import ABCCofibrations.OverUnder
+import ABCCofibrations.EquivalenceTransfer
+import ABCCofibrations.OverUnderFibration
 import ABCCofibrations.Gluing
 import ABCCofibrations.Extension
 import ABCCofibrations.Properness

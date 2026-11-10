@@ -51,12 +51,20 @@ attribute [to_dual ABCCofibrations.underCategoryWithCofibrations
 attribute [to_dual ABCCofibrations.underCategoryWithWeakEquivalences
   /-- Weak equivalences of `Under S` are the maps whose underlying map is one. -/]
   instCategoryWithWeakEquivalencesOver
+attribute [to_dual ABCCofibrations.underCategoryWithFibrations
+  /-- Fibrations of `Under S` are the maps whose underlying map is one. -/]
+  instCategoryWithCofibrationsOver
 
 variable {S}
 
 theorem cofibration_under_iff [CategoryWithCofibrations C] {X Y : Under S} (f : X ⟶ Y) :
     Cofibration f ↔ Cofibration f.right := by
   simp only [cofibration_iff]
+  rfl
+
+theorem fibration_under_iff [CategoryWithFibrations C] {X Y : Under S} (f : X ⟶ Y) :
+    Fibration f ↔ Fibration f.right := by
+  simp only [fibration_iff]
   rfl
 
 theorem weakEquivalence_under_iff [CategoryWithWeakEquivalences C] {X Y : Under S}

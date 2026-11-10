@@ -53,6 +53,46 @@ structure IsLeftProper {A B : C} (f : A ⟶ B) : Prop where
     (sq₁ : IsPushout g f j₁ h) (sq₂ : IsPushout r j₁ j₂ r') [WeakEquivalence r] :
     WeakEquivalence r'
 
+namespace IsLeftProper
+
+/-- Left proper maps are stable under pushout: if `f` is left proper and `j` is
+the pushout of `f` along `u`, then `j` is left proper. Both conditions follow
+by pasting with the square defining `j`. -/
+theorem of_isPushout {A A' B B' : C} {f : A ⟶ B} (hf : IsLeftProper f) {u : A ⟶ A'}
+    {j : A' ⟶ B'} {h : B ⟶ B'} (sq : IsPushout u f j h) : IsLeftProper j where
+  hasPushout D g := by
+    have := hf.hasPushout (u ≫ g)
+    exact (IsPushout.of_left' (IsPushout.of_hasPushout (u ≫ g) f) sq).hasPushout
+  weakEquivalence _ _ _ _ _ _ _ _ _ _ sq₁ sq₂ _ :=
+    hf.weakEquivalence (sq.paste_horiz sq₁) sq₂
+
+/-- Left proper maps are stable under composition, by vertical pushout pasting:
+push `r` first along the pushout of `f`, then along the pushout of `f₂`. -/
+theorem comp {A B B' : C} {f : A ⟶ B} {f₂ : B ⟶ B'} (hf : IsLeftProper f)
+    (hf₂ : IsLeftProper f₂) : IsLeftProper (f ≫ f₂) where
+  hasPushout D g := by
+    have := hf.hasPushout g
+    have := hf₂.hasPushout (pushout.inr g f)
+    exact ((IsPushout.of_hasPushout g f).paste_vert
+      (IsPushout.of_hasPushout (pushout.inr g f) f₂)).hasPushout
+  weakEquivalence {C₁ C₂ D₁ D₂ g r j₁ h j₂ r'} sq₁ sq₂ _ := by
+    have := hf.hasPushout g
+    let t := IsPushout.of_hasPushout g f
+    -- The square from the pushout of `f` to `D₁` is a pushout of `f₂`.
+    have kb := IsPushout.of_top' sq₁ t
+    set k := t.desc j₁ (f₂ ≫ h) _
+    have hk : pushout.inl g f ≫ k = j₁ := t.inl_desc _ _ _
+    -- Push `r` along the pushout of `f`.
+    have := hf.hasPushout (g ≫ r)
+    have sqR := IsPushout.of_left' (IsPushout.of_hasPushout (g ≫ r) f) t
+    have := hf.weakEquivalence t sqR
+    -- Then along `k`, which is a pushout of `f₂`, hence left proper.
+    have sq₂' : IsPushout r (pushout.inl g f ≫ k) j₂ r' := by rw [hk]; exact sq₂
+    exact (hf₂.of_isPushout kb).weakEquivalence IsPushout.of_id_fst
+      (IsPushout.of_top' sq₂' sqR)
+
+end IsLeftProper
+
 end LeftProperMap
 
 namespace ABCPrecofibrationCategory
@@ -105,6 +145,143 @@ theorem isLeftProper_of_cofibration [LeftProper C] {A B : C} [IsCofibrant A]
     have := LeftProper.weakEquivalence_of_isPushout sqL.flip
     have hsr' := LeftProper.weakEquivalence_of_isPushout (sqL.paste_horiz sq₂).flip
     exact (weakEquivalence_precomp_iff _ r').1 hsr'
+
+/-- Isomorphisms are left proper maps. -/
+theorem isLeftProper_of_isIso {A B : C} (f : A ⟶ B) [IsIso f] : IsLeftProper f where
+  hasPushout D g :=
+    (IsPushout.of_vert_isIso (f := g) (g := f) (inl := 𝟙 D) (inr := inv f ≫ g)
+      ⟨by simp⟩).hasPushout
+  weakEquivalence {C₁ C₂ D₁ D₂ g r j₁ h j₂ r'} sq₁ sq₂ _ := by
+    have := sq₁.isIso_inl_of_isIso
+    have := sq₂.isIso_inl_of_isIso
+    have := weakEquivalence_of_isIso j₁
+    have := weakEquivalence_of_isIso j₂
+    have : WeakEquivalence (j₁ ≫ r') := by
+      rw [← sq₂.w]
+      infer_instance
+    exact weakEquivalence_of_precomp j₁ r'
+
+/-- **Theorem 1.8.4(1)(b).** In a left proper precofibration category, every map
+factors as a left proper map followed by a weak equivalence.
+
+Take a cofibrant replacement `a : A' ⟶ A`, factor `a ≫ f` as a cofibration
+`f₁` followed by a weak equivalence `r₁`, and push `f₁` out along `a`. The
+pushout of `f₁` is left proper by part (a) and stability under pushout, the
+pushout of `a` is a weak equivalence by PCF, and two out of three handles the
+induced map. -/
+theorem exists_leftProper_factorization [LeftProper C] {A B : C} (f : A ⟶ B) :
+    ∃ (Y : C) (f' : A ⟶ Y) (r : Y ⟶ B), IsLeftProper f' ∧ WeakEquivalence r ∧ f' ≫ r = f := by
+  obtain ⟨A', a, hA', ha⟩ := exists_cofibrant_replacement A
+  obtain ⟨Z, f₁, r₁, hf₁, hr₁, hfac⟩ := factorization (a ≫ f)
+  have := LeftProper.hasPushout f₁ a
+  let sq := IsPushout.of_hasPushout f₁ a
+  have hinl : WeakEquivalence (pushout.inl f₁ a) := LeftProper.weakEquivalence_of_isPushout sq
+  let r : pushout f₁ a ⟶ B := pushout.desc r₁ f hfac
+  have hr : WeakEquivalence r :=
+    weakEquivalence_of_precomp_of_fac (pushout.inl_desc r₁ f hfac)
+  exact ⟨pushout f₁ a, pushout.inr f₁ a, r,
+    (isLeftProper_of_cofibration f₁).of_isPushout sq.flip, hr, pushout.inr_desc r₁ f hfac⟩
+
+/-- **Theorem 1.8.4(1)(c).** In a left proper precofibration category, trivial
+left proper maps are stable under pushout: the pushout `j` of a left proper
+weak equivalence `i` along any map is again a left proper weak equivalence.
+
+Factor the map as a left proper `f'` followed by a weak equivalence `r`. The
+pushout of `i` along `f'` is a weak equivalence because `f'` is left proper,
+pushing `r` along it gives a weak equivalence because `i` is left proper, and
+two out of three gives `j`. -/
+theorem _root_.ABCCofibrations.IsLeftProper.weakEquivalence_of_isPushout [LeftProper C]
+    {A B D E : C} {i : A ⟶ B} (hi : IsLeftProper i) [WeakEquivalence i]
+    {f : A ⟶ D} {j : D ⟶ E} {g : B ⟶ E}
+    (h : IsPushout f i j g) : IsLeftProper j ∧ WeakEquivalence j := by
+  refine ⟨hi.of_isPushout h, ?_⟩
+  obtain ⟨Y, f', r, hf', hr, hfac⟩ := exists_leftProper_factorization f
+  have := hi.hasPushout f'
+  let sqP := IsPushout.of_hasPushout f' i
+  -- The pushout of `i` along the left proper map `f'` is a weak equivalence.
+  have : WeakEquivalence (pushout.inl f' i) :=
+    hf'.weakEquivalence IsPushout.of_id_fst sqP.flip
+  -- Pushing `r` along it is a weak equivalence, since `i` is left proper.
+  have outer : IsPushout (f' ≫ r) i j g := by rw [hfac]; exact h
+  have sqL := IsPushout.of_left' outer sqP
+  have := hi.weakEquivalence sqP sqL
+  have : WeakEquivalence (r ≫ j) := by
+    rw [sqL.w]
+    infer_instance
+  exact weakEquivalence_of_precomp r j
+
+/-- **Proposition 1.8.5(1).** In a left proper precofibration category, a weak
+equivalence is left proper exactly when its pushouts along all maps exist and
+are weak equivalences. The forward direction is Theorem 1.8.4(1)(c); the
+converse uses pasting and two out of three, and needs no properness. -/
+theorem isLeftProper_iff_of_weakEquivalence [LeftProper C] {A B : C} (i : A ⟶ B)
+    [WeakEquivalence i] :
+    IsLeftProper i ↔ (∀ ⦃D : C⦄ (g : A ⟶ D), HasPushout g i) ∧
+      ∀ ⦃D E : C⦄ {g : A ⟶ D} {j : D ⟶ E} {k : B ⟶ E}, IsPushout g i j k →
+        WeakEquivalence j := by
+  constructor
+  · intro hi
+    exact ⟨hi.hasPushout, fun _ _ _ _ _ h ↦ (hi.weakEquivalence_of_isPushout h).2⟩
+  · rintro ⟨hex, hwe⟩
+    refine ⟨hex, fun C₁ C₂ D₁ D₂ g r j₁ h j₂ r' sq₁ sq₂ _ ↦ ?_⟩
+    have := hwe sq₁
+    have := hwe (sq₁.paste_horiz sq₂)
+    have : WeakEquivalence (j₁ ≫ r') := by
+      rw [← sq₂.w]
+      infer_instance
+    exact weakEquivalence_of_precomp j₁ r'
+
+section LeftProperCofibrations
+
+variable (C) in
+/-- A type synonym for `C`, carrying the left proper maps as cofibrations
+(and the same weak equivalences and initial object). -/
+def LeftProperCofibrations : Type u := C
+
+instance : Category.{v} (LeftProperCofibrations C) := inferInstanceAs (Category.{v} C)
+
+instance : CategoryWithCofibrations (LeftProperCofibrations C) where
+  cofibrations _ _ f := IsLeftProper (C := C) f
+
+instance : CategoryWithWeakEquivalences (LeftProperCofibrations C) where
+  weakEquivalences := weakEquivalences C
+
+instance : HasInitial (LeftProperCofibrations C) := inferInstanceAs (HasInitial C)
+
+/-- **Theorem 1.8.4(1)(d).** If `C` is a left proper precofibration category,
+then `C` with the same weak equivalences and the left proper maps as
+cofibrations is again a precofibration category. CF1 holds because
+isomorphisms are left proper and left proper maps compose; CF3(1) is
+stability under pushout; CF3(2) is part (c); CF4 is part (b). -/
+theorem leftProperCofibrations_precofibrationCategory [LeftProper C] :
+    ABCPrecofibrationCategory (LeftProperCofibrations C) where
+  initial_cofibrant := by
+    change Cofibration (initial.to (⊥_ (LeftProperCofibrations C)))
+    rw [show initial.to (⊥_ (LeftProperCofibrations C)) = 𝟙 _ from
+      initialIsInitial.hom_ext _ _]
+    exact ⟨isLeftProper_of_isIso (C := C) (𝟙 _)⟩
+  cofibrations_comp := ⟨fun _ _ hf hg ↦ IsLeftProper.comp (C := C) hf hg⟩
+  weakEquivalence_of_isIso {A B} f _ := by
+    have : IsIso (C := C) f := ‹IsIso f›
+    exact ⟨(weakEquivalence_of_isIso (C := C) f).mem⟩
+  cofibration_of_isIso {A B} f _ _ := by
+    have : IsIso (C := C) f := ‹IsIso f›
+    exact ⟨isLeftProper_of_isIso (C := C) f⟩
+  weakEquivalences_twoOutOfThree :=
+    inferInstanceAs (weakEquivalences C).HasTwoOutOfThreeProperty
+  hasPushout {A B D} i f _ _ hi := by
+    have := hi.mem.hasPushout f
+    exact hasPushout_symmetry (C := C) f i
+  cofibration_of_isPushout {A B D E i f g j} h _ _ hi :=
+    ⟨hi.mem.of_isPushout (C := C) h.flip⟩
+  weakEquivalence_of_isPushout {A B D E i f g j} h _ _ hi hw := by
+    have : WeakEquivalence (C := C) i := ⟨hw.mem⟩
+    exact ⟨(hi.mem.weakEquivalence_of_isPushout (C := C) h.flip).2.mem⟩
+  factorization {A B} f _ := by
+    obtain ⟨Y, f', r, hf', hr, hfac⟩ := exists_leftProper_factorization (C := C) f
+    exact ⟨Y, f', r, ⟨hf'⟩, ⟨hr.mem⟩, hfac⟩
+
+end LeftProperCofibrations
 
 end ABCPrecofibrationCategory
 

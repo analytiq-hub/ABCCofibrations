@@ -7,6 +7,7 @@ import ABCCofibrations.ToDualRegistrations
 import ABCCofibrations.OverUnder
 import ABCCofibrations.Gluing
 import ABCCofibrations.Extension
+import ABCCofibrations.Properness
 import ABCCofibrations.Cylinder
 import ABCCofibrations.LeftHomotopy
 import ABCCofibrations.HomotopyCancellation

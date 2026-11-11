@@ -18,7 +18,8 @@ public import Mathlib.CategoryTheory.Category.Cat.Op
 /-!
 # Relative colimits, cofinality and the Grothendieck construction (Chapter 8)
 
-Lemmas 8.2.1, 8.2.2, 8.5.2, Propositions 8.5.3, 8.5.4, 8.6.2 and Corollary 8.6.3.
+Lemmas 8.2.1, 8.2.2, 8.5.2, Propositions 8.5.3, 8.5.4, 8.6.1(1), 8.6.2 and
+Corollary 8.6.3.
 These are classical facts about diagrams; mathlib proves them, and we restate
 them in the paper's form.
 
@@ -155,6 +156,65 @@ theorem initial_hasLimit_iff [u.Initial] :
   ⟨⟨fun _ ↦ Functor.Initial.hasLimit_of_comp u, fun _ ↦ inferInstance⟩, fun {_} ↦ inferInstance⟩
 
 end Cofinality
+
+section GrothendieckAdjoint
+
+universe v₁ v₂ u₁ u₂
+
+variable {C : Type u₁} [Category.{v₁} C] (F : C ⥤ Cat.{v₂, u₂}) (d : C)
+
+/-- The inclusion of the fiber `p⁻¹d = F(d)` into the comma category `(p ↓ d)` of
+the projection `p : ∫ F ⥤ C`. -/
+def fiberInclusion : F.obj d ⥤ CostructuredArrow (Grothendieck.forget F) d :=
+  (Grothendieck.ι F d).toCostructuredArrow (Grothendieck.forget F) d (fun _ ↦ 𝟙 d)
+    (fun _ ↦ Category.id_comp _)
+
+variable {F d} in
+lemma fiberInclusion_base {X : CostructuredArrow (Grothendieck.forget F) d} {y : F.obj d}
+    (g : X ⟶ (fiberInclusion F d).obj y) : g.left.base = X.hom :=
+  (Category.comp_id _).symm.trans (CostructuredArrow.w g)
+
+omit [Category.{v₁} C] in
+private lemma eqToHom_comp_eq {𝒞 : Type*} [Category 𝒞] {A B B' Y Y' Y'' Z : 𝒞} (p : A = B)
+    (q : A = B') (r : B' = B) (h : B ⟶ Y) (s : Y = Y') (t : Y' = Y'') (g : Y'' ⟶ Z)
+    (st : Y = Y'') (g' : Y ⟶ Z) (hg : g' = eqToHom st ≫ g) :
+    eqToHom p ≫ h ≫ g' = eqToHom q ≫ eqToHom r ≫ h ≫ eqToHom s ≫ eqToHom t ≫ g := by
+  subst q r s t hg
+  simp
+
+/-- The hom-equivalence of the left adjoint of `fiberInclusion`. -/
+def fiberInclusionHomEquiv (X : CostructuredArrow (Grothendieck.forget F) d) (y : F.obj d) :
+    ((F.map X.hom).toFunctor.obj X.left.fiber ⟶ y) ≃ (X ⟶ (fiberInclusion F d).obj y) where
+  toFun φ := CostructuredArrow.homMk (⟨X.hom, φ⟩ : X.left ⟶ ⟨d, y⟩) (Category.comp_id _)
+  invFun g := eqToHom (congrArg (fun b ↦ (F.map b).toFunctor.obj X.left.fiber)
+    (fiberInclusion_base g).symm) ≫ g.left.fiber
+  left_inv φ := by
+    change eqToHom rfl ≫ φ = φ
+    rw [eqToHom_refl, Category.id_comp]
+  right_inv g := by
+    have hb := fiberInclusion_base g
+    obtain ⟨⟨b, φ⟩, ⟨⟨⟩⟩, w⟩ := g
+    change b = X.hom at hb
+    subst hb
+    apply CostructuredArrow.hom_ext
+    refine Grothendieck.ext _ _ rfl ?_
+    change eqToHom _ ≫ (eqToHom _ ≫ φ) = φ
+    simp
+
+/-- **Proposition 8.6.1(1).** For `F : C ⥤ Cat` with projection
+`p : ∫ F ⥤ C`, the inclusion of the fiber `p⁻¹d = F(d)` into `(p ↓ d)` has a left
+adjoint, sending `((d₁, x₁), f₁ : d₁ ⟶ d)` to `F(f₁)(x₁)`. -/
+theorem fiberInclusion_isRightAdjoint : (fiberInclusion F d).IsRightAdjoint :=
+  (Adjunction.adjunctionOfEquivLeft (fiberInclusionHomEquiv F d) (by
+    intro X y y' g h
+    apply CostructuredArrow.hom_ext
+    refine Grothendieck.ext _ _ (Category.comp_id X.hom).symm ?_
+    change eqToHom _ ≫ (h ≫ g) = eqToHom _ ≫ (F.map (𝟙 d)).toFunctor.map h ≫ (eqToHom _ ≫ g)
+    rw [Functor.congr_hom (congrArg Cat.Hom.toFunctor (F.map_id d)) h]
+    simp only [Cat.Hom.id_toFunctor, Functor.id_map, Category.assoc]
+    exact eqToHom_comp_eq (𝒞 := F.obj d) _ _ _ _ _ _ _ rfl _ (by simp))).isRightAdjoint
+
+end GrothendieckAdjoint
 
 section Grothendieck
 

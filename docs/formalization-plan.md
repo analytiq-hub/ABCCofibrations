@@ -713,9 +713,8 @@ Completed localization infrastructure:
 - `AdjunctionKan.lean`: Propositions 4.2.1, 4.2.2, 4.3.2, 4.3.3 and
   Corollary 4.3.4 (adjunctions and Kan extensions).
 - `AbelianLemmas.lean`: Lemmas 3.2.2 and 3.2.6.
-- `ApproximationTheorem.lean`: left approximations (Definition 5.4.1),
-  Lemma 5.4.2(1), and the approximation theorem 5.5.1 for left approximations.
-  Remaining: right approximations, Corollaries 5.5.3–5.5.4.
+- `ApproximationTheorem.lean`: left and right approximations (Definition 5.4.1),
+  Lemma 5.4.2, the approximation theorem 5.5.1, Corollaries 5.5.3–5.5.4.
 - `ToDualRegistrations.lean`: temporary local `to_dual` dictionary entries
   (model-category classes, `MorphismProperty` cast, `Over ↔ Under`). Remove when
   mathlib registers these (after mathlib4#40940 and a `MorphismProperty`

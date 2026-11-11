@@ -42,6 +42,7 @@ import ABCCofibrations.ReedyExtension
 import ABCCofibrations.ReedyFactorization
 import ABCCofibrations.ReedyFibStructure
 import ABCCofibrations.ReedyPointwise
+import ABCCofibrations.ReedyKan
 import ABCCofibrations.ProductHomotopyCategory
 import ABCCofibrations.OverUnderCofibrationCategory
 import ABCCofibrations.OverUnderFibration

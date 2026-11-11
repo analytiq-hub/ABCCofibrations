@@ -206,6 +206,80 @@ lemma extendDesc_app_ne (α : F ⟶ (complementProp d).ι ⋙ G) (z : c.pt ⟶ G
     (extendDesc hd F c α z h).app e = (extendObjIso F c he).hom ≫ α.app ⟨e, he⟩ :=
   extendDescApp_ne F c α z he
 
+variable (G)
+
+open Classical in
+/-- The components of a map into the extension. -/
+noncomputable def extendLiftApp (α : (complementProp d).ι ⋙ G ⟶ F) (z : G.obj d ⟶ c.pt)
+    (e : D) : G.obj e ⟶ extendObj F c e :=
+  if he : e = d then eqToHom (congrArg G.obj he) ≫ z ≫ (extendObjIsoSelf F c).inv ≫
+    eqToHom (congrArg (extendObj F c) he.symm)
+  else α.app ⟨e, he⟩ ≫ (extendObjIso F c he).inv
+
+variable {G}
+
+lemma extendLiftApp_self (α : (complementProp d).ι ⋙ G ⟶ F) (z : G.obj d ⟶ c.pt) :
+    extendLiftApp F c G α z d = z ≫ (extendObjIsoSelf F c).inv := by
+  simp [extendLiftApp]
+
+lemma extendLiftApp_ne (α : (complementProp d).ι ⋙ G ⟶ F) (z : G.obj d ⟶ c.pt) {e : D}
+    (he : e ≠ d) : extendLiftApp F c G α z e = α.app ⟨e, he⟩ ≫ (extendObjIso F c he).inv := by
+  simp [extendLiftApp, he]
+
+include hd in
+lemma extendLiftApp_naturality (α : (complementProp d).ι ⋙ G ⟶ F) (z : G.obj d ⟶ c.pt)
+    (h : ∀ j : LatchingCategory d,
+      G.map j.obj.hom ≫ z = α.app ((latchingToComplement d).obj j) ≫ c.ι.app j)
+    {e e' : D} (g : e ⟶ e') :
+    G.map g ≫ extendLiftApp F c G α z e' = extendLiftApp F c G α z e ≫ extendMap hd F c g := by
+  by_cases he' : e' = d
+  · subst e'
+    by_cases he : e = d
+    · subst e
+      obtain ⟨_, rfl⟩ := hd _ g
+      rw [extendMap_self_self, Category.comp_id, eqToHom_map, eqToHom_refl, Category.id_comp]
+    · have h₃ : extendMap hd F c g =
+          ((extendObjIso F c he).hom ≫ c.ι.app ⟨Over.mk g, he⟩) ≫ (extendObjIsoSelf F c).inv :=
+        (Iso.eq_comp_inv _).2 (extend_map_self hd F c he g)
+      rw [extendLiftApp_self, extendLiftApp_ne _ _ _ _ he, h₃, ← Category.assoc]
+      exact (congrArg (· ≫ (extendObjIsoSelf F c).inv) (h ⟨Over.mk g, he⟩)).trans
+        (by
+          have hc : c.ι.app ⟨Over.mk g, he⟩ ≫ (extendObjIsoSelf F c).inv =
+              (extendObjIso F c he).inv ≫ ((extendObjIso F c he).hom ≫
+                c.ι.app ⟨Over.mk g, he⟩) ≫ (extendObjIsoSelf F c).inv :=
+            (Iso.inv_hom_id_assoc _ _).symm.trans
+              (congrArg ((extendObjIso F c he).inv ≫ ·) (Category.assoc _ _ _).symm)
+          exact (Category.assoc _ _ _).trans ((congrArg (α.app ⟨e, he⟩ ≫ ·) hc).trans
+            (Category.assoc _ _ _).symm))
+  · by_cases he : e = d
+    · subst e
+      exact absurd (hd _ g).choose.symm he'
+    · have h₃ : extendMap hd F c g =
+          ((extendObjIso F c he).hom ≫ F.map ⟨g⟩) ≫ (extendObjIso F c he').inv :=
+        (Iso.eq_comp_inv _).2 (extendObjIso_naturality hd F c he he' g)
+      rw [extendLiftApp_ne _ _ _ _ he', extendLiftApp_ne _ _ _ _ he, h₃, ← Category.assoc]
+      exact (congrArg (· ≫ (extendObjIso F c he').inv)
+        (α.naturality (⟨g⟩ : (⟨e, he⟩ : Complement d) ⟶ ⟨e', he'⟩))).trans
+          (by simp only [Category.assoc, Iso.inv_hom_id_assoc])
+
+include hd in
+/-- A map into the extension, from a map on `D ∖ {d}` and a compatible map at `d`. -/
+noncomputable def extendLift (α : (complementProp d).ι ⋙ G ⟶ F) (z : G.obj d ⟶ c.pt)
+    (h : ∀ j : LatchingCategory d,
+      G.map j.obj.hom ≫ z = α.app ((latchingToComplement d).obj j) ≫ c.ι.app j) :
+    G ⟶ extend hd F c where
+  app := extendLiftApp F c G α z
+  naturality _ _ g := extendLiftApp_naturality hd F c α z h g
+
+lemma extendLift_app_self (α : (complementProp d).ι ⋙ G ⟶ F) (z : G.obj d ⟶ c.pt) (h) :
+    (extendLift hd F c α z h).app d = z ≫ (extendObjIsoSelf F c).inv :=
+  extendLiftApp_self F c α z
+
+lemma extendLift_app_ne (α : (complementProp d).ι ⋙ G ⟶ F) (z : G.obj d ⟶ c.pt) (h) {e : D}
+    (he : e ≠ d) :
+    (extendLift hd F c α z h).app e = α.app ⟨e, he⟩ ≫ (extendObjIso F c he).inv :=
+  extendLiftApp_ne F c α z he
+
 end Maps
 
 end ABCCofibrations

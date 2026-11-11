@@ -81,6 +81,8 @@ All names except the abbreviation are in
 | Restricted pullbacks | `hasPullback` |
 | Base change | `fibration_of_isPullback`, `weakEquivalence_of_isPullback` |
 | Lemma 1.2.1(2), finite products | `hasProduct_finite`, `product_finite_fibrant`, `fibration_product_map_finite`, `weakEquivalence_product_map_finite` |
+| Lemma 1.3.3(2), relative factorization | `exists_relative_factorization` |
+| Lemma 1.4.1(2)(a), cogluing for fibrations | `cogluing_fibration` |
 | Lemma 1.4.1(2)(b), cogluing | `cogluing_weakEquivalence` |
 | Lemma 1.4.2(2), excision | `weakEquivalence_of_isPullback_of_fibration` |
 
@@ -110,8 +112,10 @@ $\mathcal M^{op}$.
 Fibration categories (F1–F6) are `ABCFibrationCategory`, defined as
 cofibration categories on the opposite category
 ([FibrationCategory.lean](../../ABCCofibrations/FibrationCategory.lean)).
-Lemma 1.4.1(2)(a), whose comparison maps are canonical maps into chosen
-pullbacks, is not yet stated.
+Lemmas 1.3.3(2) and 1.4.1(2)(a) have comparison maps into pullbacks. They are
+stated for any pullback representative `P` (an `IsPullback` square), and the
+comparison `A ⟶ P` is related to the canonical map out of the chosen pushout in
+$\mathcal M^{op}$ by `IsPushout.isoPushout`.
 
 ## Opposite fibrant objects as cofibrant objects
 

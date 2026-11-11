@@ -724,7 +724,9 @@ Completed localization infrastructure:
 - `QuillenSaturation.lean`: Theorem 7.2.4, Lemma 7.4.1, Corollary 7.3.5(5).
 - `SaturatedStructure.lean`: Theorem 7.2.8(1).
 - `LocalSmallness.lean`: Propositions 7.3.2–7.3.4, Corollary 7.3.5.
-- `ProperSaturation.lean`: Lemma 7.2.10, Proposition 7.2.11(1), Theorem 7.2.12(1).
+- `ProperSaturation.lean`: Lemma 7.2.10, Proposition 7.2.11, Theorem 7.2.12.
+- `DiagramColimits.lean`: Lemmas 8.2.1, 8.2.2, Propositions 8.5.3(1), 8.5.4, 8.6.2(1), Corollary 8.6.3.
+- `DerivedApproximation.lean`: Theorem 5.7.1, Corollary 5.7.2 (approximations are derivability structures).
 - `ProductHomotopyCategory.lean`: Theorem 7.1.1 for finite products.
 - `ToDualRegistrations.lean`: temporary local `to_dual` dictionary entries
   (model-category classes, `MorphismProperty` cast, `Over ↔ Under`). Remove when
@@ -1150,3 +1152,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-10 | Approximation theorem, left case | `ApproximationTheorem.lean` defines left approximations (LAP1, LAP2 for a `LocalizerMorphism`) and proves Lemma 5.4.2(1) and Theorem 5.5.1 for left approximations. The quasi-inverse is a lift through the localization of a functor `M ⥤ ho M'` built from LAP1–LAP2, instead of the paper's zig-zag construction. Full build passed (2580 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: right approximations (needs `G.op` equivalence ⇒ `G` equivalence), Corollaries 5.5.3–5.5.4. |
 | 2026-11-11 | Chapters 3, 5–7 | Right approximations, Corollaries 5.5.3–5.5.4; Theorem 6.1.5 and Lemma 6.1.3(2); Theorems 5.2.2 and 6.4.1; Lemmas 3.2.1 and 3.2.3; Lemma 7.2.1, Proposition 7.2.9, and saturation of weak equivalences (Lemma 7.2.2, Theorem 7.2.3). See [the note](mathematics/approximation-saturation.md). Full build passed (2908 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |
 | 2026-11-11 | Chapter 7 continued | Theorem 7.2.4, Theorem 7.2.8(1), Lemma 7.2.10, Proposition 7.2.11(1), Theorem 7.2.12(1), Propositions 7.3.2–7.3.4, Corollary 7.3.5 (Baues, premodel and Quillen forms), Lemma 7.4.1, Theorem 7.1.1 (finite products), Lemma 6.1.4(2). Full build passed (2940 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |
+| 2026-11-11 | Chapters 1, 5, 7, 8 | Theorem 7.2.8(2), Proposition 7.2.11(2), Theorem 7.2.12(2); Lemmas 8.2.1, 8.2.2, Propositions 8.5.3(1), 8.5.4, 8.6.2(1), Corollary 8.6.3 (mathlib restatements); Theorem 5.7.1 and Corollary 5.7.2 (left/right approximations are derivability structures); Lemmas 1.3.3(2) and 1.4.1(2)(a) (for any pullback representatives). Full build passed (2944 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |

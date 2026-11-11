@@ -106,8 +106,21 @@ equivalences, so `a` is one.
   weak equivalence). This is shorter than the paper's construction.
 * **Proposition 7.2.11(1), Theorem 7.2.12(1).** `W`-left proper maps are
   `W̄`-left proper, by Lemma 7.2.10 and two out of six in `ho M`; hence the
-  saturated structure is left proper. The fibration versions (2) are not yet
-  formalized.
+  saturated structure is left proper. The fibration versions (2) follow in the
+  opposite category, using `saturation Cᵒᵖ = (saturation C).op`.
+* **Theorem 7.2.8(2).** The saturated prefibration structure lives on the type
+  synonym `SaturatedFib C`; it is transported from `Saturated Cᵒᵖ`.
+* **Theorem 5.7.1, Corollary 5.7.2.** The paper's total left derived functor
+  `(Lu, ε)` is mathlib's `Functor.IsLeftDerivedFunctor` (a right Kan extension,
+  in mathlib's terminology). Instead of a regular cleavage, a left
+  approximation is shown to be a left derivability structure (Kahn and
+  Maltsiniotis; mathlib's `IsLeftDerivabilityStructure.mk'`): LAP2(1) makes the
+  categories of resolutions connected and gives resolutions of arrows, and the
+  approximation theorem makes `t` a localized equivalence. Mathlib's
+  `LocalizerMorphism.Derives` then gives existence (as a pointwise derived
+  functor) and the criterion "ε is an isomorphism at every `tA'`". The
+  corollary compares any derived functor with `ho(ut) ∘ s` by full faithfulness
+  of precomposition with the localization `M' ⥤ ho M'`.
 * **Propositions 7.3.2–7.3.3, Corollary 7.3.5.** Maps of `ho M` from a cofibrant
   object to a fibrant model come from maps (via Theorem 6.4.5 and the extension
   property); under BCF6 maps between cofibrant objects do. Local smallness
@@ -123,10 +136,13 @@ equivalences, so `a` is one.
 | --- | --- |
 | Theorem 7.1.1, finite | `isLocalization_pi` |
 | Theorem 7.2.4 | `QuillenModelCategory.weakEquivalence_iff_isIso_map` |
+| Theorem 5.7.1(1), (2) | `LeftApproximation.hasLeftDerivedFunctor`, `LeftApproximation.isLeftDerivedFunctor_iff`, `RightApproximation.hasRightDerivedFunctor`, `RightApproximation.isRightDerivedFunctor_iff` |
+| Corollary 5.7.2(1), (2) | `LeftApproximation.leftDerivedFunctor_iso`, `RightApproximation.rightDerivedFunctor_iso` |
 | Theorem 7.2.8(1) | `ABCPrecofibrationCategory.saturated_precofibrationCategory`, `saturation`, `Saturated` |
+| Theorem 7.2.8(2) | `ABCPrefibrationCategory.saturated_prefibrationCategory`, `SaturatedFib`, `saturation_op` |
 | Lemma 7.2.10(1), (2) | `exists_leftInverse_iff_leftProper`, `isIso_map_iff_leftProper`, `exists_rightInverse_iff_rightProper`, `isIso_map_iff_rightProper` |
-| Proposition 7.2.11(1) | `isLeftProper_saturated` |
-| Theorem 7.2.12(1) | `saturated_leftProper` |
+| Proposition 7.2.11(1), (2) | `isLeftProper_saturated`, `isRightProper_saturated` |
+| Theorem 7.2.12(1), (2) | `saturated_leftProper`, `saturated_rightProper` |
 | Definition 7.3.1 | `IsFibrantModel`, `IsCofibrantModel` |
 | Proposition 7.3.2(1), (2) | `map_surjective_of_isFibrantModel`, `map_surjective_of_isCofibrantModel` |
 | Proposition 7.3.3(1), (2) | `locallySmall_of_fibrantModels`, `locallySmall_of_cofibrantModels` |
@@ -134,3 +150,24 @@ equivalences, so `a` is one.
 | Corollary 7.3.5 | `locallySmall_of_bauesAxiom`, `locallySmall_of_trivialCofibration_lifting`, `locallySmall_of_cofibration_lifting`, `QuillenModelCategory.locallySmall_homotopyCategory` |
 | Lemma 7.4.1 | `QuillenModelCategory.quillen_homotopy_tfae` |
 | Lemma 6.1.4(2) | `IsFibrantApproximation.rightFraction_map_eq_of_ambient_comparison` |
+
+## Chapter 8: relative colimits, cofinality, Grothendieck construction
+
+These classical results are restated from mathlib in
+[DiagramColimits.lean](../../ABCCofibrations/DiagramColimits.lean). The paper's
+relative colimit `colim^u` is mathlib's (pointwise) left Kan extension; a right
+cofinal functor is mathlib's `Functor.Final`, a left cofinal one `Functor.Initial`.
+
+| Statement | Declaration |
+| --- | --- |
+| Lemma 8.2.1(1), (2) | `hasLeftKanExtension_of_hasColimit_comma`, `hasRightKanExtension_of_hasLimit_comma` |
+| Lemma 8.2.2(1), (2) | `leftKanExtension_comp`, `rightKanExtension_comp` |
+| Proposition 8.5.3(1) | `final_iff_isIso_colimit_pre` (small categories; cocomplete targets in universe `v + 1`) |
+| Proposition 8.5.4(1), (2) | `final_hasColimit_iff`, `initial_hasLimit_iff` |
+| Proposition 8.6.2(1) | `grothendieck_colimit` (with mathlib's hypothesis on the transition functors) |
+| Corollary 8.6.3(1), (2) | `colimit_prod`, `limit_prod` (mathlib's Fubini needs `HasColimitsOfShape K M`) |
+
+Proposition 8.5.3(2) is not formalized: mathlib has no lemma relating
+`colimit.pre` and `limit.pre` across opposite categories. Lemma 8.6.1 (the
+fiber inclusions of the Grothendieck construction have adjoints) has no mathlib
+counterpart and is not formalized.

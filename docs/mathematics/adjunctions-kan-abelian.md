@@ -2,7 +2,8 @@
 
 The implementation is in
 [AdjunctionKan.lean](../../ABCCofibrations/AdjunctionKan.lean) and
-[AbelianLemmas.lean](../../ABCCofibrations/AbelianLemmas.lean). The source is
+[AbelianLemmas.lean](../../ABCCofibrations/AbelianLemmas.lean), with the snake lemma in
+[SnakeLemma.lean](../../ABCCofibrations/SnakeLemma.lean). The source is
 §3.2 and Chapter 4 of
 [*Cofibrations in Homotopy Theory*, v4](https://arxiv.org/abs/math/0610009v4)
 (`chap-examples.tex`, `chap-kanext.tex`).
@@ -30,6 +31,17 @@ The implementation is in
   functors between abelian categories.
 
 ## Proofs
+
+**Lemma 3.2.1.** Mathlib's `CommSq.shortComplex` uses the signs `(f, -g)` and
+`(g', f')`, and `CommSq.shortComplex'` the signs `(f, g)` and `(g', -f')`; they
+are isomorphic by the sign change on the second summand. Pushouts are exactly
+the squares for which the first is right exact (mathlib's
+`isColimitEquivIsColimitCokernelCofork`), pullbacks those for which the
+second is left exact. A pushout with a monic leg makes the first complex short
+exact, hence (via the isomorphism) the second left exact; dually for (6).
+
+**Lemma 3.2.3.** Mathlib's homology sequence, obtained from the snake lemma
+in any abelian category, without Mitchell's embedding theorem.
 
 **Proposition 4.2.1.** (1) The triangle identities characterize the
 unit/counit pairs of adjunctions, which are determined by them
@@ -75,5 +87,7 @@ representative. Dually for pullbacks.
 | Proposition 4.3.3(2), left Kan extensions | `isLeftKanExtension_comp_iff`, `hasLeftKanExtension_comp_iff` |
 | Corollary 4.3.4(1), right Kan extensions | `hasRightKanExtension_comp_equivalence_iff`, `isRightKanExtension_comp_equivalence_iff` |
 | Corollary 4.3.4(2), left Kan extensions | `hasLeftKanExtension_comp_equivalence_iff`, `isLeftKanExtension_comp_equivalence_iff` |
+| Lemma 3.2.1(1)–(6) | `lemma321_one` … `lemma321_six`, `lemma321_five'`, `lemma321_six'` |
+| Lemma 3.2.3 (snake lemma) | `snake_lemma` |
 | Lemma 3.2.2(1)–(4) | `IsPushout.epi_iff`, `IsPushout.mono_of_mono`, `IsPullback.mono_iff`, `IsPullback.epi_of_epi` |
 | Lemma 3.2.6 | `Adjunction.rightExact_leftExact` |

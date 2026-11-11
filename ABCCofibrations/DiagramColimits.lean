@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Adjunction.Comma
 public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Category.Cat.Op
+public import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # Relative colimits, cofinality and the Grothendieck construction (Chapter 8)
@@ -213,6 +214,28 @@ theorem fiberInclusion_isRightAdjoint : (fiberInclusion F d).IsRightAdjoint :=
     rw [Functor.congr_hom (congrArg Cat.Hom.toFunctor (F.map_id d)) h]
     simp only [Cat.Hom.id_toFunctor, Functor.id_map, Category.assoc]
     exact eqToHom_comp_eq (𝒞 := F.obj d) _ _ _ _ _ _ _ rfl _ (by simp))).isRightAdjoint
+
+/-- The inclusion of the fiber `p⁻¹d = H(d)` of the contravariant Grothendieck
+construction `∫^D H = (∫_{Dᵒᵖ} Hᵒᵖ)ᵒᵖ` into the comma category `(d ↓ p)`, written
+with mathlib's identification of `(d ↓ p)` with `(p' ↓ op d)ᵒᵖ` for the projection
+`p' : ∫_{Dᵒᵖ} Hᵒᵖ ⥤ Dᵒᵖ`. It sends `y` to the identity of `d`, viewed at the object
+`(d, y)`. -/
+def fiberInclusionContra {D : Type u₁} [Category.{v₁} D] (H : Dᵒᵖ ⥤ Cat.{v₂, u₂}) (d : D) :
+    H.obj (Opposite.op d) ⥤ StructuredArrow (Opposite.op (Opposite.op d))
+      (Grothendieck.forget (H ⋙ Cat.opFunctor)).op :=
+  (opOpEquivalence (H.obj (Opposite.op d))).inverse ⋙
+    (fiberInclusion (H ⋙ Cat.opFunctor) (Opposite.op d)).op ⋙
+      (costructuredArrowOpEquivalence _ _).functor
+
+/-- **Proposition 8.6.1(2).** For `H : Dᵒᵖ ⥤ Cat`, the inclusion of the fiber
+`p⁻¹d = H(d)` into `(d ↓ p)` has a right adjoint. It is the opposite of the left
+adjoint of Proposition 8.6.1(1) for `Hᵒᵖ : Dᵒᵖ ⥤ Cat`. -/
+theorem fiberInclusionContra_isLeftAdjoint {D : Type u₁} [Category.{v₁} D]
+    (H : Dᵒᵖ ⥤ Cat.{v₂, u₂}) (d : D) : (fiberInclusionContra H d).IsLeftAdjoint := by
+  have := fiberInclusion_isRightAdjoint (H ⋙ Cat.opFunctor) (Opposite.op d)
+  exact ⟨_, ⟨(opOpEquivalence (H.obj (Opposite.op d))).symm.toAdjunction.comp
+    ((Adjunction.ofIsRightAdjoint (fiberInclusion (H ⋙ Cat.opFunctor) (Opposite.op d))).op.comp
+      (costructuredArrowOpEquivalence _ _).toAdjunction)⟩⟩
 
 end GrothendieckAdjoint
 

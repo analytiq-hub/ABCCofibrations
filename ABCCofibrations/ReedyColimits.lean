@@ -57,7 +57,7 @@ noncomputable def latchingToComplementColimit [HasColimit (latchingDiagram X d)]
 lemma ι_latchingToComplementColimit [HasColimit (latchingDiagram X d)]
     [HasColimit ((complementProp d).ι ⋙ X)] (j : LatchingCategory d) :
     colimit.ι (latchingDiagram X d) j ≫ latchingToComplementColimit X d =
-      colimit.ι ((complementProp d).ι ⋙ X) ⟨j.obj.left, j.property⟩ :=
+      colimit.ι ((complementProp d).ι ⋙ X) ((latchingToComplement d).obj j) :=
   colimit.ι_desc _ _
 
 section Pushout

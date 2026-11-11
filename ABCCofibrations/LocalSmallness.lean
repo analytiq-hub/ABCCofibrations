@@ -8,6 +8,7 @@ module
 public import ABCCofibrations.AmbientHomotopyFractions
 public import ABCCofibrations.ReplacementComparison
 public import ABCCofibrations.HomotopyOpposite
+public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Maps of the homotopy category as homotopy classes (Propositions 7.3.2, 7.3.4)
@@ -24,11 +25,25 @@ These are the key steps for local smallness of the homotopy category
 
 @[expose] public section
 
-universe v u
+universe w v u
 
 open CategoryTheory Limits HomotopicalAlgebra
 
 namespace ABCCofibrations
+
+/-- A localization is locally small if every pair of objects is isomorphic to a
+pair whose maps in the localization all come from maps of a locally small
+category. -/
+theorem locallySmall_of_surjective {C : Type u} [Category.{v} C] {D : Type*} [Category D]
+    (L : C ⥤ D) [L.EssSurj] [LocallySmall.{w} C]
+    (h : ∀ A B : C, ∃ (A' B' : C) (_ : L.obj A ≅ L.obj A') (_ : L.obj B ≅ L.obj B'),
+      Function.Surjective (fun g : A' ⟶ B' ↦ L.map g)) : LocallySmall.{w} D where
+  hom_small X Y := by
+    obtain ⟨A', B', e₁, e₂, hs⟩ := h (L.objPreimage X) (L.objPreimage Y)
+    have : Small.{w} (L.obj A' ⟶ L.obj B') := small_of_surjective hs
+    have : Small.{w} (L.obj (L.objPreimage X) ⟶ L.obj (L.objPreimage Y)) :=
+      small_map (e₁.homCongr e₂)
+    exact small_map ((L.objObjPreimageIso X).homCongr (L.objObjPreimageIso Y)).symm
 
 namespace ABCPrecofibrationCategory
 
@@ -83,6 +98,37 @@ theorem map_eq_iff_leftHomotopy {A B : C} [IsCofibrant A] [IsCofibrant B]
   ambient_map_eq_iff_cofibrant_leftHomotopy L (X := CofibrantObject.mk A)
     (Y := CofibrantObject.mk B) (CofibrantObject.homMk g) (CofibrantObject.homMk g')
 
+include L in
+/-- **Proposition 7.3.3(1).** If every cofibrant object admits a weak equivalence to
+a fibrant model, the homotopy category of a locally small precofibration category
+is locally small. -/
+theorem locallySmall_of_fibrantModels [LocallySmall.{w} C]
+    (h : ∀ A : C, IsCofibrant A → ∃ (A' : C) (a : A ⟶ A'), WeakEquivalence a ∧ IsFibrantModel A') :
+    LocallySmall.{w} D := by
+  have := Localization.essSurj L (weakEquivalences C)
+  refine locallySmall_of_surjective L fun A B ↦ ?_
+  obtain ⟨A₁, q, hA₁, hq⟩ := exists_cofibrant_replacement A
+  obtain ⟨B₁, q', hB₁, hq'⟩ := exists_cofibrant_replacement B
+  obtain ⟨B₂, b, hb, hB₂⟩ := h B₁ hB₁
+  have := hA₁
+  exact ⟨A₁, B₂, (Localization.isoOfHom L _ q hq.mem).symm,
+    (Localization.isoOfHom L _ q' hq'.mem).symm ≪≫ Localization.isoOfHom L _ b hb.mem,
+    fun φ ↦ map_surjective_of_isFibrantModel L hB₂ φ⟩
+
+include L in
+/-- **Corollary 7.3.5(1)**, Baues form: under BCF6, the homotopy category of a
+locally small precofibration category is locally small. -/
+theorem locallySmall_of_bauesAxiom [LocallySmall.{w} C] (h6 : BauesAxiom (C := C)) :
+    LocallySmall.{w} D := by
+  have := Localization.essSurj L (weakEquivalences C)
+  refine locallySmall_of_surjective L fun A B ↦ ?_
+  obtain ⟨A₁, q, hA₁, hq⟩ := exists_cofibrant_replacement A
+  obtain ⟨B₁, q', hB₁, hq'⟩ := exists_cofibrant_replacement B
+  have := hA₁
+  have := hB₁
+  exact ⟨A₁, B₁, (Localization.isoOfHom L _ q hq.mem).symm,
+    (Localization.isoOfHom L _ q' hq'.mem).symm, fun φ ↦ map_surjective_of_bauesAxiom L h6 φ⟩
+
 end ABCPrecofibrationCategory
 
 namespace ABCPrefibrationCategory
@@ -122,6 +168,36 @@ theorem map_surjective_of_bauesAxiom
   obtain ⟨g, hg⟩ := ABCPrecofibrationCategory.map_surjective_of_bauesAxiom L.op h6
     (A := Opposite.op B) (B := Opposite.op A) φ.op
   exact ⟨g.unop, Quiver.Hom.op_inj hg⟩
+
+include L in
+/-- **Proposition 7.3.3(2).** If every fibrant object admits a weak equivalence from
+a cofibrant model, the homotopy category of a locally small prefibration category
+is locally small. -/
+theorem locallySmall_of_cofibrantModels [LocallySmall.{w} C]
+    (h : ∀ A : C, IsFibrant A → ∃ (A' : C) (a : A' ⟶ A), WeakEquivalence a ∧ IsCofibrantModel A') :
+    LocallySmall.{w} D := by
+  have := Localization.essSurj L (weakEquivalences C)
+  refine locallySmall_of_surjective L fun A B ↦ ?_
+  obtain ⟨A₁, q, hA₁, hq⟩ := exists_fibrant_replacement A
+  obtain ⟨A₂, a, ha, hA₂⟩ := h A₁ hA₁
+  obtain ⟨B₁, q', hB₁, hq'⟩ := exists_fibrant_replacement B
+  have := hB₁
+  exact ⟨A₂, B₁, Localization.isoOfHom L _ q hq.mem ≪≫ (Localization.isoOfHom L _ a ha.mem).symm,
+    Localization.isoOfHom L _ q' hq'.mem, fun φ ↦ map_surjective_of_isCofibrantModel L hA₂ φ⟩
+
+include L in
+/-- **Corollary 7.3.5(2)**, Baues form: under BF6, the homotopy category of a
+locally small prefibration category is locally small. -/
+theorem locallySmall_of_bauesAxiom [LocallySmall.{w} C]
+    (h6 : ABCPrecofibrationCategory.BauesAxiom (C := Cᵒᵖ)) : LocallySmall.{w} D := by
+  have := Localization.essSurj L (weakEquivalences C)
+  refine locallySmall_of_surjective L fun A B ↦ ?_
+  obtain ⟨A₁, q, hA₁, hq⟩ := exists_fibrant_replacement A
+  obtain ⟨B₁, q', hB₁, hq'⟩ := exists_fibrant_replacement B
+  have := hA₁
+  have := hB₁
+  exact ⟨A₁, B₁, Localization.isoOfHom L _ q hq.mem, Localization.isoOfHom L _ q' hq'.mem,
+    fun φ ↦ map_surjective_of_bauesAxiom L h6 φ⟩
 
 end ABCPrefibrationCategory
 

@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Fubini
 public import Mathlib.CategoryTheory.Adjunction.Comma
 public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Category.Cat.Op
 
 /-!
 # Relative colimits, cofinality and the Grothendieck construction (Chapter 8)
@@ -177,6 +178,38 @@ theorem grothendieck_colimit :
   exact ⟨colimitFiberwiseColimitIso G⟩
 
 end Grothendieck
+
+section ContravariantGrothendieck
+
+variable {D : Type*} [Category D] {H : Dᵒᵖ ⥤ Cat} {M : Type*} [Category M]
+  (X : (Grothendieck (H ⋙ Cat.opFunctor))ᵒᵖ ⥤ M)
+  [∀ {x y : Dᵒᵖ} (f : x ⟶ y),
+    HasColimit (((H ⋙ Cat.opFunctor).map f).toFunctor ⋙ Grothendieck.ι _ y ⋙ X.rightOp)]
+
+/-- **Proposition 8.6.2(2).** For `H : Dᵒᵖ ⥤ Cat`, the contravariant
+Grothendieck construction is `∫^D H = (∫_{Dᵒᵖ} Hᵒᵖ)ᵒᵖ`. If the limits over the
+fibers exist (mathlib's hypothesis for `X.rightOp`), the limit of `X` over
+`∫^D H` exists iff the limit over `D` of the fiberwise limits does, and then
+they agree. The fiberwise limits are the unopposites of the fiberwise colimits
+of `X.rightOp` in `Mᵒᵖ`. -/
+theorem grothendieck_limit :
+    (HasLimit X ↔ HasLimit (fiberwiseColimit X.rightOp).unop) ∧
+      ∀ [HasLimit X], ∃ (_ : HasLimit (fiberwiseColimit X.rightOp).unop),
+        Nonempty (limit X ≅ limit (fiberwiseColimit X.rightOp).unop) := by
+  have e₁ : HasLimit X ↔ HasColimit X.rightOp :=
+    ⟨fun _ ↦ inferInstance, fun _ ↦ (inferInstance : HasLimit X.rightOp.leftOp)⟩
+  have e₂ : HasColimit (fiberwiseColimit X.rightOp) ↔ HasLimit (fiberwiseColimit X.rightOp).unop :=
+    ⟨fun _ ↦ inferInstance, fun _ ↦ hasColimit_of_hasLimit_unop _⟩
+  refine ⟨e₁.trans ((grothendieck_colimit X.rightOp).1.trans e₂), ?_⟩
+  intro hX
+  have := e₁.1 hX
+  have := hasColimit_fiberwiseColimit X.rightOp
+  refine ⟨inferInstance, ⟨?_⟩⟩
+  exact (limitLeftOpIsoUnopColimit X.rightOp :) ≪≫
+    (colimitFiberwiseColimitIso X.rightOp).unop ≪≫
+    (limitUnopIsoUnopColimit (fiberwiseColimit X.rightOp)).symm
+
+end ContravariantGrothendieck
 
 section Fubini
 

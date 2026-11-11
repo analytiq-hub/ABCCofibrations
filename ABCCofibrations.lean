@@ -36,6 +36,7 @@ import ABCCofibrations.ReedyColimits
 import ABCCofibrations.ReedyFinite
 import ABCCofibrations.ReedyTransfer
 import ABCCofibrations.ReedyColimitMaps
+import ABCCofibrations.ReedyInverse
 import ABCCofibrations.ProductHomotopyCategory
 import ABCCofibrations.OverUnderCofibrationCategory
 import ABCCofibrations.OverUnderFibration

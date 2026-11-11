@@ -6,6 +6,7 @@ Authors: ABCCofibrations contributors
 module
 
 public import ABCCofibrations.HomotopyIsomorphisms
+public import ABCCofibrations.EquivalenceTransfer
 
 /-!
 # The saturated precofibration structure (Theorem 7.2.8)
@@ -123,3 +124,47 @@ theorem saturated_precofibrationCategory : ABCPrecofibrationCategory (Saturated 
 
 end ABCCofibrations.ABCPrecofibrationCategory
 
+namespace ABCCofibrations.ABCPrefibrationCategory
+
+open ABCPrecofibrationCategory
+
+variable (C : Type u) [Category.{v} C] [CategoryWithFibrations C]
+  [CategoryWithWeakEquivalences C] [HasTerminal C]
+
+/-- A type synonym for `C`, carrying the saturated weak equivalences and the same
+fibrations and terminal object. -/
+def SaturatedFib : Type u := C
+
+instance : Category.{v} (SaturatedFib C) := inferInstanceAs (Category.{v} C)
+
+instance : CategoryWithFibrations (SaturatedFib C) := inferInstanceAs (CategoryWithFibrations C)
+
+instance : CategoryWithWeakEquivalences (SaturatedFib C) where
+  weakEquivalences := saturation C
+
+instance : HasTerminal (SaturatedFib C) := inferInstanceAs (HasTerminal C)
+
+variable {C}
+
+omit [CategoryWithFibrations C] [HasTerminal C] in
+/-- The saturation of the opposite category is the opposite of the saturation. -/
+theorem saturation_op : saturation Cᵒᵖ = (saturation C).op := by
+  ext X Y f
+  have : (weakEquivalences C).Q.op.IsLocalization (weakEquivalences Cᵒᵖ) :=
+    inferInstanceAs ((weakEquivalences C).Q.op.IsLocalization (weakEquivalences C).op)
+  rw [saturation_iff (weakEquivalences C).Q.op]
+  change IsIso ((weakEquivalences C).Q.map f.unop).op ↔ saturation C f.unop
+  rw [isIso_op_iff, saturation_iff (weakEquivalences C).Q]
+
+/-- **Theorem 7.2.8(2)** (Cisinski). If `(M, W, Fib)` is a prefibration category,
+so is `(M, W̄, Fib)`. -/
+theorem saturated_prefibrationCategory [ABCPrefibrationCategory C] :
+    ABCPrefibrationCategory (SaturatedFib C) := by
+  have h := saturated_precofibrationCategory (C := Cᵒᵖ)
+  refine @ABCPrecofibrationCategory.of_equivalence (SaturatedFib C)ᵒᵖ _ _ _ _ (Saturated Cᵒᵖ)
+    _ _ _ _ h (show (SaturatedFib C)ᵒᵖ ≌ Saturated Cᵒᵖ from CategoryTheory.Equivalence.refl) rfl ?_
+  ext X Y f
+  change (saturation C).op f ↔ saturation Cᵒᵖ f
+  rw [saturation_op]
+
+end ABCCofibrations.ABCPrefibrationCategory

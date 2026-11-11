@@ -200,6 +200,44 @@ theorem isIso_map_iff_rightProper {A B : C} (f : A ⟶ B) :
     exact ⟨Opposite.op A', Opposite.op A'', f'.op, f''.op, hf', hf'',
       (weakEquivalences_op_iff (f' ≫ f)).2 hw, (weakEquivalences_op_iff (f'' ≫ f')).2 hw'⟩
 
+omit [CategoryWithFibrations C] [HasTerminal C] [ABCPrefibrationCategory C] [RightProper C] in
+/-- Membership in the saturation of the opposite category. -/
+lemma saturation_op_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    ABCPrecofibrationCategory.saturation Cᵒᵖ f ↔ ABCPrecofibrationCategory.saturation C f.unop := by
+  rw [saturation_op]
+  rfl
+
+/-- **Proposition 7.2.11(2).** In a right proper prefibration category, a map
+which is right proper for `W` is right proper for the saturation `W̄`. -/
+theorem isRightProper_saturated {A B : C} {f : A ⟶ B} (hf : IsRightProper f) :
+    IsRightProper (C := SaturatedFib C) f := by
+  have h := ABCPrecofibrationCategory.isLeftProper_saturated (C := Cᵒᵖ) hf
+  refine ⟨fun _ g ↦ h.hasPushout g, fun {C₁ C₂ D₁ D₂ _ r _ _ _ r'} sq₁ sq₂ hr ↦ ⟨?_⟩⟩
+  have hr' : WeakEquivalence (C := ABCPrecofibrationCategory.Saturated Cᵒᵖ) r :=
+    ⟨(saturation_op_iff (C := C) r).2 hr.mem⟩
+  exact (saturation_op_iff (C := C) r').1
+    (h.weakEquivalence (C₁ := C₁) (C₂ := C₂) (D₁ := D₁) (D₂ := D₂) sq₁ sq₂).mem
+
+/-- **Theorem 7.2.12(2).** If `(M, W, Fib)` is a right proper prefibration category,
+so is `(M, W̄, Fib)`. -/
+theorem saturated_rightProper :
+    letI := saturated_prefibrationCategory (C := C)
+    RightProper (SaturatedFib C) := by
+  let := saturated_prefibrationCategory (C := C)
+  exact
+  { hasPushout := fun {A B D} i r hA hi ↦ by
+      have : IsCofibrant (C := Cᵒᵖ) A := hA
+      have : Cofibration (C := Cᵒᵖ) i := hi
+      exact ABCPrecofibrationCategory.LeftProper.hasPushout (C := Cᵒᵖ) i r
+    weakEquivalence_of_isPushout := fun {A B D E i r r' j} h hA hi hr ↦ by
+      have hA' : IsCofibrant (C := Cᵒᵖ) A := hA
+      have hi' : Cofibration (C := Cᵒᵖ) i := hi
+      have : IsFibrant (C := C) A.unop := (isFibrant_iff_isCofibrant_op (C := C) _).2 hA'
+      have : Fibration (C := C) i.unop := (fibration_unop_iff (C := C) i).2 hi'
+      exact IsLeftProper.weakEquivalence
+        (isRightProper_saturated (isRightProper_of_fibration (C := C) i.unop))
+        IsPushout.of_id_fst h.flip }
+
 end ABCPrefibrationCategory
 
 end ABCCofibrations

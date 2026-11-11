@@ -380,4 +380,117 @@ lemma factorization_step {X Y : D ⥤ M} [∀ e, HasColimit (latchingDiagram X e
 
 end Step
 
+section Main
+
+variable {M : Type u₂} [Category.{v₂} M] [CategoryWithCofibrations M]
+  [CategoryWithWeakEquivalences M] [HasInitial M] [ABCPrecofibrationCategory M]
+
+/-- The induction behind the Reedy factorization. -/
+theorem reedy_factorization_aux (n : ℕ) : ∀ (D : Type w) [SmallCategory D] [Finite D]
+    [∀ x y : D, Finite (x ⟶ y)] (deg : D → ℕ)
+    (_ : ∀ {x y : D} (f : x ⟶ y), deg x < deg y ∨ ∃ h : x = y, f = eqToHom h),
+    Nat.card D = n → ∀ (X Y : D ⥤ M) [∀ e, HasColimit (latchingDiagram X e)],
+    IsReedyCofibrant X → ∀ f : X ⟶ Y,
+    ∃ (Y' : D ⥤ M) (_ : ∀ e, HasColimit (latchingDiagram Y' e)) (f' : X ⟶ Y') (r : Y' ⟶ Y),
+      IsReedyCofibration f' ∧ (∀ e, WeakEquivalence (r.app e)) ∧ f' ≫ r = f := by
+  induction n with
+  | zero =>
+    intro D _ _ _ deg hdeg hn X Y _ hX f
+    have : IsEmpty D := (Nat.card_eq_zero.1 hn).resolve_right (fun h ↦ not_infinite_iff_finite.2
+      inferInstance h)
+    have : IsDirect D := ⟨⟨deg, hdeg⟩⟩
+    obtain ⟨_, h⟩ := isReedyCofibration_of_isIso (𝟙 X) hX
+    exact ⟨X, inferInstance, 𝟙 X, f, h, fun e ↦ isEmptyElim e, Category.id_comp f⟩
+  | succ n ih =>
+    intro D _ _ _ deg hdeg hn X Y _ hX f
+    have : IsDirect D := ⟨⟨deg, hdeg⟩⟩
+    have : Nonempty D := (Nat.card_pos_iff.1 (by omega)).1
+    obtain ⟨d, hd⟩ := exists_maximal (D := D)
+    obtain ⟨_, hX'⟩ := isReedyCofibrant_restrict hd X hX
+    obtain ⟨Y'', _, f'', r'', hf'', hr'', hfr⟩ := ih (Complement d) (fun e ↦ deg e.obj)
+      (hdeg_complement deg hdeg d) (by rw [natCard_complement, hn]; rfl)
+      ((complementProp d).ι ⋙ X) ((complementProp d).ι ⋙ Y) hX'
+      (Functor.whiskerLeft (complementProp d).ι f)
+    exact factorization_step deg hdeg hd hX f f'' r'' hf'' hr'' hfr
+
+variable {D : Type w} [SmallCategory D] [Finite D] [∀ x y : D, Finite (x ⟶ y)] [IsDirect D]
+
+/-- **Theorem 9.2.4(1)(a)**, the factorization axiom CF4 for the Reedy
+structure, for finite direct categories. A map from a Reedy cofibrant diagram
+factors as a Reedy cofibration followed by a pointwise weak equivalence. -/
+theorem reedy_factorization {X Y : D ⥤ M} [∀ e, HasColimit (latchingDiagram X e)]
+    (hX : IsReedyCofibrant X) (f : X ⟶ Y) :
+    ∃ (Y' : D ⥤ M) (_ : ∀ e, HasColimit (latchingDiagram Y' e)) (f' : X ⟶ Y') (r : Y' ⟶ Y),
+      IsReedyCofibration f' ∧ (∀ e, WeakEquivalence (r.app e)) ∧ f' ≫ r = f := by
+  obtain ⟨deg, hdeg⟩ := IsDirect.exists_deg (D := D)
+  exact reedy_factorization_aux _ D deg hdeg rfl X Y hX f
+
+end Main
+
+namespace ReedyDiagram
+
+variable (D : Type w) [SmallCategory D] [Finite D] [∀ x y : D, Finite (x ⟶ y)] [IsDirect D]
+  (M : Type u₂) [Category.{v₂} M] [CategoryWithCofibrations M]
+  [CategoryWithWeakEquivalences M] [HasInitial M] [ABCPrecofibrationCategory M]
+
+instance : (weakEquivalences (ReedyDiagram D M)).HasTwoOutOfThreeProperty where
+  comp_mem f g hf hg e := by
+    have := hf e
+    have := hg e
+    change WeakEquivalence (NatTrans.app f e ≫ NatTrans.app g e)
+    infer_instance
+  of_postcomp f g hg hfg e := by
+    have := hg e
+    have : WeakEquivalence (NatTrans.app f e ≫ NatTrans.app g e) := hfg e
+    exact weakEquivalence_of_postcomp _ (NatTrans.app g e)
+  of_precomp f g hf hfg e := by
+    have := hf e
+    have : WeakEquivalence (NatTrans.app f e ≫ NatTrans.app g e) := hfg e
+    exact weakEquivalence_of_precomp (NatTrans.app f e) _
+
+/-- **Theorem 9.2.4(1)(a)** (axioms CF1–CF4), for finite direct categories: the
+diagrams over `D` in a precofibration category, with pointwise weak equivalences
+and Reedy cofibrations, form a precofibration category. -/
+instance precofibrationCategory : ABCPrecofibrationCategory (ReedyDiagram D M) where
+  initial_cofibrant := isCofibrant_of_isReedyCofibrant isReedyCofibrant_initial
+  cofibrations_comp := ⟨fun {X Y Z} f g hf hg ↦ by
+    obtain ⟨hX, _, hf⟩ := hf
+    obtain ⟨_, hZ, hg⟩ := hg
+    exact ⟨hX, hZ, IsReedyCofibration.comp hf hg⟩⟩
+  weakEquivalence_of_isIso {X Y} f hf := ⟨fun e ↦ by
+    have : @IsIso (D ⥤ M) _ X Y f := hf
+    have : IsIso (NatTrans.app f e) := NatIso.isIso_app_of_isIso f e
+    exact weakEquivalence_of_isIso _⟩
+  cofibration_of_isIso {X Y} f hf hA := by
+    obtain ⟨_, hA⟩ := isReedyCofibrant_of_isCofibrant hA
+    have : @IsIso (D ⥤ M) _ X Y f := hf
+    obtain ⟨_, h⟩ := isReedyCofibration_of_isIso (D := D) (M := M) (X := X) (Y := Y) f hA
+    exact ⟨⟨inferInstance, inferInstance, h⟩⟩
+  weakEquivalences_twoOutOfThree := inferInstance
+  hasPushout {A B C} i f hA hC hi := by
+    obtain ⟨_, _, hi⟩ := (cofibration_iff i).1 hi
+    obtain ⟨_, hC⟩ := isReedyCofibrant_of_isCofibrant hC
+    exact hasPushout_of_pointwise i f (hasPushout_app f hi hC)
+  cofibration_of_isPushout {A B C E i f g j} h hA hC hi := by
+    obtain ⟨_, _, hi⟩ := (cofibration_iff i).1 hi
+    obtain ⟨_, hC⟩ := isReedyCofibrant_of_isCofibrant hC
+    obtain ⟨_, hj⟩ := IsReedyCofibration.isPushout h hi hC
+    exact ⟨⟨inferInstance, inferInstance, hj⟩⟩
+  weakEquivalence_of_isPushout {A B C E i f g j} h hA hC hi hw := by
+    obtain ⟨_, _, hi⟩ := (cofibration_iff i).1 hi
+    obtain ⟨_, hC⟩ := isReedyCofibrant_of_isCofibrant hC
+    refine ⟨fun e ↦ ?_⟩
+    have hT := isPushout_app h (hasPushout_app f hi hC) e
+    have := hi.1.isCofibrant_obj e
+    have := hC.isCofibrant_obj e
+    have := (hi.cofibration_app e).2
+    have : WeakEquivalence (NatTrans.app i e) := (weakEquivalence_iff i).1 hw e
+    exact weakEquivalence_of_isPushout hT
+  factorization {A B} f hA := by
+    obtain ⟨_, hA⟩ := isReedyCofibrant_of_isCofibrant hA
+    obtain ⟨Y', _, f', r, hf', hr, hfr⟩ := reedy_factorization hA f
+    exact ⟨Y', f', r, ⟨⟨inferInstance, inferInstance, hf'⟩⟩, ⟨hr⟩, hfr⟩
+
+end ReedyDiagram
+
 end ABCCofibrations

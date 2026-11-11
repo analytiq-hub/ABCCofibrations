@@ -38,6 +38,8 @@ import ABCCofibrations.ReedyTransfer
 import ABCCofibrations.ReedyColimitMaps
 import ABCCofibrations.ReedyInverse
 import ABCCofibrations.ReedyStructure
+import ABCCofibrations.ReedyExtension
+import ABCCofibrations.ReedyFactorization
 import ABCCofibrations.ProductHomotopyCategory
 import ABCCofibrations.OverUnderCofibrationCategory
 import ABCCofibrations.OverUnderFibration

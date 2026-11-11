@@ -43,7 +43,7 @@ omit [CategoryWithCofibrations C] [CategoryWithWeakEquivalences C] [HasInitial C
   [Cofibration a₀₁] [Cofibration a₁₂] in
 /-- The factorization of the composite comparison through a pushout of the
 first comparison along a cofibration. -/
-private lemma exists_comparison_factorization
+lemma exists_comparison_factorization
     (w₀₁ : a₀₁ ≫ f₁ = f₀ ≫ b₀₁)
     (h₀₁ : IsPushout a₀₁ f₀ l₀₁ r₀₁) (h₁₂ : IsPushout a₁₂ f₁ l₁₂ r₁₂)
     (h₀₂ : IsPushout (a₀₁ ≫ a₁₂) f₀ l₀₂ r₀₂)

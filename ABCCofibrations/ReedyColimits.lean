@@ -28,7 +28,7 @@ namespace ABCCofibrations
 variable {D : Type u₁} [Category.{v₁} D] {M : Type u₂} [Category.{v₂} M]
 
 /-- The objects of `D` other than `d`. -/
-def complementProp (d : D) : ObjectProperty D := fun e ↦ e ≠ d
+abbrev complementProp (d : D) : ObjectProperty D := fun e ↦ e ≠ d
 
 /-- The full subcategory `D ∖ {d}`. -/
 abbrev Complement (d : D) : Type u₁ := (complementProp d).FullSubcategory

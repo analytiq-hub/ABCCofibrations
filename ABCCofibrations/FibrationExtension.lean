@@ -13,8 +13,8 @@ public import ABCCofibrations.FibrationBasic
 
 The fibration statements of the gluing lemma (Lemma 1.4.1(2)), of excision
 (Lemma 1.4.2(2)) and of relative factorization (Lemma 1.3.3(2)), deduced from
-the cofibration statements in the opposite category. A pullback square in `C` is a pushout square in `Cᵒᵖ`
-(`IsPullback.op`), fibrations with fibrant target are cofibrations with
+the cofibration statements in the opposite category. A pullback square in `C`
+is a pushout square in `Cᵒᵖ` (`IsPullback.op`), fibrations with fibrant target are cofibrations with
 cofibrant source there, and weak equivalences are self-dual.
 -/
 

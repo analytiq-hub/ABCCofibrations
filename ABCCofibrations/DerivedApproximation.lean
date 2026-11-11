@@ -8,6 +8,7 @@ module
 public import ABCCofibrations.ApproximationTheorem
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
+public import Mathlib.CategoryTheory.Functor.Derived.Adjunction
 
 /-!
 # Total derived functors from approximations (Theorem 5.7.1, Corollary 5.7.2)
@@ -174,5 +175,65 @@ theorem rightDerivedFunctor_iso {H : Type*} [Category H] (L : M ⥤ H) [L.IsLoca
     Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft s e₂⟩
 
 end RightApproximation
+
+section AbstractQuillen
+
+variable {M₁' M₁ M₂ M₂' : Type*} [Category M₁'] [Category M₁] [Category M₂] [Category M₂']
+  {W₁' : MorphismProperty M₁'} {W₁ : MorphismProperty M₁} {W₂ : MorphismProperty M₂}
+  {W₂' : MorphismProperty M₂'} [W₁'.IsMultiplicative] [W₁.IsMultiplicative]
+  [W₂.IsMultiplicative] [W₂'.IsMultiplicative]
+  {Φ₁ : LocalizerMorphism W₁' W₁} {Φ₂ : LocalizerMorphism W₂' W₂}
+  {H₁' H₂' : Type*} [Category H₁'] [Category H₂'] {L₁' : M₁' ⥤ H₁'} {L₂' : M₂' ⥤ H₂'}
+  [L₁'.IsLocalization W₁'] [L₂'.IsLocalization W₂']
+
+/-- **Theorem 5.8.1** (abstract Quillen adjunction), adjunction part. Let
+`u₁ ⊣ u₂` be an adjunction between `M₁` and `M₂`, `t₁ : M₁' ⟶ M₁` a left
+approximation and `t₂ : M₂' ⟶ M₂` a right approximation, with `u₁t₁` and `u₂t₂`
+preserving weak equivalences. Then the total left derived functor of `u₁` is left
+adjoint to the total right derived functor of `u₂`.
+
+The derived functors exist by Theorem 5.7.1. The proof is mathlib's
+`Adjunction.derived` (Maltsiniotis): the composites `Lu₁ ∘ Ru₂` and `Ru₂ ∘ Lu₁`
+are again derived functors, by the derivability-structure criterion. -/
+theorem derived_adjunction (h₁ : LeftApproximation Φ₁ L₁') (h₂ : RightApproximation Φ₂ L₂')
+    {u₁ : M₁ ⥤ M₂} {u₂ : M₂ ⥤ M₁} (adj : u₁ ⊣ u₂)
+    (hu₁ : W₁' ≤ W₂.inverseImage (Φ₁.functor ⋙ u₁))
+    (hu₂ : W₂' ≤ W₁.inverseImage (Φ₂.functor ⋙ u₂))
+    {H₁ H₂ : Type*} [Category H₁] [Category H₂] (L₁ : M₁ ⥤ H₁) (L₂ : M₂ ⥤ H₂)
+    [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
+    (G' : H₁ ⥤ H₂) (α : L₁ ⋙ G' ⟶ u₁ ⋙ L₂) [G'.IsLeftDerivedFunctor α W₁]
+    (F' : H₂ ⥤ H₁) (β : u₂ ⋙ L₁ ⟶ L₂ ⋙ F') [F'.IsRightDerivedFunctor β W₂] :
+    Nonempty (G' ⊣ F') := by
+  have := h₁.isLeftDerivabilityStructure
+  have := h₂.isRightDerivabilityStructure
+  have hα := (h₁.isLeftDerivedFunctor_iff W₂ L₂ hu₁ L₁ G' α).1 inferInstance
+  have hβ := (h₂.isRightDerivedFunctor_iff W₁ L₁ hu₂ L₂ F' β).1 inferInstance
+  have : (G' ⋙ F').IsLeftDerivedFunctor
+      ((Functor.associator _ _ _).inv ≫ Functor.whiskerRight α F') W₁ :=
+    LocalizerMorphism.Derives.isLeftDerivedFunctor_of_isIso (Φ := Φ₁) (F := (u₁ ⋙ L₂) ⋙ F')
+      (fun _ _ f hf ↦ by
+        have : IsIso (L₂.map (u₁.map (Φ₁.functor.map f))) :=
+          Localization.inverts L₂ W₂ _ (hu₁ _ hf)
+        exact (inferInstance : IsIso (F'.map (L₂.map (u₁.map (Φ₁.functor.map f))))))
+      _ (fun X ↦ by
+        have := hα X
+        simp only [NatTrans.comp_app, Functor.associator_inv_app, Functor.whiskerRight_app,
+          Category.id_comp]
+        infer_instance)
+  have : (F' ⋙ G').IsRightDerivedFunctor
+      (Functor.whiskerRight β G' ≫ (Functor.associator _ _ _).hom) W₂ :=
+    LocalizerMorphism.Derives.isRightDerivedFunctor_of_isIso (Φ := Φ₂) (F := (u₂ ⋙ L₁) ⋙ G')
+      (fun _ _ f hf ↦ by
+        have : IsIso (L₁.map (u₂.map (Φ₂.functor.map f))) :=
+          Localization.inverts L₁ W₁ _ (hu₂ _ hf)
+        exact (inferInstance : IsIso (G'.map (L₁.map (u₂.map (Φ₂.functor.map f))))))
+      _ (fun X ↦ by
+        have := hβ X
+        simp only [NatTrans.comp_app, Functor.associator_hom_app, Functor.whiskerRight_app,
+          Category.comp_id]
+        infer_instance)
+  exact ⟨adj.derived W₁ W₂ α β⟩
+
+end AbstractQuillen
 
 end ABCCofibrations

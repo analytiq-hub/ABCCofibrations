@@ -45,7 +45,7 @@ abbrev IsInverse (D : Type u₁) [Category.{v₁} D] : Prop := IsDirect Dᵒᵖ
 variable {D : Type u₁} [Category.{v₁} D] {M : Type u₂} [Category.{v₂} M]
 
 /-- The objects of `Over d` other than the identity of `d`. -/
-def latchingProp (d : D) : ObjectProperty (Over d) := fun X ↦ X.left ≠ d
+abbrev latchingProp (d : D) : ObjectProperty (Over d) := fun X ↦ X.left ≠ d
 
 /-- **Definition 9.1.2(1).** The latching category `∂(D ↓ d)`. -/
 abbrev LatchingCategory (d : D) : Type _ := (latchingProp d).FullSubcategory

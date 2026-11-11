@@ -111,4 +111,101 @@ noncomputable def extend : D ⥤ M where
   map_id := extendMap_id hd F c
   map_comp := extendMap_comp hd F c
 
+/-- The value of the extension at `e ≠ d`. -/
+noncomputable def extendObjIso {e : D} (h : e ≠ d) : extendObj F c e ≅ F.obj ⟨e, h⟩ :=
+  eqToIso (extendObj_ne F c h)
+
+/-- The value of the extension at `d`. -/
+noncomputable def extendObjIsoSelf : extendObj F c d ≅ c.pt :=
+  eqToIso (extendObj_self F c)
+
+lemma extendObjIso_naturality {e e' : D} (he : e ≠ d) (he' : e' ≠ d) (g : e ⟶ e') :
+    extendMap hd F c g ≫ (extendObjIso F c he').hom =
+      (extendObjIso F c he).hom ≫ F.map ⟨g⟩ := by
+  rw [extendMap_ne_ne hd F c he he']
+  simp [extendObjIso]
+
+lemma extend_map_self {e : D} (he : e ≠ d) (g : e ⟶ d) :
+    extendMap hd F c g ≫ (extendObjIsoSelf F c).hom =
+      (extendObjIso F c he).hom ≫ c.ι.app ⟨Over.mk g, he⟩ := by
+  rw [extendMap_ne_self hd F c he]
+  simp only [extendObjIso, extendObjIsoSelf, eqToIso.hom, Category.assoc]
+  congr 1
+  exact (Category.assoc _ _ _).trans ((congrArg (c.ι.app _ ≫ ·)
+    ((eqToHom_trans _ _).trans (eqToHom_refl c.pt _))).trans (Category.comp_id _))
+
+/-- The extension restricts to `F` on `D ∖ {d}`. -/
+noncomputable def extendRestrictIso : (complementProp d).ι ⋙ extend hd F c ≅ F :=
+  NatIso.ofComponents (fun e ↦ extendObjIso F c e.property)
+    (fun {e e'} g ↦ extendObjIso_naturality hd F c e.property e'.property g.hom)
+
+/-- The latching diagram of the extension at `d` is `F` on the latching category. -/
+noncomputable def extendLatchingIso :
+    latchingDiagram (extend hd F c) d ≅ latchingToComplement d ⋙ F :=
+  NatIso.ofComponents (fun j ↦ extendObjIso F c j.property)
+    (fun {j j'} g ↦ extendObjIso_naturality hd F c j.property j'.property g.hom.left)
+
+section Maps
+
+variable (G : D ⥤ M)
+
+open Classical in
+/-- The components of a map out of the extension. -/
+noncomputable def extendDescApp (α : F ⟶ (complementProp d).ι ⋙ G) (z : c.pt ⟶ G.obj d)
+    (e : D) : extendObj F c e ⟶ G.obj e :=
+  if he : e = d then eqToHom (congrArg (extendObj F c) he) ≫ (extendObjIsoSelf F c).hom ≫ z ≫
+    eqToHom (congrArg G.obj he.symm)
+  else (extendObjIso F c he).hom ≫ α.app ⟨e, he⟩
+
+variable {G}
+
+lemma extendDescApp_self (α : F ⟶ (complementProp d).ι ⋙ G) (z : c.pt ⟶ G.obj d) :
+    extendDescApp F c G α z d = (extendObjIsoSelf F c).hom ≫ z := by
+  simp [extendDescApp]
+
+lemma extendDescApp_ne (α : F ⟶ (complementProp d).ι ⋙ G) (z : c.pt ⟶ G.obj d) {e : D}
+    (he : e ≠ d) : extendDescApp F c G α z e = (extendObjIso F c he).hom ≫ α.app ⟨e, he⟩ := by
+  simp [extendDescApp, he]
+
+include hd in
+/-- A map out of the extension, from a map on `D ∖ {d}` and a compatible map at
+`d`. -/
+noncomputable def extendDesc (α : F ⟶ (complementProp d).ι ⋙ G) (z : c.pt ⟶ G.obj d)
+    (h : ∀ j : LatchingCategory d,
+      c.ι.app j ≫ z = α.app ((latchingToComplement d).obj j) ≫ G.map j.obj.hom) :
+    extend hd F c ⟶ G where
+  app := extendDescApp F c G α z
+  naturality {e e'} g := by
+    change extendMap hd F c g ≫ _ = _
+    by_cases he' : e' = d
+    · subst e'
+      by_cases he : e = d
+      · subst e
+        obtain ⟨_, rfl⟩ := hd _ g
+        rw [extendMap_self_self, Category.id_comp, eqToHom_map, eqToHom_refl]
+        exact (Category.comp_id (extendDescApp F c G α z d)).symm
+      · rw [extendDescApp_self, ← Category.assoc, extend_map_self hd F c he,
+          extendDescApp_ne _ _ _ _ he]
+        exact (Category.assoc _ _ _).trans ((congrArg ((extendObjIso F c he).hom ≫ ·)
+          (h ⟨Over.mk g, he⟩)).trans (Category.assoc _ _ _).symm)
+    · by_cases he : e = d
+      · subst e
+        exact absurd (hd _ g).choose.symm he'
+      · rw [extendDescApp_ne _ _ _ _ he', ← Category.assoc, extendObjIso_naturality hd F c he he',
+          extendDescApp_ne _ _ _ _ he]
+        exact (Category.assoc _ _ _).trans ((congrArg ((extendObjIso F c he).hom ≫ ·)
+          (α.naturality (⟨g⟩ : (⟨e, he⟩ : Complement d) ⟶ ⟨e', he'⟩))).trans
+            (Category.assoc _ _ _).symm)
+
+lemma extendDesc_app_self (α : F ⟶ (complementProp d).ι ⋙ G) (z : c.pt ⟶ G.obj d) (h) :
+    (extendDesc hd F c α z h).app d = (extendObjIsoSelf F c).hom ≫ z :=
+  extendDescApp_self F c α z
+
+lemma extendDesc_app_ne (α : F ⟶ (complementProp d).ι ⋙ G) (z : c.pt ⟶ G.obj d) (h) {e : D}
+    (he : e ≠ d) :
+    (extendDesc hd F c α z h).app e = (extendObjIso F c he).hom ≫ α.app ⟨e, he⟩ :=
+  extendDescApp_ne F c α z he
+
+end Maps
+
 end ABCCofibrations

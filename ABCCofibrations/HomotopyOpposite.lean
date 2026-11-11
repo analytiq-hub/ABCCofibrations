@@ -189,4 +189,39 @@ theorem ambient_map_eq_iff_fibrant_rightHomotopy
   · intro h
     exact Quiver.Hom.op_inj (he.2 h)
 
+omit [HasBinaryCoproduct (Opposite.op B) (Opposite.op B)] in
+/-- **Lemma 6.3.2(2).** A right homotopy between maps of fibrant objects can be
+represented on any given good path object, after replacing the source by a
+trivial fibration. -/
+theorem RightHomotopyRel.exists_on_pathObject {A : C} [IsFibrant A] {f g : A ⟶ B}
+    (h : RightHomotopyRel f g) (Q : PathObject B) [Q.IsGood] :
+    ∃ (A' : C) (a : A' ⟶ A), Fibration a ∧ WeakEquivalence a ∧
+      Nonempty (Q.RightHomotopy (a ≫ f) (a ≫ g)) := by
+  let := ABCPrecofibrationCategory.hasBinaryCoproduct (Opposite.op B) (Opposite.op B)
+  have : (pathObjectOp Q).IsGood := (pathObjectOp_isGood_iff Q).2 inferInstance
+  obtain ⟨A', b, hb, hbw, ⟨H⟩⟩ :=
+    ((rightHomotopy_iff_op f g).1 h).exists_on_cylinder (pathObjectOp Q)
+  refine ⟨A'.unop, b.unop, (fibration_unop_iff b).2 hb, (weakEquivalences_unop_iff b).2 hbw,
+    ⟨{ h := H.h.unop
+       h₀ := by
+         have e := congrArg Quiver.Hom.unop H.h₀
+         simp only [unop_comp, Quiver.Hom.unop_op] at e
+         exact e
+       h₁ := by
+         have e := congrArg Quiver.Hom.unop H.h₁
+         simp only [unop_comp, Quiver.Hom.unop_op] at e
+         exact e }⟩⟩
+
+omit [HasBinaryCoproduct (Opposite.op B) (Opposite.op B)] in
+/-- **Theorem 6.3.3(2).** Right homotopy is an equivalence relation on maps
+between fibrant objects, compatible with postcomposition and precomposition by
+maps of fibrant objects. -/
+theorem rightHomotopy_equivalence_comp {A : C} [IsFibrant A] :
+    Equivalence (RightHomotopyRel (A := A) (B := B)) ∧
+      (∀ {f g : A ⟶ B}, RightHomotopyRel f g → ∀ {D : C} [IsFibrant D] [HasBinaryProduct D D]
+        (k : B ⟶ D), RightHomotopyRel (f ≫ k) (g ≫ k)) ∧
+      ∀ {f g : A ⟶ B}, RightHomotopyRel f g → ∀ {D : C} [IsFibrant D] (k : D ⟶ A),
+        RightHomotopyRel (k ≫ f) (k ≫ g) :=
+  ⟨RightHomotopyRel.equivalence, fun h _ _ _ k ↦ h.postcomp k, fun h _ _ k ↦ h.precomp k⟩
+
 end ABCCofibrations.ABCPrefibrationCategory

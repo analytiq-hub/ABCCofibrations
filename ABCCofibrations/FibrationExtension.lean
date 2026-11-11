@@ -7,6 +7,7 @@ module
 
 public import ABCCofibrations.Extension
 public import ABCCofibrations.FibrationBasic
+public import ABCCofibrations.PathObject
 
 /-!
 # Cogluing and excision in prefibration categories
@@ -167,5 +168,43 @@ theorem cogluing_fibration {A₁ A₂ A₃ A₄ B₁ B₂ B₃ B₄ : C}
   apply (cofibration_op_iff _).1
   rw [hd']
   exact ⟨(cofibrations Cᵒᵖ).comp_mem _ _ (by assumption : Cofibration _).mem hd.mem⟩
+
+/-- **Lemma 1.5.3(2)** (relative path objects). Extend a good path object `P` on
+`A` along a map `f : B ⟶ A` of fibrant objects: there is a good path object `Q`
+on `B` with a map `c : Q ⟶ P` over `f`, such that the comparison `k : Q ⟶ R` to
+any pullback `R` of `P.p` and `f × f` is a fibration. -/
+theorem exists_relative_good_pathObject {A B : C} [IsFibrant A] [IsFibrant B]
+    [HasBinaryProduct A A] [HasBinaryProduct B B] (P : PathObject A) [P.IsGood] (f : B ⟶ A)
+    {R : C} {fst : R ⟶ P.P} {snd : R ⟶ B ⨯ B} (hR : IsPullback fst snd P.p (prod.map f f)) :
+    ∃ (Q : PathObject B) (c : Q.P ⟶ P.P) (k : Q.P ⟶ R),
+      Q.IsGood ∧ IsFibrant Q.P ∧ Fibration k ∧
+      c ≫ P.p₀ = Q.p₀ ≫ f ∧ c ≫ P.p₁ = Q.p₁ ≫ f ∧ Q.ι ≫ c = f ≫ P.ι ∧
+      k ≫ fst = c ∧ k ≫ snd = Q.p := by
+  have := prod_fibrant (A := A) (B := A)
+  have := prod_fibrant (A := B) (B := B)
+  have hsq : f ≫ prod.lift (𝟙 A) (𝟙 A) = prod.lift (𝟙 B) (𝟙 B) ≫ prod.map f f := by
+    ext <;> simp
+  have hP : P.ι ≫ P.p = prod.lift (𝟙 A) (𝟙 A) := by
+    ext <;> simp [PrepathObject.p]
+  obtain ⟨Z, p, i, c, k, hZ, hi, hp, hk, hpi, hleft, hright, hkfst, hksnd⟩ :=
+    exists_relative_factorization (prod.lift (𝟙 A) (𝟙 A)) (prod.lift (𝟙 B) (𝟙 B))
+      (prod.map f f) f hsq P.ι P.p hP hR
+  let Q : PathObject B :=
+    { P := Z
+      p₀ := i ≫ prod.fst
+      p₁ := i ≫ prod.snd
+      ι := p
+      ι_p₀ := by simp [← Category.assoc, hpi]
+      ι_p₁ := by simp [← Category.assoc, hpi]
+      weakEquivalence_ι := hp }
+  have hQ : Q.p = i := by ext <;> simp [PrepathObject.p, Q]
+  have hgood : Q.IsGood := ⟨by rw [hQ]; exact hi⟩
+  have h₀ : c ≫ P.p₀ = Q.p₀ ≫ f := by
+    simpa [Q, PrepathObject.p] using congrArg (fun t ↦ t ≫ (prod.fst : A ⨯ A ⟶ A)) hleft
+  have h₁ : c ≫ P.p₁ = Q.p₁ ≫ f := by
+    simpa [Q, PrepathObject.p] using congrArg (fun t ↦ t ≫ (prod.snd : A ⨯ A ⟶ A)) hleft
+  refine ⟨Q, c, k, hgood, hZ, hk, h₀, h₁, hright, hkfst, ?_⟩
+  rw [hQ]
+  exact hksnd
 
 end ABCCofibrations.ABCPrefibrationCategory

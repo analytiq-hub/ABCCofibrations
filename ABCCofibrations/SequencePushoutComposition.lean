@@ -7,9 +7,10 @@ module
 
 public import ABCCofibrations.PushoutComposition
 public import ABCCofibrations.SequentialColimits
+public import ABCCofibrations.FibrationConsequences
 
 /-!
-# Relative pushout comparisons along sequences (Lemma 9.3.4(1))
+# Relative pushout comparisons along sequences (Lemma 9.3.4)
 
 Given a map `τ : A ⟶ B` of CF6 sequences, if every comparison map
 `B_n ⊔_{A_n} A_{n+1} ⟶ B_{n+1}` is a cofibration (resp. a weak equivalence), so
@@ -427,3 +428,102 @@ theorem weakEquivalence_sequence_comparison (h1 : SequentialCofibrationAxiom C)
 end Main
 
 end ABCCofibrations.ABCPrecofibrationCategory
+
+namespace ABCCofibrations.ABCFibrationCategory
+
+open Opposite ABCPrecofibrationCategory ABCPrefibrationCategory
+
+variable {C : Type u} [Category.{v} C] [CategoryWithFibrations C]
+  [CategoryWithWeakEquivalences C] [HasTerminal C] [ABCFibrationCategory.{w} C]
+  {F G : ℕᵒᵖ ⥤ C} (τ : F ⟶ G) (hF0 : IsFibrant (F.obj (op 0))) (hG0 : IsFibrant (G.obj (op 0)))
+  (hG : ∀ n, Fibration (G.map (succHom n).op))
+  [HasLimit F] [HasLimit G] {Q : C} {lQ : Q ⟶ limit G} {rQ : Q ⟶ F.obj (op 0)}
+  (hQ : IsPullback lQ rQ (limit.π G (op 0)) (τ.app (op 0))) (k : limit F ⟶ Q)
+  (hk₁ : k ≫ lQ = limMap τ) (hk₂ : k ≫ rQ = limit.π F (op 0))
+
+omit [CategoryWithFibrations C] [CategoryWithWeakEquivalences C] [HasTerminal C]
+  [ABCFibrationCategory C] [HasLimit F] in
+include hQ in
+/-- The pullback square of the conclusion, as a pushout square in `Cᵒᵖ` over the
+colimit of the opposite sequence. -/
+private lemma isPushout_op :
+    IsPushout (colimit.ι G.rightOp 0) ((NatTrans.rightOp τ).app 0)
+      ((colimitRightOpIsoUnopLimit G).hom ≫ lQ.op) rQ.op :=
+  hQ.op.flip.of_iso (Iso.refl _) (colimitRightOpIsoUnopLimit G).symm (Iso.refl _) (Iso.refl _)
+    (by simp [← ι_comp_colimitRightOpIsoUnopLimit_hom]) (by simp) (by simp) (by simp)
+
+omit [CategoryWithFibrations C] [CategoryWithWeakEquivalences C] [HasTerminal C]
+  [ABCFibrationCategory C] in
+include hk₁ hk₂ in
+private lemma comparison_op :
+    ((colimitRightOpIsoUnopLimit G).hom ≫ lQ.op) ≫ (k.op ≫ (colimitRightOpIsoUnopLimit F).inv) =
+        colimMap (NatTrans.rightOp τ) ∧
+      rQ.op ≫ (k.op ≫ (colimitRightOpIsoUnopLimit F).inv) = colimit.ι F.rightOp 0 := by
+  constructor
+  · rw [Category.assoc, ← Category.assoc lQ.op, ← op_comp, hk₁, op_limMap]
+    simp
+  · rw [← Category.assoc, ← op_comp, hk₂, ← ι_comp_colimitRightOpIsoUnopLimit_hom]
+    simp
+
+include hF0 hG0 hG hQ hk₁ hk₂ in
+/-- **Lemma 9.3.4(2)(a).** Let `τ : A ⟶ B` be a map of countable inverse
+sequences with `A₀, B₀` fibrant and the `B`-maps fibrations. If every comparison
+map `A_{n+1} ⟶ B_{n+1} ×_{B_n} A_n` is a fibration, so is the comparison
+`lim A ⟶ lim B ×_{B₀} A₀`. The pullbacks are given by arbitrary representatives.
+(The paper's hypothesis that the `A`-maps are fibrations is not needed.) -/
+theorem fibration_sequence_comparison
+    (hc : ∀ n, ∃ (P : C) (l : P ⟶ G.obj (op (n + 1))) (r : P ⟶ F.obj (op n))
+      (c : F.obj (op (n + 1)) ⟶ P), IsPullback l r (G.map (succHom n).op) (τ.app (op n)) ∧
+        c ≫ l = τ.app (op (n + 1)) ∧ c ≫ r = F.map (succHom n).op ∧ Fibration c) :
+    Fibration k := by
+  have h1 := ABCCofibrationCategory.sequentialCofibrationAxiom (C := Cᵒᵖ)
+  have hc' : Cofibration (k.op ≫ (colimitRightOpIsoUnopLimit F).inv) :=
+    cofibration_sequence_comparison (NatTrans.rightOp τ)
+      ((isFibrant_iff_isCofibrant_op _).1 hG0) ((isFibrant_iff_isCofibrant_op _).1 hF0)
+      (fun n ↦ (cofibration_op_iff _).2 (hG n)) h1 (fun n ↦ by
+        obtain ⟨P, l, r, c, hP, hl, hr, hcc⟩ := hc n
+        exact ⟨op P, l.op, r.op, c.op, hP.op.flip, by rw [← op_comp, hl]; rfl,
+          by rw [← op_comp, hr]; rfl, (cofibration_op_iff _).2 hcc⟩)
+      (isPushout_op τ hQ) _ (comparison_op τ k hk₁ hk₂).1 (comparison_op τ k hk₁ hk₂).2
+  have hG0' : IsCofibrant (G.rightOp.obj 0) := (isFibrant_iff_isCofibrant_op _).1 hG0
+  have hF0' : IsCofibrant (F.rightOp.obj 0) := (isFibrant_iff_isCofibrant_op _).1 hF0
+  have : Cofibration (colimit.ι G.rightOp 0) :=
+    h1.cofibration _ hG0' (fun n ↦ (cofibration_op_iff _).2 (hG n))
+  have : Cofibration rQ.op := cofibration_of_isPushout (isPushout_op τ hQ)
+  have : IsCofibrant (op Q) := cofibrant_target rQ.op
+  have : IsCofibrant (colimit F.rightOp) :=
+    cofibrant_target (k.op ≫ (colimitRightOpIsoUnopLimit F).inv)
+  have : Cofibration (colimitRightOpIsoUnopLimit F).hom := cofibration_of_isIso _
+  apply (cofibration_op_iff k).1
+  rw [show k.op = (k.op ≫ (colimitRightOpIsoUnopLimit F).inv) ≫
+    (colimitRightOpIsoUnopLimit F).hom by simp]
+  infer_instance
+
+include hF0 hG0 hG hQ hk₁ hk₂ in
+/-- **Lemma 9.3.4(2)(b).** Let `τ : A ⟶ B` be a map of countable inverse
+sequences of fibrations with `A₀, B₀` fibrant. If every comparison map
+`A_{n+1} ⟶ B_{n+1} ×_{B_n} A_n` is a weak equivalence, so is the comparison
+`lim A ⟶ lim B ×_{B₀} A₀`. -/
+theorem weakEquivalence_sequence_comparison (hF : ∀ n, Fibration (F.map (succHom n).op))
+    (hc : ∀ n, ∃ (P : C) (l : P ⟶ G.obj (op (n + 1))) (r : P ⟶ F.obj (op n))
+      (c : F.obj (op (n + 1)) ⟶ P), IsPullback l r (G.map (succHom n).op) (τ.app (op n)) ∧
+        c ≫ l = τ.app (op (n + 1)) ∧ c ≫ r = F.map (succHom n).op ∧ WeakEquivalence c) :
+    WeakEquivalence k := by
+  have hw : WeakEquivalence (k.op ≫ (colimitRightOpIsoUnopLimit F).inv) :=
+    ABCPrecofibrationCategory.weakEquivalence_sequence_comparison (NatTrans.rightOp τ)
+      ((isFibrant_iff_isCofibrant_op _).1 hG0) ((isFibrant_iff_isCofibrant_op _).1 hF0)
+      (fun n ↦ (cofibration_op_iff _).2 (hG n))
+      (ABCCofibrationCategory.sequentialCofibrationAxiom (C := Cᵒᵖ))
+      (ABCCofibrationCategory.trivialSequentialAxiom (C := Cᵒᵖ))
+      (fun n ↦ (cofibration_op_iff _).2 (hF n)) (fun n ↦ by
+        obtain ⟨P, l, r, c, hP, hl, hr, hcc⟩ := hc n
+        exact ⟨op P, l.op, r.op, c.op, hP.op.flip, by rw [← op_comp, hl]; rfl,
+          by rw [← op_comp, hr]; rfl, (weakEquivalences_op_iff _).2 hcc⟩)
+      (isPushout_op τ hQ) _ (comparison_op τ k hk₁ hk₂).1 (comparison_op τ k hk₁ hk₂).2
+  have := ABCPrecofibrationCategory.weakEquivalence_of_isIso (colimitRightOpIsoUnopLimit F).hom
+  apply (weakEquivalences_op_iff k).1
+  rw [show k.op = (k.op ≫ (colimitRightOpIsoUnopLimit F).inv) ≫
+    (colimitRightOpIsoUnopLimit F).hom by simp]
+  infer_instance
+
+end ABCCofibrations.ABCFibrationCategory

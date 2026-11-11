@@ -32,6 +32,7 @@ import ABCCofibrations.ExactFunctors
 import ABCCofibrations.SequencePushoutComposition
 import ABCCofibrations.WeakSaturation
 import ABCCofibrations.ReedyBasic
+import ABCCofibrations.ReedyColimits
 import ABCCofibrations.ProductHomotopyCategory
 import ABCCofibrations.OverUnderCofibrationCategory
 import ABCCofibrations.OverUnderFibration

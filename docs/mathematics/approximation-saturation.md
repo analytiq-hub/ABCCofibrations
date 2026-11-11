@@ -137,6 +137,7 @@ equivalences, so `a` is one.
 | Theorem 7.1.1, finite | `isLocalization_pi` |
 | Theorem 7.2.4 | `QuillenModelCategory.weakEquivalence_iff_isIso_map` |
 | Theorem 5.7.1(1), (2) | `LeftApproximation.hasLeftDerivedFunctor`, `LeftApproximation.isLeftDerivedFunctor_iff`, `RightApproximation.hasRightDerivedFunctor`, `RightApproximation.isRightDerivedFunctor_iff` |
+| Theorem 5.8.1, adjunction part | `derived_adjunction` |
 | Corollary 5.7.2(1), (2) | `LeftApproximation.leftDerivedFunctor_iso`, `RightApproximation.rightDerivedFunctor_iso` |
 | Theorem 7.2.8(1) | `ABCPrecofibrationCategory.saturated_precofibrationCategory`, `saturation`, `Saturated` |
 | Theorem 7.2.8(2) | `ABCPrefibrationCategory.saturated_prefibrationCategory`, `SaturatedFib`, `saturation_op` |
@@ -167,7 +168,32 @@ cofinal functor is mathlib's `Functor.Final`, a left cofinal one `Functor.Initia
 | Proposition 8.6.2(1) | `grothendieck_colimit` (with mathlib's hypothesis on the transition functors) |
 | Corollary 8.6.3(1), (2) | `colimit_prod`, `limit_prod` (mathlib's Fubini needs `HasColimitsOfShape K M`) |
 
-Proposition 8.5.3(2) is not formalized: mathlib has no lemma relating
-`colimit.pre` and `limit.pre` across opposite categories. Lemma 8.6.1 (the
-fiber inclusions of the Grothendieck construction have adjoints) has no mathlib
-counterpart and is not formalized.
+| Lemma 8.5.2 | `adjunction_cofinal` (terminal objects of the comma categories stand in for contractible nerves) |
+| Proposition 8.5.3(2) | `initial_iff_isIso_limit_pre` |
+| Proposition 8.6.1(1), (2) | `fiberInclusion_isRightAdjoint`, `fiberInclusionContra_isLeftAdjoint` |
+| Proposition 8.6.2(2) | `grothendieck_limit` |
+
+## Chapter 9
+
+| Statement | Declaration |
+| --- | --- |
+| Lemma 9.3.3 | `cofibration_comparison_comp`, `weakEquivalence_comparison_comp` (both namespaces) |
+| Lemma 9.3.4(1), (2) | `cofibration_sequence_comparison`, `weakEquivalence_sequence_comparison`, `ABCFibrationCategory.fibration_sequence_comparison`, `ABCFibrationCategory.weakEquivalence_sequence_comparison` |
+| Definitions 9.1.1–9.1.3, 9.2.2 | `IsDirect`, `IsInverse`, `LatchingCategory`, `latchingObj`, `latchingMap`, `IsReedyCofibrant`, `IsReedyCofibration`, `IsReedyFibrant`, `IsReedyFibration` |
+| Proposition 9.2.3(1), (2) | `IsReedyCofibration.comp`, `isReedyCofibration_of_isIso`, `IsReedyFibration.comp`, `isReedyFibration_of_isIso` |
+| Lemma 9.3.1(1) | `colimit_isPushout_latching` |
+| Definition 9.7.1, Lemma 9.7.2 | `LeftExact`, `RightExact`, `LeftExact.comp`, `LeftExact.weakEquivalence_map`, `RightExact.comp`, `RightExact.weakEquivalence_map` |
+
+Latching objects are colimits whose existence is recorded as instance
+hypotheses; matching objects and Reedy fibrations are defined through the
+opposite categories. In Lemma 9.3.4(1)(a) and 9.3.4(2)(a) the paper's
+cofibration (resp. fibration) hypothesis on the second sequence is not needed.
+Definition 9.7.1 asks preservation of colimits of all transfinite sequences of
+cofibrations, not only continuous ones.
+
+## Chapter 7, weak saturation
+
+Theorem 7.2.7 (`weakSaturation_tfae`, both namespaces). The paper's step
+"weakly saturated ⟹ saturated" applies Lemma 7.2.1 in an over category without
+justifying the needed left inverse; the formalization argues directly in `M`
+(see the module docstring of `WeakSaturation.lean`).

@@ -27,6 +27,7 @@ import ABCCofibrations.LocalSmallness
 import ABCCofibrations.ProperSaturation
 import ABCCofibrations.DiagramColimits
 import ABCCofibrations.DerivedApproximation
+import ABCCofibrations.PushoutComposition
 import ABCCofibrations.ProductHomotopyCategory
 import ABCCofibrations.OverUnderCofibrationCategory
 import ABCCofibrations.OverUnderFibration

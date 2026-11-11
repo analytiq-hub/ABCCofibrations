@@ -10,11 +10,14 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 public import Mathlib.CategoryTheory.Limits.Fubini
+public import Mathlib.CategoryTheory.Adjunction.Comma
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # Relative colimits, cofinality and the Grothendieck construction (Chapter 8)
 
-Lemmas 8.2.1, 8.2.2, Propositions 8.5.3(1), 8.5.4, 8.6.2(1) and Corollary 8.6.3.
+Lemmas 8.2.1, 8.2.2, 8.5.2, Propositions 8.5.3, 8.5.4, 8.6.2(1) and Corollary 8.6.3.
 These are classical facts about diagrams; mathlib proves them, and we restate
 them in the paper's form.
 
@@ -85,6 +88,20 @@ end RelativeColimits
 
 section Cofinality
 
+/-- **Lemma 8.5.2.** For an adjunction `u ⊣ v`, `u` is left cofinal and `v` is
+right cofinal. The paper's *homotopy* cofinality (contractible nerves of the
+comma categories) is witnessed by the terminal objects of the comma categories
+`(u ↓ d₂)` and the initial objects of `(d₁ ↓ v)`. -/
+theorem adjunction_cofinal {D₁ D₂ : Type*} [Category D₁] [Category D₂] {u : D₁ ⥤ D₂}
+    {v : D₂ ⥤ D₁} (adj : u ⊣ v) :
+    u.Initial ∧ v.Final ∧
+      (∀ d₂, Nonempty (IsTerminal (CostructuredArrow.mk (adj.counit.app d₂) :
+        CostructuredArrow u d₂))) ∧
+      ∀ d₁, Nonempty (IsInitial (StructuredArrow.mk (adj.unit.app d₁) :
+        StructuredArrow d₁ v)) :=
+  ⟨initial_of_adjunction adj, final_of_adjunction adj,
+    fun d₂ ↦ ⟨mkTerminalOfRightAdjoint _ adj d₂⟩, fun d₁ ↦ ⟨mkInitialOfLeftAdjoint _ adj d₁⟩⟩
+
 /-- **Proposition 8.5.3(1).** A functor between small categories is right cofinal
 iff, for every cocomplete category, restriction along it preserves colimits. -/
 theorem final_iff_isIso_colimit_pre {D₁ D₂ : Type v} [SmallCategory D₁] [SmallCategory D₂]
@@ -93,6 +110,34 @@ theorem final_iff_isIso_colimit_pre {D₁ D₂ : Type v} [SmallCategory D₁] [S
       IsIso (colimit.pre X u) :=
   ⟨fun _ _ _ _ _ ↦ inferInstance,
     fun h ↦ (Functor.final_iff_isIso_colimit_pre u).2 fun G ↦ h (Type v) G⟩
+
+/-- **Proposition 8.5.3(2).** A functor between small categories is left cofinal
+iff, for every complete category, restriction along it preserves limits. For
+the converse, the test category `(Type v)ᵒᵖ` turns the criterion into the
+colimit criterion for `u.op`. -/
+theorem initial_iff_isIso_limit_pre {D₁ D₂ : Type v} [SmallCategory D₁] [SmallCategory D₂]
+    (u : D₁ ⥤ D₂) :
+    u.Initial ↔ ∀ (M : Type (v + 1)) [Category.{v} M] [HasLimitsOfSize.{v, v} M] (X : D₂ ⥤ M),
+      IsIso (limit.pre X u) := by
+  refine ⟨fun _ _ _ _ _ ↦ inferInstance, fun h ↦ ?_⟩
+  have : u.op.Final := (Functor.final_iff_isIso_colimit_pre u.op).2 fun G ↦ by
+    have := h (Type v)ᵒᵖ G.rightOp
+    have key : (colimit.pre G u.op).op = (limitRightOpIsoOpColimit G).inv ≫
+        limit.pre G.rightOp u ≫ (limitRightOpIsoOpColimit (u.op ⋙ G)).hom := by
+      apply Quiver.Hom.unop_inj
+      apply colimit.hom_ext
+      intro j
+      apply Quiver.Hom.op_inj
+      simp only [op_comp, Quiver.Hom.op_unop, Category.assoc,
+        limitRightOpIsoOpColimit_hom_comp_ι]
+      change _ = _ ≫ limit.pre G.rightOp u ≫ limit.π (u ⋙ G.rightOp) j.unop
+      rw [limit.pre_π, limitRightOpIsoOpColimit_inv_comp_π, ← op_comp, colimit.ι_pre]
+      rfl
+    have : IsIso (colimit.pre G u.op).op := by
+      rw [key]
+      infer_instance
+    exact (isIso_op_iff _).1 this
+  exact initial_of_final_op u
 
 variable {D₁ D₂ M : Type*} [Category D₁] [Category D₂] [Category M] (u : D₁ ⥤ D₂) (X : D₂ ⥤ M)
 

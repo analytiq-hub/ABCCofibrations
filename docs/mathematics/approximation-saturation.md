@@ -88,3 +88,49 @@ equivalences, so `a` is one.
 | Lemma 7.2.2(1), (2) | `ABCPrecofibrationCategory.weakEquivalence_iff_isIso_map`, `ABCPrefibrationCategory.weakEquivalence_iff_isIso_map` |
 | Theorem 7.2.3(1), (2) | `ABCCofibrationCategory.weakEquivalence_iff_isIso_map`, `ABCFibrationCategory.weakEquivalence_iff_isIso_map` |
 | Proposition 7.2.9(1), (2) | `ABCPrecofibrationCategory.isIso_map_of_hasLiftingProperty`, `ABCPrefibrationCategory.isIso_map_of_hasLiftingProperty` |
+
+## Further results of Chapters 6–7
+
+* **Theorem 7.2.4.** A model category with sequential colimits satisfies CF6
+  (lifting classes are stable under transfinite composition), so Lemma 7.2.2
+  applies.
+* **Theorem 7.2.8(1)** (Cisinski). On the type synonym `Saturated C`, the
+  saturation `W̄` with the same cofibrations is a precofibration structure.
+  CF3(2): for a cofibration `i` in `W̄`, Lemma 7.2.1 gives cofibrations `i'`,
+  `i''` with `i'i`, `i''i'` in `W`; pushing them out along the square gives the
+  same for the cobase change `j`, so `j ∈ W̄`. Part (2) is not yet formalized.
+* **Lemma 7.2.10.** In a left proper precofibration category, a map with a left
+  inverse in `ho M` is followed by a left proper map into a weak equivalence:
+  replace `A` cofibrantly, factor, apply Lemma 7.2.1, and push the cofibration
+  out along the weak equivalence to `B` (left properness makes the comparison a
+  weak equivalence). This is shorter than the paper's construction.
+* **Proposition 7.2.11(1), Theorem 7.2.12(1).** `W`-left proper maps are
+  `W̄`-left proper, by Lemma 7.2.10 and two out of six in `ho M`; hence the
+  saturated structure is left proper. The fibration versions (2) are not yet
+  formalized.
+* **Propositions 7.3.2–7.3.3, Corollary 7.3.5.** Maps of `ho M` from a cofibrant
+  object to a fibrant model come from maps (via Theorem 6.4.5 and the extension
+  property); under BCF6 maps between cofibrant objects do. Local smallness
+  follows (`locallySmall_of_surjective`). For model categories, fibrant
+  objects are fibrant models.
+* **Lemma 7.4.1** is mathlib's fundamental lemma of homotopical algebra.
+* **Theorem 7.1.1** is formalized for finite products only (mathlib's
+  `Functor.IsLocalization.pi`).
+* **Lemma 6.1.4(2)** follows from 6.1.4(1) in the opposite category via
+  mathlib's `RightFraction.op_map`.
+
+| Statement | Declaration |
+| --- | --- |
+| Theorem 7.1.1, finite | `isLocalization_pi` |
+| Theorem 7.2.4 | `QuillenModelCategory.weakEquivalence_iff_isIso_map` |
+| Theorem 7.2.8(1) | `ABCPrecofibrationCategory.saturated_precofibrationCategory`, `saturation`, `Saturated` |
+| Lemma 7.2.10(1), (2) | `exists_leftInverse_iff_leftProper`, `isIso_map_iff_leftProper`, `exists_rightInverse_iff_rightProper`, `isIso_map_iff_rightProper` |
+| Proposition 7.2.11(1) | `isLeftProper_saturated` |
+| Theorem 7.2.12(1) | `saturated_leftProper` |
+| Definition 7.3.1 | `IsFibrantModel`, `IsCofibrantModel` |
+| Proposition 7.3.2(1), (2) | `map_surjective_of_isFibrantModel`, `map_surjective_of_isCofibrantModel` |
+| Proposition 7.3.3(1), (2) | `locallySmall_of_fibrantModels`, `locallySmall_of_cofibrantModels` |
+| Proposition 7.3.4(1), (2) | `map_surjective_of_bauesAxiom`, `map_eq_iff_leftHomotopy` |
+| Corollary 7.3.5 | `locallySmall_of_bauesAxiom`, `locallySmall_of_trivialCofibration_lifting`, `locallySmall_of_cofibration_lifting`, `QuillenModelCategory.locallySmall_homotopyCategory` |
+| Lemma 7.4.1 | `QuillenModelCategory.quillen_homotopy_tfae` |
+| Lemma 6.1.4(2) | `IsFibrantApproximation.rightFraction_map_eq_of_ambient_comparison` |

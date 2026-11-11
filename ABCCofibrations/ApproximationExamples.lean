@@ -95,6 +95,33 @@ theorem map_eq_of_map_precomp_eq {E : Type*} [Category E] (G : C ⥤ E)
       rw [← op_comp, h, op_comp])
   exact Quiver.Hom.op_inj this
 
+/-- **Lemma 6.1.4(2).** For a fibrant approximation `t`, two right fractions
+`f s⁻¹` and `g u⁻¹` of the source with a common ambient comparison (weak
+equivalences `τ₁`, `τ₂` with `τ₁ ∘ t(s) = τ₂ ∘ t(u)` and `τ₁ ∘ t(f) = τ₂ ∘ t(g)`)
+have the same value under every functor inverting weak equivalences. -/
+theorem rightFraction_map_eq_of_ambient_comparison {A B : C}
+    (φ ψ : (weakEquivalences C).RightFraction A B) {X : D}
+    (τ₁ : X ⟶ F.obj φ.X') (τ₂ : X ⟶ F.obj ψ.X') [WeakEquivalence τ₁] [WeakEquivalence τ₂]
+    (hf : τ₁ ≫ F.map φ.f = τ₂ ≫ F.map ψ.f) (hs : τ₁ ≫ F.map φ.s = τ₂ ≫ F.map ψ.s)
+    {E : Type*} [Category E] (G : C ⥤ E) (hG : (weakEquivalences C).IsInvertedBy G) :
+    φ.map G hG = ψ.map G hG := by
+  let p₁ : F.op.obj φ.op.Y' ⟶ Opposite.op X := τ₁.op
+  let p₂ : F.op.obj ψ.op.Y' ⟶ Opposite.op X := τ₂.op
+  have : WeakEquivalence p₁ := (weakEquivalences_op_iff τ₁).2 inferInstance
+  have : WeakEquivalence p₂ := (weakEquivalences_op_iff τ₂).2 inferInstance
+  have := IsCofibrantApproximation.fraction_map_eq_of_ambient_comparison (F := F.op)
+    φ.op ψ.op p₁ p₂
+    (by
+      change (F.map φ.f).op ≫ τ₁.op = (F.map ψ.f).op ≫ τ₂.op
+      rw [← op_comp, hf, op_comp])
+    (by
+      change (F.map φ.s).op ≫ τ₁.op = (F.map ψ.s).op ≫ τ₂.op
+      rw [← op_comp, hs, op_comp])
+    G.op hG.op
+  apply Quiver.Hom.op_inj
+  rw [MorphismProperty.RightFraction.op_map, MorphismProperty.RightFraction.op_map]
+  exact this
+
 end IsFibrantApproximation
 
 end ABCCofibrations

@@ -7,6 +7,9 @@ module
 
 public import ABCCofibrations.QuillenModelCategory
 public import ABCCofibrations.Saturation
+public import ABCCofibrations.LocalSmallness
+public import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Quillen model categories have saturated weak equivalences (Theorem 7.2.4)
@@ -19,7 +22,7 @@ weak equivalences are saturated. (The paper's axiom M1 provides all colimits.)
 
 @[expose] public section
 
-universe v u
+universe w v u
 
 open CategoryTheory Limits HomotopicalAlgebra MorphismProperty
 
@@ -62,5 +65,43 @@ theorem weakEquivalence_iff_isIso_map {D : Type*} [Category D] (L : C ⥤ D)
   let := precofibrationCategory C
   exact ABCPrecofibrationCategory.weakEquivalence_iff_isIso_map L sequentialCofibrationAxiom
     trivialSequentialAxiom f
+
+omit [HasColimitsOfShape ℕ C] in
+/-- In a model category, a fibrant object is a fibrant model (Definition 7.3.1(1)). -/
+theorem isFibrantModel_of_isFibrant (X : C) [IsFibrant X] :
+    letI := precofibrationCategory C
+    ABCPrecofibrationCategory.IsFibrantModel X := by
+  let := precofibrationCategory C
+  intro A B f i _ hi hw
+  have : Fibration (terminal.from X) := (isFibrant_iff X).1 inferInstance
+  have sq : CommSq f i (terminal.from X) (terminal.from B) := ⟨terminal.hom_ext _ _⟩
+  exact ⟨sq.lift, sq.fac_left⟩
+
+omit [HasColimitsOfShape ℕ C] in
+/-- **Corollary 7.3.5(5).** The homotopy category of a locally small model category
+is locally small. -/
+theorem locallySmall_homotopyCategory [LocallySmall.{w} C] {D : Type*} [Category D] (L : C ⥤ D)
+    [L.IsLocalization (weakEquivalences C)] : LocallySmall.{w} D := by
+  let := precofibrationCategory C
+  refine ABCPrecofibrationCategory.locallySmall_of_fibrantModels L fun A _ ↦ ?_
+  let h := factorizationData (trivialCofibrations C) (fibrations C) (terminal.from A)
+  have : Fibration h.p := ⟨h.hp⟩
+  have : IsFibrant h.Z := (isFibrant_iff h.Z).2 (by
+    rw [show terminal.from h.Z = h.p from terminal.hom_ext _ _]
+    infer_instance)
+  exact ⟨h.Z, h.i, ⟨h.hi.2⟩, isFibrantModel_of_isFibrant h.Z⟩
+
+omit [HasColimitsOfShape ℕ C] in
+/-- **Lemma 7.4.1.** For `A` cofibrant and `B` fibrant in a model category, two maps
+`f g : A ⟶ B` are Quillen left homotopic iff they are Quillen right homotopic iff
+they have the same image in the homotopy category. This is mathlib's fundamental
+lemma of homotopical algebra. -/
+theorem quillen_homotopy_tfae {D : Type*} [Category D] (L : C ⥤ D)
+    [L.IsLocalization (weakEquivalences C)] {A B : C} [IsCofibrant A] [IsFibrant B]
+    (f g : A ⟶ B) :
+    List.TFAE [LeftHomotopyRel f g, RightHomotopyRel f g, L.map f = L.map g] := by
+  tfae_have 1 ↔ 2 := leftHomotopyRel_iff_rightHomotopyRel
+  tfae_have 1 ↔ 3 := LeftHomotopyRel.iff_map_eq L A B
+  tfae_finish
 
 end ABCCofibrations.QuillenModelCategory

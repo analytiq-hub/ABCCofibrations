@@ -9,6 +9,7 @@ public import ABCCofibrations.AmbientHomotopyFractions
 public import ABCCofibrations.ReplacementComparison
 public import ABCCofibrations.HomotopyOpposite
 public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.LiftingProperties.Basic
 
 /-!
 # Maps of the homotopy category as homotopy classes (Propositions 7.3.2, 7.3.4)
@@ -200,5 +201,46 @@ theorem locallySmall_of_bauesAxiom [LocallySmall.{w} C]
     fun φ ↦ map_surjective_of_bauesAxiom L h6 φ⟩
 
 end ABCPrefibrationCategory
+
+section Premodel
+
+variable {C : Type u} [Category.{v} C] [CategoryWithCofibrations C] [CategoryWithFibrations C]
+  [CategoryWithWeakEquivalences C] [HasInitial C] [HasTerminal C]
+  [ABCPrecofibrationCategory C] [ABCPrefibrationCategory C]
+  {D : Type*} [Category D] (L : C ⥤ D) [L.IsLocalization (weakEquivalences C)]
+
+include L in
+/-- **Corollary 7.3.5(3).** In an ABC premodel category in which trivial
+cofibrations with cofibrant domain lift against fibrations with fibrant codomain,
+the homotopy category of a locally small category is locally small. -/
+theorem locallySmall_of_trivialCofibration_lifting [LocallySmall.{w} C]
+    (hlift : ∀ ⦃A B X Y : C⦄ (i : A ⟶ B) (p : X ⟶ Y), IsCofibrant A → Cofibration i →
+      WeakEquivalence i → IsFibrant Y → Fibration p → HasLiftingProperty i p) :
+    LocallySmall.{w} D := by
+  refine ABCPrecofibrationCategory.locallySmall_of_fibrantModels L fun A _ ↦ ?_
+  obtain ⟨R, r, hR, hr⟩ := ABCPrefibrationCategory.exists_fibrant_replacement A
+  refine ⟨R, r, hr, fun A₀ B₀ f i hA₀ hi hw ↦ ?_⟩
+  have : Fibration (terminal.from R) := hR
+  have := hlift i (terminal.from R) hA₀ hi hw inferInstance this
+  have sq : CommSq f i (terminal.from R) (terminal.from B₀) := ⟨terminal.hom_ext _ _⟩
+  exact ⟨sq.lift, sq.fac_left⟩
+
+include L in
+/-- **Corollary 7.3.5(4).** In an ABC premodel category in which cofibrations with
+cofibrant domain lift against trivial fibrations with fibrant codomain, the
+homotopy category of a locally small category is locally small. -/
+theorem locallySmall_of_cofibration_lifting [LocallySmall.{w} C]
+    (hlift : ∀ ⦃A B X Y : C⦄ (i : A ⟶ B) (p : X ⟶ Y), IsCofibrant A → Cofibration i →
+      IsFibrant Y → Fibration p → WeakEquivalence p → HasLiftingProperty i p) :
+    LocallySmall.{w} D := by
+  refine ABCPrefibrationCategory.locallySmall_of_cofibrantModels L fun A _ ↦ ?_
+  obtain ⟨Q, q, hQ, hq⟩ := ABCPrecofibrationCategory.exists_cofibrant_replacement A
+  refine ⟨Q, q, hq, fun E D' g p hD hp hw ↦ ?_⟩
+  have : Cofibration (initial.to Q) := hQ
+  have := hlift (initial.to Q) p inferInstance this hD hp hw
+  have sq : CommSq (initial.to E) (initial.to Q) p g := ⟨initial.hom_ext _ _⟩
+  exact ⟨sq.lift, sq.fac_right⟩
+
+end Premodel
 
 end ABCCofibrations

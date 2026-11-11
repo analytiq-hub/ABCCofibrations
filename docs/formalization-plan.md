@@ -639,7 +639,7 @@ Suggested next construction:
 No functorial factorization or functorial replacement is assumed. Connectedness
 of replacement categories alone does not establish the comparison equivalence.
 The cofibration proofs use CF1–CF4, and the dual fibration proofs use F1–F4. The latest full check is
-`lake build ABCCofibrations`: 2908 jobs, without warnings. The accompanying
+`lake build ABCCofibrations`: 2940 jobs, without warnings. The accompanying
 mathematical account is [cofibrant-replacements.md](cofibrant-replacements.md).
 Local paper source for the next argument is
 `references/radulescu-banu-2009/source/chap-homotopy.tex`, §6.4.
@@ -721,6 +721,11 @@ Completed localization infrastructure:
 - `HomotopyIsomorphisms.lean`: Lemma 7.2.1, Proposition 7.2.9.
 - `Saturation.lean`: Lemma 7.2.2, Theorem 7.2.3 (saturation of weak
   equivalences in cofibration and fibration categories).
+- `QuillenSaturation.lean`: Theorem 7.2.4, Lemma 7.4.1, Corollary 7.3.5(5).
+- `SaturatedStructure.lean`: Theorem 7.2.8(1).
+- `LocalSmallness.lean`: Propositions 7.3.2–7.3.4, Corollary 7.3.5.
+- `ProperSaturation.lean`: Lemma 7.2.10, Proposition 7.2.11(1), Theorem 7.2.12(1).
+- `ProductHomotopyCategory.lean`: Theorem 7.1.1 for finite products.
 - `ToDualRegistrations.lean`: temporary local `to_dual` dictionary entries
   (model-category classes, `MorphismProperty` cast, `Over ↔ Under`). Remove when
   mathlib registers these (after mathlib4#40940 and a `MorphismProperty`
@@ -1144,3 +1149,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-10 | Chapter 4, §3.2 lemmas, Lemma 1.6.5(2) | `AdjunctionKan.lean` proves Propositions 4.2.1, 4.2.2, 4.3.2, 4.3.3 and Corollary 4.3.4 (with standard Kan extension names; the paper swaps left and right). `AbelianLemmas.lean` proves Lemmas 3.2.2 and 3.2.6. `FibrationConsequences.lean` adds Lemma 1.6.5(2) for inverse sequences. See [the note](mathematics/adjunctions-kan-abelian.md). Full build passed (2578 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |
 | 2026-11-10 | Approximation theorem, left case | `ApproximationTheorem.lean` defines left approximations (LAP1, LAP2 for a `LocalizerMorphism`) and proves Lemma 5.4.2(1) and Theorem 5.5.1 for left approximations. The quasi-inverse is a lift through the localization of a functor `M ⥤ ho M'` built from LAP1–LAP2, instead of the paper's zig-zag construction. Full build passed (2580 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: right approximations (needs `G.op` equivalence ⇒ `G` equivalence), Corollaries 5.5.3–5.5.4. |
 | 2026-11-11 | Chapters 3, 5–7 | Right approximations, Corollaries 5.5.3–5.5.4; Theorem 6.1.5 and Lemma 6.1.3(2); Theorems 5.2.2 and 6.4.1; Lemmas 3.2.1 and 3.2.3; Lemma 7.2.1, Proposition 7.2.9, and saturation of weak equivalences (Lemma 7.2.2, Theorem 7.2.3). See [the note](mathematics/approximation-saturation.md). Full build passed (2908 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |
+| 2026-11-11 | Chapter 7 continued | Theorem 7.2.4, Theorem 7.2.8(1), Lemma 7.2.10, Proposition 7.2.11(1), Theorem 7.2.12(1), Propositions 7.3.2–7.3.4, Corollary 7.3.5 (Baues, premodel and Quillen forms), Lemma 7.4.1, Theorem 7.1.1 (finite products), Lemma 6.1.4(2). Full build passed (2940 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |

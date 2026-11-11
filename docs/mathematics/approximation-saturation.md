@@ -182,7 +182,20 @@ cofinal functor is mathlib's `Functor.Final`, a left cofinal one `Functor.Initia
 | Definitions 9.1.1–9.1.3, 9.2.2 | `IsDirect`, `IsInverse`, `LatchingCategory`, `latchingObj`, `latchingMap`, `IsReedyCofibrant`, `IsReedyCofibration`, `IsReedyFibrant`, `IsReedyFibration` |
 | Proposition 9.2.3(1), (2) | `IsReedyCofibration.comp`, `isReedyCofibration_of_isIso`, `IsReedyFibration.comp`, `isReedyFibration_of_isIso` |
 | Lemma 9.3.1(1) | `colimit_isPushout_latching` |
+| Theorem 9.3.5(1)(a), finite direct categories | `reedyCofibrant_colimit_finite` |
+| Theorem 9.3.5(1)(b), (c), finite direct small categories | `reedyCofibration_colimMap`, `reedyCofibrant_colimMap_weakEquivalence` |
+| Corollary 9.3.6(1), finite direct small categories | `IsReedyCofibration.cofibration_app` |
 | Definition 9.7.1, Lemma 9.7.2 | `LeftExact`, `RightExact`, `LeftExact.comp`, `LeftExact.weakEquivalence_map`, `RightExact.comp`, `RightExact.weakEquivalence_map` |
+
+Theorem 9.3.5 is proved for direct categories with finitely many objects (and,
+for (b), (c), finitely many morphisms), by induction on a degree bound and on the
+number of objects: an object `d` of maximal degree has no non-identity maps out
+of it, `colim_D X` is the pushout of Lemma 9.3.1, and the gluing lemma applies.
+The restrictions of Reedy data to `D ∖ {d}` and to latching categories (the
+paper's identification (9.1.2) of iterated latching categories) are transferred
+along final functors (`ReedyTransfer.lean`). The paper's general small case,
+which needs CF5 for the infinitely many objects of a degree and CF6 for the
+infinitely many degrees, is not yet formalized.
 
 Latching objects are colimits whose existence is recorded as instance
 hypotheses; matching objects and Reedy fibrations are defined through the

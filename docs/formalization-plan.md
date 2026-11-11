@@ -732,6 +732,9 @@ Completed localization infrastructure:
 - `WeakSaturation.lean`: Definitions 7.2.5–7.2.6, Theorem 7.2.7.
 - `ReedyBasic.lean`: Definitions 9.1.1–9.1.3, 9.2.2, Proposition 9.2.3.
 - `ReedyColimits.lean`: Lemma 9.3.1(1).
+- `ReedyFinite.lean`: Theorem 9.3.5(1)(a) for finite direct categories.
+- `ReedyTransfer.lean`: transfer of Reedy data to complements and latching categories.
+- `ReedyColimitMaps.lean`: Theorem 9.3.5(1)(b),(c) and Corollary 9.3.6(1) for finite direct categories.
 - `DerivedApproximation.lean`: Theorem 5.7.1, Corollary 5.7.2 (approximations are derivability structures).
 - `ProductHomotopyCategory.lean`: Theorem 7.1.1 for finite products.
 - `ToDualRegistrations.lean`: temporary local `to_dual` dictionary entries
@@ -1161,3 +1164,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-11 | Chapters 1, 5, 7, 8 | Theorem 7.2.8(2), Proposition 7.2.11(2), Theorem 7.2.12(2); Lemmas 8.2.1, 8.2.2, Propositions 8.5.3(1), 8.5.4, 8.6.2(1), Corollary 8.6.3 (mathlib restatements); Theorem 5.7.1 and Corollary 5.7.2 (left/right approximations are derivability structures); Lemmas 1.3.3(2) and 1.4.1(2)(a) (for any pullback representatives). Full build passed (2944 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |
 | 2026-11-11 | Chapters 1, 6–9 | Lemma 9.3.3, Lemma 9.3.4(1), Lemma 8.5.2, Propositions 8.5.3(2), 8.6.1(1), 8.6.2(2), Lemma 9.7.2 (exact functors), Lemma 1.5.3(2), Lemma 6.3.2(2), Theorem 6.3.3(2), Theorem 7.2.7 (weak saturation; the hard direction is proved directly, as the paper's over-category step is unjustified). Not yet done: Lemma 9.3.4(2), Proposition 8.6.1(2). Full build passed, without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |
 | 2026-11-11 | Chapters 5, 8, 9 | Lemma 9.3.4(2) (fibration categories), Proposition 8.6.1(2), Theorem 5.8.1 (adjunction part, via mathlib's `Adjunction.derived` and derivability structures), direct categories, latching objects and Reedy (co)fibrations with Proposition 9.2.3, Lemma 9.3.1(1). Full build passed, without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. |
+| 2026-11-11 | Reedy core (finite case) | Theorem 9.3.5(1)(a)–(c) and Corollary 9.3.6(1) for finite direct (small) categories, by induction on a degree bound and on the number of objects, using Lemma 9.3.1, the gluing lemma, and transfer of Reedy data along final functors. Full build passed (3102 jobs), without warnings; axiom audit uses only `propext`, `Classical.choice`, and `Quot.sound`. Next: Theorem 9.2.4 (Reedy cofibration structure; needs pointwise pushouts, latching objects of pushouts, and the degree-wise factorization), then the infinite case with CF5/CF6. |

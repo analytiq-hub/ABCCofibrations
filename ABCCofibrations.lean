@@ -16,6 +16,8 @@ import ABCCofibrations.OtherAxiomSystems
 import ABCCofibrations.AdjunctionKan
 import ABCCofibrations.AbelianLemmas
 import ABCCofibrations.ApproximationTheorem
+import ABCCofibrations.ApproximationExamples
+import ABCCofibrations.GabrielZisman
 import ABCCofibrations.OverUnderCofibrationCategory
 import ABCCofibrations.OverUnderFibration
 import ABCCofibrations.Gluing

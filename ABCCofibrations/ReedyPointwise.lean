@@ -180,3 +180,45 @@ instance precofibrationCategory : ABCPrecofibrationCategory (PointwiseDiagram D 
 end PointwiseDiagram
 
 end ABCCofibrations
+
+namespace ABCCofibrations
+
+/-- The category of `D`-diagrams in `M`, to carry the pointwise fibration structure. -/
+def PointwiseFibDiagram (D : Type*) [Category D] (M : Type*) [Category M] : Type _ := D ⥤ M
+
+namespace PointwiseFibDiagram
+
+variable (D : Type w) [SmallCategory D] (M : Type u₂) [Category.{v₂} M]
+  [CategoryWithFibrations M] [CategoryWithWeakEquivalences M] [HasTerminal M]
+
+instance : Category (PointwiseFibDiagram D M) := inferInstanceAs (Category (D ⥤ M))
+
+instance : HasTerminal (PointwiseFibDiagram D M) := inferInstanceAs (HasTerminal (D ⥤ M))
+
+instance : CategoryWithWeakEquivalences (PointwiseFibDiagram D M) where
+  weakEquivalences := fun _ _ f ↦ ∀ e, WeakEquivalence (NatTrans.app f e)
+
+instance : CategoryWithFibrations (PointwiseFibDiagram D M) where
+  fibrations := fun _ _ f ↦ ∀ e, Fibration (NatTrans.app f e)
+
+variable [Finite D] [∀ x y : D, Finite (x ⟶ y)] [IsInverse D] [ABCPrefibrationCategory M]
+
+/-- **Theorem 9.2.4(2)(b)** (axioms F1–F4), for finite inverse categories: the
+diagrams over `D` in a prefibration category, with pointwise weak equivalences
+and pointwise fibrations, form a prefibration category. -/
+theorem prefibrationCategory : ABCPrefibrationCategory (PointwiseFibDiagram D M) := by
+  refine ABCPrecofibrationCategory.of_equivalence (D' := PointwiseDiagram Dᵒᵖ Mᵒᵖ)
+    (show (PointwiseFibDiagram D M)ᵒᵖ ≌ PointwiseDiagram Dᵒᵖ Mᵒᵖ from
+      Functor.opUnopEquiv D M) ?_ ?_
+  · ext X Y f
+    change (∀ e, Fibration _) ↔ ∀ e, Cofibration _
+    exact ⟨fun h e ↦ (cofibration_op_iff _).2 (h e.unop),
+      fun h e ↦ (cofibration_op_iff _).1 (h (Opposite.op e))⟩
+  · ext X Y f
+    change (∀ e, WeakEquivalence _) ↔ ∀ e, WeakEquivalence _
+    exact ⟨fun h e ↦ (weakEquivalences_op_iff _).2 (h e.unop),
+      fun h e ↦ (weakEquivalences_op_iff _).1 (h (Opposite.op e))⟩
+
+end PointwiseFibDiagram
+
+end ABCCofibrations

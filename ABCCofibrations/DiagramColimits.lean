@@ -1,0 +1,154 @@
+/-
+Copyright (c) 2026 ABCCofibrations contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ABCCofibrations contributors
+-/
+module
+
+public import ABCCofibrations.AdjunctionKan
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
+public import Mathlib.CategoryTheory.Limits.Fubini
+
+/-!
+# Relative colimits, cofinality and the Grothendieck construction (Chapter 8)
+
+Lemmas 8.2.1, 8.2.2, Propositions 8.5.3(1), 8.5.4, 8.6.2(1) and Corollary 8.6.3.
+These are classical facts about diagrams; mathlib proves them, and we restate
+them in the paper's form.
+
+The relative colimit `colim^u X` of the paper is the (pointwise) left Kan
+extension of `X` along `u`, and `lim^u X` the right Kan extension. A *right
+cofinal* functor (colimits) is mathlib's `Functor.Final`, a *left cofinal* one
+mathlib's `Functor.Initial`.
+-/
+
+@[expose] public section
+
+open CategoryTheory Limits Functor
+
+namespace ABCCofibrations
+
+section RelativeColimits
+
+variable {D₁ D₂ M : Type*} [Category D₁] [Category D₂] [Category M] (u : D₁ ⥤ D₂) (X : D₁ ⥤ M)
+
+/-- **Lemma 8.2.1(1).** If the colimits of `X` over the comma categories `(u ↓ d)`
+exist, the relative colimit `colim^u X` exists and is computed by them. -/
+theorem hasLeftKanExtension_of_hasColimit_comma
+    [∀ d, HasColimit (CostructuredArrow.proj u d ⋙ X)] :
+    HasLeftKanExtension u X ∧
+      ∀ d, Nonempty ((u.leftKanExtension X).obj d ≅ colimit (CostructuredArrow.proj u d ⋙ X)) :=
+  ⟨inferInstance, fun d ↦ ⟨leftKanExtensionObjIsoColimit u X d⟩⟩
+
+/-- **Lemma 8.2.1(2).** If the limits of `X` over the comma categories `(d ↓ u)`
+exist, the relative limit `lim^u X` exists and is computed by them. -/
+theorem hasRightKanExtension_of_hasLimit_comma
+    [∀ d, HasLimit (StructuredArrow.proj d u ⋙ X)] :
+    HasRightKanExtension u X ∧
+      ∀ d, Nonempty ((u.rightKanExtension X).obj d ≅ limit (StructuredArrow.proj d u ⋙ X)) :=
+  ⟨inferInstance, fun d ↦ ⟨(isPointwiseRightKanExtensionOfIsRightKanExtension _
+    (u.rightKanExtensionCounit X) d).isoLimit⟩⟩
+
+variable {D₃ : Type*} [Category D₃] (v : D₂ ⥤ D₃)
+
+/-- **Lemma 8.2.2(1).** If `colim^u X` exists, then `colim^v colim^u X` exists iff
+`colim^{vu} X` does, and then they are canonically isomorphic. -/
+theorem leftKanExtension_comp [HasLeftKanExtension u X] :
+    (HasLeftKanExtension v (u.leftKanExtension X) ↔ HasLeftKanExtension (u ⋙ v) X) ∧
+      ∀ [HasLeftKanExtension v (u.leftKanExtension X)] [HasLeftKanExtension (u ⋙ v) X],
+        Nonempty ((u ⋙ v).leftKanExtension X ≅ v.leftKanExtension (u.leftKanExtension X)) := by
+  refine ⟨hasLeftKanExtension_comp_iff (u.leftKanExtensionUnit X), ?_⟩
+  intro _ _
+  have := (isLeftKanExtension_comp_iff (u.leftKanExtensionUnit X)
+    (v.leftKanExtensionUnit (u.leftKanExtension X))).1 inferInstance
+  exact ⟨leftKanExtensionUnique _ ((u ⋙ v).leftKanExtensionUnit X) _
+    (u.leftKanExtensionUnit X ≫ whiskerLeft u (v.leftKanExtensionUnit (u.leftKanExtension X)) ≫
+      (associator u v _).inv)⟩
+
+/-- **Lemma 8.2.2(2).** If `lim^u X` exists, then `lim^v lim^u X` exists iff
+`lim^{vu} X` does, and then they are canonically isomorphic. -/
+theorem rightKanExtension_comp [HasRightKanExtension u X] :
+    (HasRightKanExtension v (u.rightKanExtension X) ↔ HasRightKanExtension (u ⋙ v) X) ∧
+      ∀ [HasRightKanExtension v (u.rightKanExtension X)] [HasRightKanExtension (u ⋙ v) X],
+        Nonempty ((u ⋙ v).rightKanExtension X ≅ v.rightKanExtension (u.rightKanExtension X)) := by
+  refine ⟨hasRightKanExtension_comp_iff (u.rightKanExtensionCounit X), ?_⟩
+  intro _ _
+  have := (isRightKanExtension_comp_iff (u.rightKanExtensionCounit X)
+    (v.rightKanExtensionCounit (u.rightKanExtension X))).1 inferInstance
+  exact ⟨rightKanExtensionUnique _ ((u ⋙ v).rightKanExtensionCounit X) _
+    ((associator u v _).hom ≫ whiskerLeft u (v.rightKanExtensionCounit (u.rightKanExtension X)) ≫
+      u.rightKanExtensionCounit X)⟩
+
+end RelativeColimits
+
+section Cofinality
+
+/-- **Proposition 8.5.3(1).** A functor between small categories is right cofinal
+iff, for every cocomplete category, restriction along it preserves colimits. -/
+theorem final_iff_isIso_colimit_pre {D₁ D₂ : Type v} [SmallCategory D₁] [SmallCategory D₂]
+    (u : D₁ ⥤ D₂) :
+    u.Final ↔ ∀ (M : Type (v + 1)) [Category.{v} M] [HasColimitsOfSize.{v, v} M] (X : D₂ ⥤ M),
+      IsIso (colimit.pre X u) :=
+  ⟨fun _ _ _ _ _ ↦ inferInstance,
+    fun h ↦ (Functor.final_iff_isIso_colimit_pre u).2 fun G ↦ h (Type v) G⟩
+
+variable {D₁ D₂ M : Type*} [Category D₁] [Category D₂] [Category M] (u : D₁ ⥤ D₂) (X : D₂ ⥤ M)
+
+/-- **Proposition 8.5.4(1).** For a right cofinal functor `u`, the colimit of `X`
+exists iff that of `u*X` does, and then the comparison is an isomorphism. -/
+theorem final_hasColimit_iff [u.Final] :
+    (HasColimit (u ⋙ X) ↔ HasColimit X) ∧ ∀ [HasColimit X], IsIso (colimit.pre X u) :=
+  ⟨⟨fun _ ↦ Functor.Final.hasColimit_of_comp u, fun _ ↦ inferInstance⟩, fun {_} ↦ inferInstance⟩
+
+/-- **Proposition 8.5.4(2).** For a left cofinal functor `u`, the limit of `X`
+exists iff that of `u*X` does, and then the comparison is an isomorphism. -/
+theorem initial_hasLimit_iff [u.Initial] :
+    (HasLimit (u ⋙ X) ↔ HasLimit X) ∧ ∀ [HasLimit X], IsIso (limit.pre X u) :=
+  ⟨⟨fun _ ↦ Functor.Initial.hasLimit_of_comp u, fun _ ↦ inferInstance⟩, fun {_} ↦ inferInstance⟩
+
+end Cofinality
+
+section Grothendieck
+
+variable {C : Type*} [Category C] {F : C ⥤ Cat} {M : Type*} [Category M]
+  (G : Grothendieck F ⥤ M)
+  [∀ {X Y : C} (f : X ⟶ Y), HasColimit ((F.map f).toFunctor ⋙ Grothendieck.ι F Y ⋙ G)]
+
+/-- **Proposition 8.6.2(1).** If the colimits over the fibers exist (in mathlib's
+form: the restrictions along the transition functors have colimits), the colimit
+over the Grothendieck construction exists iff the colimit of the fiberwise
+colimits does, and then they agree. -/
+theorem grothendieck_colimit :
+    (HasColimit G ↔ HasColimit (fiberwiseColimit G)) ∧
+      ∀ [HasColimit G], Nonempty (@colimit _ _ _ _ (fiberwiseColimit G)
+        (hasColimit_fiberwiseColimit G) ≅ colimit G) := by
+  refine ⟨⟨fun _ ↦ ?_, fun _ ↦ ?_⟩, ?_⟩
+  · exact hasColimit_fiberwiseColimit G
+  · exact hasColimit_of_hasColimit_fiberwiseColimit_of_hasColimit G
+  intro _
+  let _ := hasColimit_fiberwiseColimit G
+  exact ⟨colimitFiberwiseColimitIso G⟩
+
+end Grothendieck
+
+section Fubini
+
+variable {J K M : Type*} [Category J] [Category K] [Category M] (G : J × K ⥤ M)
+
+/-- **Corollary 8.6.3(1)** (Fubini). The colimit over a product is the iterated
+colimit, when the inner colimits are given by `colim` (mathlib's hypotheses). -/
+theorem colimit_prod [HasColimitsOfShape K M] [HasColimit (curry.obj G ⋙ colim)] :
+    ∃ (_ : HasColimit G), Nonempty (colimit G ≅ colimit (curry.obj G ⋙ colim)) :=
+  ⟨inferInstance, ⟨colimitIsoColimitCurryCompColim G⟩⟩
+
+/-- **Corollary 8.6.3(2)** (Fubini). The limit over a product is the iterated
+limit. -/
+theorem limit_prod [HasLimitsOfShape K M] [HasLimit (curry.obj G ⋙ lim)] :
+    ∃ (_ : HasLimit G), Nonempty (limit G ≅ limit (curry.obj G ⋙ lim)) :=
+  ⟨inferInstance, ⟨limitIsoLimitCurryCompLim G⟩⟩
+
+end Fubini
+
+end ABCCofibrations

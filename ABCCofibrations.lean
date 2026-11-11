@@ -25,6 +25,7 @@ import ABCCofibrations.QuillenSaturation
 import ABCCofibrations.SaturatedStructure
 import ABCCofibrations.LocalSmallness
 import ABCCofibrations.ProperSaturation
+import ABCCofibrations.DiagramColimits
 import ABCCofibrations.ProductHomotopyCategory
 import ABCCofibrations.OverUnderCofibrationCategory
 import ABCCofibrations.OverUnderFibration

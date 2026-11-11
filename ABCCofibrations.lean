@@ -30,6 +30,7 @@ import ABCCofibrations.DerivedApproximation
 import ABCCofibrations.PushoutComposition
 import ABCCofibrations.ExactFunctors
 import ABCCofibrations.SequencePushoutComposition
+import ABCCofibrations.WeakSaturation
 import ABCCofibrations.ProductHomotopyCategory
 import ABCCofibrations.OverUnderCofibrationCategory
 import ABCCofibrations.OverUnderFibration

@@ -18,7 +18,7 @@ public import Mathlib.CategoryTheory.Category.Cat.Op
 /-!
 # Relative colimits, cofinality and the Grothendieck construction (Chapter 8)
 
-Lemmas 8.2.1, 8.2.2, 8.5.2, Propositions 8.5.3, 8.5.4, 8.6.2(1) and Corollary 8.6.3.
+Lemmas 8.2.1, 8.2.2, 8.5.2, Propositions 8.5.3, 8.5.4, 8.6.2 and Corollary 8.6.3.
 These are classical facts about diagrams; mathlib proves them, and we restate
 them in the paper's form.
 

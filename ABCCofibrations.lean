@@ -34,6 +34,7 @@ import ABCCofibrations.WeakSaturation
 import ABCCofibrations.ReedyBasic
 import ABCCofibrations.ReedyColimits
 import ABCCofibrations.ReedyFinite
+import ABCCofibrations.ReedyTransfer
 import ABCCofibrations.ProductHomotopyCategory
 import ABCCofibrations.OverUnderCofibrationCategory
 import ABCCofibrations.OverUnderFibration

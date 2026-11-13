@@ -459,25 +459,31 @@ Reedy cofibrations are pointwise cofibrations, dually for fibrations;
 pushouts exist, preserve Reedy cofibrations, and preserve triviality.
 No full infinite-diagram category instance is claimed yet.
 
-**Infinite CF4 construction started:**
-- `ReedyLayerExtension.lean`: extension over an arbitrary maximal layer,
-  compatible maps, recovery of an existing diagram, and the latching-diagram
-  and latching-map comparisons at new objects.
-- `ReedyLayerLatching.lean`: old diagrams and Reedy cofibrations restrict to
-  predecessor diagrams at new objects. The new latching colimits are
-  cofibrant and preserve cofibrations using CF5(1) without CF6, since their
-  degrees are bounded.
-- `ReedyLayerFactorization.lean`: `exists_factorization_at_new_object`
-  constructs the compatible local CF4 step, its weak equivalence, and its
-  relative pushout cofibration, with all assembly equations.
+**Infinite CF4 is now proved:** `reedy_factorization_small` in
+`ReedySmallFactorization.lean` works for every small direct indexing category,
+using CF1–CF4 and CF5(1) without CF6. `reedy_fibration_factorization_small`
+gives the native inverse result by duality. The bounded-degree variants also
+impose no finite-object or finite-hom assumptions.
 
-**Next missing proof:** glue these local choices into a whole layer
-factorization using `extensionHom` and `extensionIso`, then prove Reedy
-cofibrancy and the Reedy map condition at both old and new objects. Construct
-compatible layer choices through the truncations and assemble the whole
-infinite diagram factorization. Then establish Reedy CF5–CF6 and the full
-9.2.4 instances; obtain the fibration statements by duality. Full CF5–CF6 /
-F5–F6 remain available for the existing finite pointwise structures.
+Construction: `ReedyOpenReflection.lean` and `ReedyLayerReedy.lean` check old
+and new Reedy conditions; `ReedyLayer.factorization_layer` assembles the local
+choices and compares both maps with the old factorization. `ReedyOpenFunctor.lean`
+handles nested presentations of truncations. `ReedyTruncationFactorization.lean`
+and `ReedyFactorizationTower.lean` build compatible successors and a chosen tower.
+`DegreeDiagramGluing.lean` proves the cocycle identities and assembles its diagram
+and maps, using each object's first stage and requiring no colimit.
+
+`SmallDiagramPrecategory.lean` now gives the **CF1–CF4 instances for arbitrary
+small direct diagrams with both Reedy and pointwise cofibrations**, assuming an
+ambient `ABCCofibrationCategory` in the indexing universe. The new instances
+have lower priority than the finite instances. The standalone factorization
+uses weaker split assumptions than these structure instances.
+
+**Resume here:** transport these new instances to native inverse diagram
+structures by duality. Prove Reedy CF5–CF6 and the full infinite diagram-category
+instances. Extend the existing pointwise CF5–CF6 construction beyond finite
+indexing categories by separating its pointwise colimit proof from the
+precofibration-category hypothesis; track the coproduct universe explicitly.
 See [the factorization note](mathematics/reedy-layer-factorization.md) for
 precise current scope and differences from the paper.
 
@@ -1238,3 +1244,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-13 | Unbounded diagrams with finite degree truncations | `DegreeColimits.lean` constructs the truncation-colimit sequence, proves reconstruction of the whole colimit, and proves naturality. `ReedyDegreeColimits.lean` proves 9.3.5(1)(a)–(c) when each bounded-degree full subcategory has finitely many objects; `ReedyDegreeLimits.lean` proves 9.3.5(2)(a)–(c) by duality for native limits. Parts (b)–(c) require finite hom-sets; (a)–(b) use only CF6(1) / F6(1), and (c) adds the trivial-composite clause. The shared sequential cofibration lemma now lives in `SequentialColimits.lean`, replacing its duplicate in `SequencePushoutComposition.lean`. Full build passed (3148 jobs), without warnings; the reconstruction, sequential cofibration, and six unbounded theorem axiom audits use only `propext`, `Classical.choice`, and `Quot.sound`. The general arbitrary-layer CF5 construction, Reedy CF5–CF6, and infinite relative/Kan results remain. |
 | 2026-11-13 | Arbitrary layers, small colimits, and Kan extensions | `ReedyLayer.lean` proves Lemma 9.3.2(1); bounded layer induction and CF6 prove 9.3.5(1)–(2)(a–c) for every small direct/inverse category. `ReedySmallKan.lean` and `ReedySmallRightKan.lean` prove full 9.4.2(a–c). The complementary-degree induction and collapsed-degree filtration prove 9.4.1(a),(c), unlocking 9.4.3(a),(c), all without finite-object or finite-hom assumptions. Native inverse results reuse direct proofs by duality. Full build passed (3182 jobs), without warnings; 31 theorem axiom audits list only `propext`, `Classical.choice`, and `Quot.sound`. Next: the relative map comparison 9.4.1(b), then 9.4.3(b); infinite diagram structures remain. |
 | 2026-11-13 | Full relative and Reedy Kan comparisons; infinite CF4 construction | `ReedyRelativeDegreeMaps.lean`, `ReedySmallRelativeMaps.lean`, and the any-stage sequential comparison complete 9.4.1(b) and 9.4.3(b), including native duals. `ReedySmallStructure.lean` proves full Corollary 9.3.6 and standalone arbitrary-small CF3. Three layer modules construct extensions, transfer predecessor Reedy data, and prove the compatible local CF4 step using CF5(1) without CF6. Full build passed (3194 jobs), without warnings; 26 declaration axiom audits list only `propext`, `Classical.choice`, and `Quot.sound`. Next: prove the assembled layer factorization Reedy and construct the coherent degree recursion; infinite Reedy CF5–CF6 remain. |
+| 2026-11-13 | Unrestricted Reedy factorization and direct diagram CF1–CF4 | Whole-layer Reedy assembly, compatible truncation extensions, a chosen tower, and categorical gluing prove `reedy_factorization_small` using CF5(1) without CF6; the native inverse theorem follows by duality. Bounded variants retain arbitrary object and hom-set sizes. `SmallDiagramPrecategory.lean` gives CF1–CF4 for small direct Reedy and pointwise diagram structures with an ambient ABC cofibration category. Full build passed (3216 jobs), without warnings; 28 declaration axiom audits list only `propext`, `Classical.choice`, and `Quot.sound`. Stopping point: transport the new instances to inverse diagrams, then Reedy CF5–CF6 and unrestricted pointwise CF5–CF6. |

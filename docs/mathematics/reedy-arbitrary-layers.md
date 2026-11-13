@@ -199,11 +199,11 @@ The absolute theorem 9.3.5, relative theorem 9.4.1, pointwise Kan theorem
 sides, without finiteness restrictions. Their older finite specializations
 remain useful under weaker ambient axioms.
 
-The remaining diagram-category structure theorem is 9.2.4 for infinite
-indexing categories. Corollary 9.3.6 and standalone CF3 are now implemented
-in `ReedySmallStructure.lean`. The categorical layer-extension construction
-and compatible local CF4 step are also implemented. See
-[the layer factorization note](reedy-layer-factorization.md) for their exact
-scope, differences from the paper, and the remaining assembly of the
-infinite factorization. Reedy CF5–CF6 and the complete infinite instances
-are still outstanding.
+The CF1–CF4 part of 9.2.4(1)(a),(b) is now implemented for arbitrary small
+direct categories. The whole-layer factorization, a compatible tower, and
+categorical gluing prove the unrestricted CF4 theorem using CF5(1) without
+CF6. Native inverse factorization follows by duality. See
+[the layer factorization note](reedy-layer-factorization.md) for the exact
+statements and differences from the paper. Full Reedy CF5–CF6, unrestricted
+pointwise CF5–CF6, and transport of the new instances to native inverse
+structures remain outstanding.

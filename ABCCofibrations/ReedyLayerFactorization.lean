@@ -6,6 +6,7 @@ Authors: ABCCofibrations contributors
 module
 
 public import ABCCofibrations.ReedyLayerLatching
+public import ABCCofibrations.ReedyLayerReedy
 
 /-!
 # The factorization step at each new layer object
@@ -106,5 +107,66 @@ theorem exists_factorization_at_new_object
   · apply colimit.hom_ext
     intro j
     rw [colimit.ι_desc]
+
+include hmax hdeg in
+/-- Extend an already chosen Reedy factorization over a whole maximal layer.
+The restriction is compared with the original middle diagram and both maps,
+so the result can be used in a compatible degree induction. -/
+theorem factorization_layer
+    (h5 : CoproductCofibrationAxiom.{w} M) {X Y : D ⥤ M}
+    [∀ e, HasColimit (latchingDiagram X e)] (hX : IsReedyCofibrant X)
+    (f : X ⟶ Y) (Z : P.FullSubcategory ⥤ M)
+    [∀ e, HasColimit (latchingDiagram Z e)]
+    [∀ e, HasColimit (latchingDiagram (P.ι ⋙ X) e)]
+    (a : P.ι ⋙ X ⟶ Z) (r : Z ⟶ P.ι ⋙ Y) (ha : IsReedyCofibration a)
+    (hr : ∀ e, WeakEquivalence (r.app e)) (har : a ≫ r = Functor.whiskerLeft P.ι f) :
+    ∃ (Z' : D ⥤ M) (_ : ∀ e, HasColimit (latchingDiagram Z' e))
+      (a' : X ⟶ Z') (r' : Z' ⟶ Y) (e : P.ι ⋙ Z' ≅ Z),
+      IsReedyCofibration a' ∧ (∀ d, WeakEquivalence (r'.app d)) ∧ a' ≫ r' = f ∧
+      Functor.whiskerLeft P.ι a' ≫ e.hom = a ∧
+      e.inv ≫ Functor.whiskerLeft P.ι r' = r := by
+  classical
+  have : IsDirect D := ⟨⟨deg, hdeg⟩⟩
+  choose hLZ c i p hi hp hip hwp hrel using
+    (fun d : Objects P ↦ exists_factorization_at_new_object P hmax d deg hdeg h5 hX f Z
+      ha.2.1 a r har)
+  have hL (d : Objects P) : IsCofibrant (colimit (latchingToOld P hmax d ⋙ Z)) :=
+    (colimit_latchingToOld P hmax d deg hdeg h5 Z ha.2.1).choose_spec
+  have : ∀ d : Objects P, HasColimit (latchingToOld P hmax d ⋙ P.ι ⋙ X) :=
+    fun d ↦ inferInstanceAs (HasColimit (latchingDiagram X d.val))
+  obtain ⟨hCol, hA⟩ := isReedyCofibration_extensionLift P hmax Z c X hX a ha i hi hL hrel
+  let a' := extensionLift P hmax X a i hi
+  let r' := extensionDesc P hmax Y r p hp
+  refine ⟨extension P hmax Z c, hCol, a', r', extensionRestrictIso P hmax Z c, hA, ?_, ?_, ?_, ?_⟩
+  · intro d
+    by_cases hd : P d
+    · change WeakEquivalence ((extensionDesc P hmax Y r p hp).app d)
+      rw [extensionDesc_app_old P hmax Y r p hp hd]
+      have := weakEquivalence_of_isIso (extensionObjIsoOld P hmax Z c hd).hom
+      have := hr ⟨d, hd⟩
+      infer_instance
+    · change WeakEquivalence ((extensionDesc P hmax Y r p hp).app d)
+      rw [extensionDesc_app_new P hmax Y r p hp ⟨d, hd⟩]
+      have := weakEquivalence_of_isIso (extensionObjIsoNew P hmax Z c ⟨d, hd⟩).hom
+      have := hwp ⟨d, hd⟩
+      infer_instance
+  · ext d
+    change a'.app d ≫ r'.app d = f.app d
+    by_cases hd : P d
+    · rw [extensionLift_app_old P hmax X a i hi hd, extensionDesc_app_old P hmax Y r p hp hd]
+      simp only [Category.assoc, Iso.inv_hom_id_assoc]
+      exact congrArg (fun t ↦ t.app ⟨d, hd⟩) har
+    · rw [extensionLift_app_new P hmax X a i hi ⟨d, hd⟩,
+        extensionDesc_app_new P hmax Y r p hp ⟨d, hd⟩]
+      simp only [Category.assoc, Iso.inv_hom_id_assoc]
+      exact hip ⟨d, hd⟩
+  · ext e
+    change a'.app e.obj ≫ (extensionObjIsoOld P hmax Z c e.property).hom = a.app e
+    rw [extensionLift_app_old P hmax X a i hi e.property]
+    simp
+  · ext e
+    change (extensionObjIsoOld P hmax Z c e.property).inv ≫ r'.app e.obj = r.app e
+    rw [extensionDesc_app_old P hmax Y r p hp e.property]
+    simp
 
 end ABCCofibrations.ReedyLayer

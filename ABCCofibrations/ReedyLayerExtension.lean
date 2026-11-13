@@ -159,6 +159,18 @@ lemma extensionLatchingIso_hom_desc (d : Objects P)
   congr 2
 
 
+/-- Formula for the new latching map under the source and vertex comparisons. -/
+lemma latchingMap_extension (d : Objects P)
+    [HasColimit (latchingToOld P hmax d ⋙ F)]
+    [HasColimit (latchingDiagram (extension P hmax F c) d.val)] :
+    latchingMap (extension P hmax F c) d.val =
+      (HasColimit.isoOfNatIso (extensionLatchingIso P hmax F c d)).hom ≫
+        colimit.desc _ (c d) ≫ (extensionObjIsoNew P hmax F c d).inv := by
+  apply (cancel_mono (extensionObjIsoNew P hmax F c d).hom).1
+  simp only [Category.assoc, Iso.inv_hom_id, Category.comp_id]
+  exact (extensionLatchingIso_hom_desc P hmax F c d).symm
+
+
 section Maps
 variable {F} {c} {G : P.FullSubcategory ⥤ M}
   {c' : ∀ d : Objects P, Cocone (latchingToOld P hmax d ⋙ G)}
@@ -250,5 +262,49 @@ noncomputable def extensionIso (X : D ⥤ M) :
     subst d
     have hf' : f = 𝟙 b := by simpa using hf
     rw [hf', extensionMap_id, X.map_id, Category.id_comp, Category.comp_id]
+
+section LiftDesc
+variable {F c} (X : D ⥤ M) (a : P.ι ⋙ X ⟶ F)
+  (i : ∀ d : Objects P, X.obj d.val ⟶ (c d).pt)
+  (hi : ∀ (d : Objects P) (j : LatchingCategory d.val),
+    X.map j.obj.hom ≫ i d = a.app ((latchingToOld P hmax d).obj j) ≫ (c d).ι.app j)
+
+/-- Lift a map to the old diagram across compatible maps at the new objects. -/
+noncomputable def extensionLift : X ⟶ extension P hmax F c :=
+  (extensionIso P hmax X).inv ≫ extensionHom P hmax a i hi
+
+lemma extensionLift_app_old {d : D} (hd : P d) :
+    (extensionLift P hmax X a i hi).app d =
+      a.app ⟨d, hd⟩ ≫ (extensionObjIsoOld P hmax F c hd).inv := by
+  simp [extensionLift, extensionHom, extensionHomApp, extensionIso, hd]
+
+lemma extensionLift_app_new (d : Objects P) :
+    (extensionLift P hmax X a i hi).app d.val =
+      i d ≫ (extensionObjIsoNew P hmax F c d).inv := by
+  simp [extensionLift, extensionHom, extensionHomApp, extensionIso, d.property]
+
+end LiftDesc
+
+section Desc
+variable {F c} (Y : D ⥤ M) (r : F ⟶ P.ι ⋙ Y)
+  (p : ∀ d : Objects P, (c d).pt ⟶ Y.obj d.val)
+  (hp : ∀ (d : Objects P) (j : LatchingCategory d.val),
+    (c d).ι.app j ≫ p d = r.app ((latchingToOld P hmax d).obj j) ≫ Y.map j.obj.hom)
+
+/-- Descend compatible old and new maps to a map out of the extension. -/
+noncomputable def extensionDesc : extension P hmax F c ⟶ Y :=
+  extensionHom P hmax r p hp ≫ (extensionIso P hmax Y).hom
+
+lemma extensionDesc_app_old {d : D} (hd : P d) :
+    (extensionDesc P hmax Y r p hp).app d =
+      (extensionObjIsoOld P hmax F c hd).hom ≫ r.app ⟨d, hd⟩ := by
+  simp [extensionDesc, extensionHom, extensionHomApp, extensionIso, hd]
+
+lemma extensionDesc_app_new (d : Objects P) :
+    (extensionDesc P hmax Y r p hp).app d.val =
+      (extensionObjIsoNew P hmax F c d).hom ≫ p d := by
+  simp [extensionDesc, extensionHom, extensionHomApp, extensionIso, d.property]
+
+end Desc
 
 end ABCCofibrations.ReedyLayer

@@ -435,6 +435,7 @@ variable (D : Type w) [SmallCategory D] [Finite D] [∀ x y : D, Finite (x ⟶ y
   (M : Type u₂) [Category.{v₂} M] [CategoryWithCofibrations M]
   [CategoryWithWeakEquivalences M] [HasInitial M] [ABCPrecofibrationCategory M]
 
+omit [Finite D] [∀ x y : D, Finite (x ⟶ y)] [IsDirect D] in
 instance : (weakEquivalences (ReedyDiagram D M)).HasTwoOutOfThreeProperty where
   comp_mem f g hf hg e := by
     have := hf e

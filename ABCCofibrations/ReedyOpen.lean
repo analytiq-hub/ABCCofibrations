@@ -26,19 +26,26 @@ namespace ABCCofibrations
 
 variable {D : Type u₁} [Category.{v₁} D]
 
+/-- A strict degree function restricts to any full subcategory. -/
+lemma degreeCondition_fullSubcategory (P : ObjectProperty D) (deg : D → ℕ)
+    (hdeg : ∀ {a b : D} (f : a ⟶ b), deg a < deg b ∨ ∃ h : a = b, f = eqToHom h) :
+    ∀ {a b : P.FullSubcategory} (f : a ⟶ b), deg a.obj < deg b.obj ∨
+      ∃ h : a = b, f = eqToHom h := by
+  intro a b f
+  rcases hdeg f.hom with h | ⟨h, hf⟩
+  · exact Or.inl h
+  · obtain ⟨a, ha⟩ := a
+    obtain ⟨b, hb⟩ := b
+    dsimp at h
+    subst h
+    exact Or.inr ⟨rfl, InducedCategory.hom_ext (by simpa using hf)⟩
+
 /-- A full subcategory of a direct category is direct. -/
 instance isDirect_fullSubcategory (P : ObjectProperty D) [IsDirect D] :
     IsDirect P.FullSubcategory where
   exists_deg := by
     obtain ⟨deg, hdeg⟩ := IsDirect.exists_deg (D := D)
-    refine ⟨fun e ↦ deg e.obj, fun {a b} f ↦ ?_⟩
-    rcases hdeg f.hom with h | ⟨h, hf⟩
-    · exact Or.inl h
-    · obtain ⟨a, ha⟩ := a
-      obtain ⟨b, hb⟩ := b
-      dsimp at h
-      subst h
-      exact Or.inr ⟨rfl, InducedCategory.hom_ext (by simpa using hf)⟩
+    exact ⟨fun e ↦ deg e.obj, degreeCondition_fullSubcategory P deg hdeg⟩
 
 /-- The objectwise form of an open full embedding: membership is closed
 under taking sources of arrows. -/

@@ -145,5 +145,17 @@ bounded-degree truncation. Parts (a) and (b) use CF1–CF4 plus CF6(1), or
 their duals; (c) additionally uses CF6(2). Parts (b) and (c) retain the
 finite-hom assumption of the finite map theorems. CF5 and F5 are not used.
 This does not supply the full infinite relative-colimit or Kan-extension
-theorems. The outstanding construction is a simultaneous attachment of
-an arbitrary, potentially infinite degree layer using CF5 coproducts.
+theorems. The arbitrary-layer construction is now implemented separately; see below.
+
+
+## Arbitrary small diagrams
+
+The finite restrictions above describe the earlier CF1–CF4 results and
+remain appropriate for those APIs. The new
+[arbitrary-layer note](reedy-arbitrary-layers.md) records the full
+9.3.5(1)–(2)(a–c) and 9.4.2(1)–(2)(a–c), using CF5/CF6 and their duals.
+`ReedySmallKan.lean` and `ReedySmallRightKan.lean` impose no finite-object
+or finite-hom assumptions. Their target indexing category is arbitrary
+small. The relative filtration now proves 9.4.1(a),(c), and the same boundary
+comparison gives 9.4.3(a),(c), on both sides. Their map statement (b)
+still needs the relative sequential comparison described in that note.

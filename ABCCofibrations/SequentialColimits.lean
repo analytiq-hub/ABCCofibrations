@@ -282,6 +282,45 @@ end Colimit
 
 end ReedyStep
 
+/-- The relative comparison from the first pushout to the colimit is a
+cofibration for a Reedy cofibration of sequences. The pushout may be any
+representative, rather than the chosen categorical pushout. -/
+theorem cofibration_comparison_colimit_of_reedy (h1 : SequentialCofibrationAxiom C)
+    {F G : ℕ ⥤ C} (τ : F ⟶ G)
+    (hF0 : IsCofibrant (F.obj 0)) (hF : ∀ n, Cofibration (F.map (succHom n)))
+    (hτ : ∀ n, Cofibration (τ.app n))
+    (hk : ∀ n, ∃ (P : C) (l : G.obj n ⟶ P) (r : F.obj (n + 1) ⟶ P) (k : P ⟶ G.obj (n + 1)),
+      IsPushout (τ.app n) (F.map (succHom n)) l r ∧ l ≫ k = G.map (succHom n) ∧
+        r ≫ k = τ.app (n + 1) ∧ Cofibration k)
+    [HasColimit F] [HasColimit G] {P : C} {l : G.obj 0 ⟶ P} {r : colimit F ⟶ P}
+    (hP : IsPushout (τ.app 0) (colimit.ι F 0) l r) (c : P ⟶ colimit G)
+    (hl : l ≫ c = colimit.ι G 0) (hr : r ≫ c = colimMap τ) : Cofibration c := by
+  have : ∀ n, IsCofibrant (F.obj n) := isCofibrant_obj_of_sequence F hF0 hF
+  have : IsCofibrant (colimit F) := isCofibrant_colimit_of_sequence h1 F hF0 hF
+  have : ∀ n, Cofibration (τ.app n) := hτ
+  have hs (n : ℕ) : Cofibration ((ReedyStep.seq τ).map (succHom n)) := by
+    obtain ⟨Q, l, r, k, hQ, hl, hr, hc⟩ := hk n
+    rw [ReedyStep.seq_map_succ]
+    exact ReedyStep.map_cofibration τ n hQ k hl hr
+  have h0 : IsCofibrant ((ReedyStep.seq τ).obj 0) := ReedyStep.isCofibrant_obj τ 0
+  have := h1.hasColimit (ReedyStep.seq τ) h0 hs
+  have : Cofibration (ReedyStep.ι' τ 0) := h1.cofibration (ReedyStep.seq τ) h0 hs
+  have := isCofibrant_colimit_of_sequence h1 (ReedyStep.seq τ) h0 hs
+  have := cofibration_of_isIso (inv (ReedyStep.φ τ))
+  let he : P ≅ ReedyStep.obj τ 0 := hP.isoPushout
+  have hPC : IsCofibrant P := by
+    have := cofibration_of_isPushout hP
+    exact cofibrant_target r
+  have := cofibration_of_isIso he.hom
+  rw [show c = he.hom ≫ ReedyStep.ι' τ 0 ≫ inv (ReedyStep.φ τ) by
+    apply hP.hom_ext
+    · rw [hl, ← Category.assoc, show l ≫ he.hom = ReedyStep.inl τ 0 from hP.inl_isoPushout_hom]
+      rw [← ReedyStep.ι_φ_assoc, IsIso.hom_inv_id, Category.comp_id]
+    · rw [hr, ← Category.assoc, show r ≫ he.hom = ReedyStep.inr τ 0 from hP.inr_isoPushout_hom]
+      rw [← Category.assoc, ← ReedyStep.colimMap_φ, Category.assoc,
+        IsIso.hom_inv_id, Category.comp_id]]
+  infer_instance
+
 /-- Sequential colimits preserve Reedy cofibrations, using CF6(1). -/
 theorem cofibration_colimMap_of_reedy (h1 : SequentialCofibrationAxiom C)
     {F G : ℕ ⥤ C} (τ : F ⟶ G)

@@ -146,7 +146,7 @@ lemma colimit_pre_naturality [HasColimit X] [HasColimit Y] :
 include hd in
 /-- One step of Theorem 9.3.5(1)(b): the gluing lemma at an object `d` with no
 non-identity maps out of it. -/
-lemma step_cofibration (hX : IsReedyCofibrant X) (hY : IsReedyCofibrant Y)
+lemma step_cofibration_and_relative (hX : IsReedyCofibrant X) (hY : IsReedyCofibrant Y)
     (hc : ∃ (P : M) (l : X.obj d ⟶ P) (r : latchingObj Y d ⟶ P) (c : P ⟶ Y.obj d),
       IsPushout (latchingMap X d) (latchingObjMap f d) l r ∧ l ≫ c = f.app d ∧
         r ≫ c = latchingMap Y d ∧ Cofibration c)
@@ -154,7 +154,10 @@ lemma step_cofibration (hX : IsReedyCofibrant X) (hY : IsReedyCofibrant Y)
     (hY' : IsCofibrant (colimit ((complementProp d).ι ⋙ Y)))
     (hL : Cofibration (latchingObjMap f d))
     (h' : Cofibration (colimMap (Functor.whiskerLeft (complementProp d).ι f))) :
-    ∃ (_ : HasColimit X) (_ : HasColimit Y), Cofibration (colimMap f) := by
+    ∃ (_ : HasColimit X) (_ : HasColimit Y)
+      (_ : HasPushout (colimit.pre X (complementProp d).ι)
+        (colimMap (Functor.whiskerLeft (complementProp d).ι f))),
+      Cofibration (colimMap f) ∧ Cofibration (relativeColimMap (complementProp d).ι f) := by
   obtain ⟨hLX, hiX⟩ := hX d
   obtain ⟨hLY, hiY⟩ := hY d
   obtain ⟨hcX, hsqX, -, hpX⟩ := colimit_isPushout_latching X d hd hLX hX' hiX
@@ -176,8 +179,24 @@ lemma step_cofibration (hX : IsReedyCofibrant X) (hY : IsReedyCofibrant Y)
     rw [show pushout.desc (f.app d) (latchingMap Y d) h₁₂ = hP.isoPushout.inv ≫ c by
       apply pushout.hom_ext <;> simp [hl, hr]]
     infer_instance
+  refine ⟨inferInstance, ?_⟩
   exact (gluing_cofibration hsqX hsqY h₁₂ (latchingToComplementColimit_naturality f)
-    (by simp) (colimit_pre_naturality f)).2.1
+    (by simp) (colimit_pre_naturality f)).2
+
+include hd in
+/-- Colimits preserve Reedy cofibrations at a maximal-object step. -/
+lemma step_cofibration (hX : IsReedyCofibrant X) (hY : IsReedyCofibrant Y)
+    (hc : ∃ (P : M) (l : X.obj d ⟶ P) (r : latchingObj Y d ⟶ P) (c : P ⟶ Y.obj d),
+      IsPushout (latchingMap X d) (latchingObjMap f d) l r ∧ l ≫ c = f.app d ∧
+        r ≫ c = latchingMap Y d ∧ Cofibration c)
+    (hX' : IsCofibrant (colimit ((complementProp d).ι ⋙ X)))
+    (hY' : IsCofibrant (colimit ((complementProp d).ι ⋙ Y)))
+    (hL : Cofibration (latchingObjMap f d))
+    (h' : Cofibration (colimMap (Functor.whiskerLeft (complementProp d).ι f))) :
+    ∃ (_ : HasColimit X) (_ : HasColimit Y), Cofibration (colimMap f) := by
+  obtain ⟨hXc, hYc, _, hc, _⟩ :=
+    step_cofibration_and_relative hd f hX hY hc hX' hY' hL h'
+  exact ⟨hXc, hYc, hc⟩
 
 include hd in
 /-- One step of Theorem 9.3.5(1)(c). -/

@@ -129,7 +129,8 @@ lemma isReedyCofibrant_latchingToComplement (Y : Complement d ⥤ M)
     [∀ e, HasColimit (latchingDiagram Y e)] (hY : IsReedyCofibrant Y) :
     ∃ (_ : ∀ j, HasColimit (latchingDiagram (latchingToComplement d ⋙ Y) j)),
       IsReedyCofibrant (latchingToComplement d ⋙ Y) := by
-  have hC (j : LatchingCategory d) : HasColimit (latchingDiagram (latchingToComplement d ⋙ Y) j) := by
+  have hC (j : LatchingCategory d) :
+      HasColimit (latchingDiagram (latchingToComplement d ⋙ Y) j) := by
     have := latchLatchC_final deg hdeg j
     exact Functor.Final.comp_hasColimit (latchLatchC deg hdeg j)
       (G := latchingDiagram Y ((latchingToComplement d).obj j))
@@ -277,7 +278,8 @@ lemma factorization_step {X Y : D ⥤ M} [∀ e, HasColimit (latchingDiagram X e
     by_cases he : e = d
     · subst e
       rw [NatTrans.comp_app, extendLift_app_self, extendDesc_app_self]
-      exact (Category.assoc _ _ _).trans <| (Category.assoc (pushout.inl _ φ) h _).trans ((congrArg (pushout.inl _ φ ≫ ·)
+      exact (Category.assoc _ _ _).trans <|
+        (Category.assoc (pushout.inl _ φ) h _).trans ((congrArg (pushout.inl _ φ ≫ ·)
         ((congrArg (h ≫ ·) (Iso.inv_hom_id_assoc (extendObjIsoSelf Y'' c) rd)).trans hhr)).trans
           (pushout.inl_desc _ _ _))
     · rw [NatTrans.comp_app, extendLift_app_ne _ _ _ _ _ _ he, extendDesc_app_ne _ _ _ _ _ _ he]

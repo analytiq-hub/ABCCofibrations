@@ -127,14 +127,11 @@ theorem isCofibrant_obj (n : ℕ) : IsCofibrant (obj τ n) := by
   let := cofibration_of_isPushout (isPushout τ n)
   exact cofibrant_target (inr τ n)
 
-/-- Pushout pasting: each transition `H_n → H_{n+1}` is a cobase change of the
-comparison map `G_n ⊔_{F_n} F_{n+1} → G_{n+1}`, so it is a cofibration, and a
-weak equivalence when the comparison map is. -/
-theorem map_trivial (n : ℕ) {P : C} {l : G.obj n ⟶ P} {r : F.obj (n + 1) ⟶ P}
+/-- Each transition of the pushout sequence is a cobase change of the relative comparison. -/
+theorem isPushout_map (n : ℕ) {P : C} {l : G.obj n ⟶ P} {r : F.obj (n + 1) ⟶ P}
     (hP : IsPushout (τ.app n) (F.map (succHom n)) l r) (k : P ⟶ G.obj (n + 1))
-    (hl : l ≫ k = G.map (succHom n)) (hr : r ≫ k = τ.app (n + 1))
-    [Cofibration k] [WeakEquivalence k] :
-    Cofibration (map τ n) ∧ WeakEquivalence (map τ n) := by
+    (hl : l ≫ k = G.map (succHom n)) (hr : r ≫ k = τ.app (n + 1)) :
+    ∃ q : P ⟶ obj τ n, IsPushout k q (inl τ (n + 1)) (map τ n) := by
   have s : IsPushout (τ.app n) (F.map (succHom n) ≫ colimit.ι F (n + 1)) (inl τ n)
       (inr τ n) := by
     rw [colimit.w]
@@ -152,10 +149,32 @@ theorem map_trivial (n : ℕ) {P : C} {l : G.obj n ⟶ P} {r : F.obj (n + 1) ⟶
     · rw [reassoc_of% hl, reassoc_of% hq₁, inl_map]
     · rw [reassoc_of% hr, reassoc_of% hq₂, inr_map, condition]
   have sq₃ : IsPushout k q (inl τ (n + 1)) (map τ n) := IsPushout.of_left outer comm sq₂
-  let := cofibration_of_isPushout hP
-  let := cofibrant_target r
-  let := isCofibrant_obj τ n
-  exact ⟨cofibration_of_isPushout sq₃, weakEquivalence_of_isPushout sq₃⟩
+  exact ⟨q, sq₃⟩
+
+/-- The pushout sequence has cofibration transitions when the relative comparisons do. -/
+theorem map_cofibration (n : ℕ) {P : C} {l : G.obj n ⟶ P} {r : F.obj (n + 1) ⟶ P}
+    (hP : IsPushout (τ.app n) (F.map (succHom n)) l r) (k : P ⟶ G.obj (n + 1))
+    (hl : l ≫ k = G.map (succHom n)) (hr : r ≫ k = τ.app (n + 1))
+    [Cofibration k] : Cofibration (map τ n) := by
+  obtain ⟨q, sq⟩ := isPushout_map τ n hP k hl hr
+  have := cofibration_of_isPushout hP
+  have := cofibrant_target r
+  have := isCofibrant_obj τ n
+  exact cofibration_of_isPushout sq
+
+/-- Pushout pasting: each transition `H_n → H_{n+1}` is a cobase change of the
+comparison map `G_n ⊔_{F_n} F_{n+1} → G_{n+1}`, so it is a cofibration, and a
+weak equivalence when the comparison map is. -/
+theorem map_trivial (n : ℕ) {P : C} {l : G.obj n ⟶ P} {r : F.obj (n + 1) ⟶ P}
+    (hP : IsPushout (τ.app n) (F.map (succHom n)) l r) (k : P ⟶ G.obj (n + 1))
+    (hl : l ≫ k = G.map (succHom n)) (hr : r ≫ k = τ.app (n + 1))
+    [Cofibration k] [WeakEquivalence k] :
+    Cofibration (map τ n) ∧ WeakEquivalence (map τ n) := by
+  obtain ⟨q, sq⟩ := isPushout_map τ n hP k hl hr
+  have := cofibration_of_isPushout hP
+  have := cofibrant_target r
+  have := isCofibrant_obj τ n
+  exact ⟨cofibration_of_isPushout sq, weakEquivalence_of_isPushout sq⟩
 
 section Colimit
 
@@ -262,6 +281,33 @@ instance : IsIso (φ τ) := ⟨ψ τ, φ_ψ τ, ψ_φ τ⟩
 end Colimit
 
 end ReedyStep
+
+/-- Sequential colimits preserve Reedy cofibrations, using CF6(1). -/
+theorem cofibration_colimMap_of_reedy (h1 : SequentialCofibrationAxiom C)
+    {F G : ℕ ⥤ C} (τ : F ⟶ G)
+    (hF0 : IsCofibrant (F.obj 0)) (hF : ∀ n, Cofibration (F.map (succHom n)))
+    (hτ : ∀ n, Cofibration (τ.app n))
+    (hk : ∀ n, ∃ (P : C) (l : G.obj n ⟶ P) (r : F.obj (n + 1) ⟶ P) (k : P ⟶ G.obj (n + 1)),
+      IsPushout (τ.app n) (F.map (succHom n)) l r ∧ l ≫ k = G.map (succHom n) ∧
+        r ≫ k = τ.app (n + 1) ∧ Cofibration k)
+    [HasColimit F] [HasColimit G] : Cofibration (colimMap τ) := by
+  have hFn : ∀ n, IsCofibrant (F.obj n) := isCofibrant_obj_of_sequence F hF0 hF
+  have hA : IsCofibrant (colimit F) := isCofibrant_colimit_of_sequence h1 F hF0 hF
+  have hτ' : ∀ n, Cofibration (τ.app n) := hτ
+  have hs (n : ℕ) : Cofibration ((ReedyStep.seq τ).map (succHom n)) := by
+    obtain ⟨P, l, r, k, hP, hl, hr, hc⟩ := hk n
+    rw [ReedyStep.seq_map_succ]
+    exact ReedyStep.map_cofibration τ n hP k hl hr
+  have h0 : IsCofibrant ((ReedyStep.seq τ).obj 0) := ReedyStep.isCofibrant_obj τ 0
+  have := h1.hasColimit (ReedyStep.seq τ) h0 hs
+  have : Cofibration (ReedyStep.ι' τ 0) := h1.cofibration (ReedyStep.seq τ) h0 hs
+  have := isCofibrant_colimit_of_sequence h1 (ReedyStep.seq τ) h0 hs
+  have := cofibration_of_isPushout (ReedyStep.isPushout τ 0)
+  have := cofibration_of_isIso (inv (ReedyStep.φ τ))
+  rw [show colimMap τ = (ReedyStep.inr τ 0 ≫ ReedyStep.ι' τ 0) ≫
+      inv (ReedyStep.φ τ) by
+    rw [← ReedyStep.colimMap_φ, Category.assoc, IsIso.hom_inv_id, Category.comp_id]]
+  infer_instance
 
 /-- The Reedy step of Lemma 1.6.4(1): if every component of `τ` is a
 cofibration, `τ_0` is trivial, and every comparison map

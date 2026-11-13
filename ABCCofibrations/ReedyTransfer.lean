@@ -43,26 +43,27 @@ lemma transfer_desc (K : J ⥤ M) [HasColimit K] [HasColimit (F ⋙ K)] (c : Coc
   rw [← colimit.pre_desc]
   infer_instance
 
-omit [CategoryWithCofibrations M] [CategoryWithWeakEquivalences M] [HasInitial M]
-  [ABCPrecofibrationCategory M] in
-/-- Relative latching comparisons transfer along a final functor. -/
-lemma transfer_comparison {K K' : J ⥤ M} [HasColimit K] [HasColimit K'] [HasColimit (F ⋙ K)]
-    [HasColimit (F ⋙ K')] (α : K ⟶ K') (c : Cocone K) (c' : Cocone K') {P : M}
-    {l : c.pt ⟶ P} {r : colimit K' ⟶ P} {k : P ⟶ c'.pt}
-    (hP : IsPushout (colimit.desc K c) (colimMap α) l r) (hr : r ≫ k = colimit.desc K' c') :
-    ∃ r' : colimit (F ⋙ K') ⟶ P, IsPushout (colimit.desc (F ⋙ K) (c.whisker F))
-      (colimMap (Functor.whiskerLeft F α)) l r' ∧
-        r' ≫ k = colimit.desc (F ⋙ K') (c'.whisker F) := by
-  have : IsIso (colimit.pre K F) := inferInstance
-  have : IsIso (colimit.pre K' F) := inferInstance
-  refine ⟨colimit.pre K' F ≫ r, ?_, by rw [Category.assoc, hr, colimit.pre_desc]⟩
-  refine hP.of_iso (asIso (colimit.pre K F)).symm (Iso.refl _) (asIso (colimit.pre K' F)).symm
-    (Iso.refl _) ?_ ?_ (by simp) (by simp)
-  · simp [← colimit.pre_desc]
-  · simp only [Iso.symm_hom, asIso_inv, IsIso.eq_inv_comp]
-    apply colimit.hom_ext
-    intro j
-    simp
+/-- A cofibration of colimit maps can be detected after restriction along a final functor. -/
+lemma cofibration_colimMap_of_final {K K' : J ⥤ M} [HasColimit K] [HasColimit K']
+    [HasColimit (F ⋙ K)] [HasColimit (F ⋙ K')] (α : K ⟶ K')
+    (hK : IsCofibrant (colimit K))
+    (hα : Cofibration (colimMap (Functor.whiskerLeft F α))) : Cofibration (colimMap α) := by
+  have := cofibration_of_isIso (inv (colimit.pre K F))
+  have := cofibrant_target (inv (colimit.pre K F))
+  have := cofibrant_target (colimMap (Functor.whiskerLeft F α))
+  have := cofibration_of_isIso (colimit.pre K' F)
+  rw [colimMap_eq_inv_pre_comp F α]
+  infer_instance
+
+/-- A weak equivalence of colimit maps can be detected after final restriction. -/
+lemma weakEquivalence_colimMap_of_final {K K' : J ⥤ M} [HasColimit K] [HasColimit K']
+    [HasColimit (F ⋙ K)] [HasColimit (F ⋙ K')] (α : K ⟶ K')
+    (hα : WeakEquivalence (colimMap (Functor.whiskerLeft F α))) :
+    WeakEquivalence (colimMap α) := by
+  have := weakEquivalence_of_isIso (inv (colimit.pre K F))
+  have := weakEquivalence_of_isIso (colimit.pre K' F)
+  rw [colimMap_eq_inv_pre_comp F α]
+  infer_instance
 
 /-- The restriction of a Reedy cofibration to `D ∖ {d}` is a Reedy cofibration,
 when no non-identity map leaves `d`. -/

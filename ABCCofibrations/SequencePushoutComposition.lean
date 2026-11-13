@@ -266,37 +266,6 @@ variable [CategoryWithCofibrations C] [CategoryWithWeakEquivalences C] [HasIniti
 
 open RelativeSequence
 
-/-- A cofibration-only form of `ReedyStep.map_trivial`: each transition of the
-Reedy sequence is a cobase change of the relative latching map. -/
-theorem ReedyStep.map_cofibration {F G : ℕ ⥤ C} (τ : F ⟶ G) [HasColimit F]
-    [∀ n, IsCofibrant (F.obj n)] [IsCofibrant (colimit F)] [∀ n, Cofibration (τ.app n)]
-    (n : ℕ) {P : C} {l : G.obj n ⟶ P} {r : F.obj (n + 1) ⟶ P}
-    (hP : IsPushout (τ.app n) (F.map (succHom n)) l r) (k : P ⟶ G.obj (n + 1))
-    (hl : l ≫ k = G.map (succHom n)) (hr : r ≫ k = τ.app (n + 1)) [Cofibration k] :
-    Cofibration (ReedyStep.map τ n) := by
-  have s : IsPushout (τ.app n) (F.map (succHom n) ≫ colimit.ι F (n + 1)) (ReedyStep.inl τ n)
-      (ReedyStep.inr τ n) := by
-    rw [colimit.w]
-    exact ReedyStep.isPushout τ n
-  have sq₂ := IsPushout.of_top' s hP
-  set q := hP.desc (ReedyStep.inl τ n) (colimit.ι F (n + 1) ≫ ReedyStep.inr τ n) _
-  have hq₁ : l ≫ q = ReedyStep.inl τ n := hP.inl_desc _ _ _
-  have hq₂ : r ≫ q = colimit.ι F (n + 1) ≫ ReedyStep.inr τ n := hP.inr_desc _ _ _
-  have outer : IsPushout (r ≫ k) (colimit.ι F (n + 1)) (ReedyStep.inl τ (n + 1))
-      (ReedyStep.inr τ n ≫ ReedyStep.map τ n) := by
-    rw [hr, ReedyStep.inr_map]
-    exact ReedyStep.isPushout τ (n + 1)
-  have comm : k ≫ ReedyStep.inl τ (n + 1) = q ≫ ReedyStep.map τ n := by
-    apply hP.hom_ext
-    · rw [reassoc_of% hl, reassoc_of% hq₁, ReedyStep.inl_map]
-    · rw [reassoc_of% hr, reassoc_of% hq₂, ReedyStep.inr_map, ReedyStep.condition]
-  have sq₃ : IsPushout k q (ReedyStep.inl τ (n + 1)) (ReedyStep.map τ n) :=
-    IsPushout.of_left outer comm sq₂
-  have := cofibration_of_isPushout hP
-  have := cofibrant_target r
-  have := ReedyStep.isCofibrant_obj τ n
-  exact cofibration_of_isPushout sq₃
-
 variable {F G : ℕ ⥤ C} (τ : F ⟶ G) (hF0 : IsCofibrant (F.obj 0)) (hG0 : IsCofibrant (G.obj 0))
   (hF : ∀ n, Cofibration (F.map (succHom n)))
 

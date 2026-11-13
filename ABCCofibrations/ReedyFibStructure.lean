@@ -41,7 +41,8 @@ instance : CategoryWithWeakEquivalences (ReedyFibDiagram D M) where
   weakEquivalences := fun _ _ f ↦ ∀ e, WeakEquivalence (NatTrans.app f e)
 
 instance : CategoryWithFibrations (ReedyFibDiagram D M) where
-  fibrations := fun X Y f ↦ ∃ (_ : ∀ e, HasColimit (latchingDiagram (Functor.op (C := D) (D := M) X) e))
+  fibrations := fun X Y f ↦
+    ∃ (_ : ∀ e, HasColimit (latchingDiagram (Functor.op (C := D) (D := M) X) e))
     (_ : ∀ e, HasColimit (latchingDiagram (Functor.op (C := D) (D := M) Y) e)), IsReedyFibration f
 
 variable [Finite D] [∀ x y : D, Finite (x ⟶ y)] [IsInverse D] [ABCPrefibrationCategory M]

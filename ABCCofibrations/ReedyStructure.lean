@@ -182,6 +182,8 @@ instance hasColimit_initialLatching (d : D) :
     HasColimit (latchingDiagram (⊥_ (ReedyDiagram D M) : D ⥤ M) d) :=
   ⟨⟨⟨_, isColimitInitialLatching d⟩⟩⟩
 
+omit [CategoryWithCofibrations M] [CategoryWithWeakEquivalences M]
+  [ABCPrecofibrationCategory M] in
 lemma isInitial_latchingObj_initial (d : D) :
     Nonempty (IsInitial (latchingObj (⊥_ (ReedyDiagram D M) : D ⥤ M) d)) :=
   ⟨IsInitial.ofIso initialIsInitial
@@ -208,6 +210,7 @@ lemma isReedyCofibrant_initial : IsReedyCofibrant (⊥_ (ReedyDiagram D M) : D �
     ⟨(isInitialInitialObj d).to _, hL.hom_ext _ _, (isInitialInitialObj d).hom_ext _ _⟩
   exact cofibration_of_isIso _
 
+omit [CategoryWithWeakEquivalences M] [ABCPrecofibrationCategory M] in
 /-- A cofibrant object of the Reedy structure is a Reedy cofibrant diagram. -/
 lemma isReedyCofibrant_of_isCofibrant {X : ReedyDiagram D M} (hX : IsCofibrant X) :
     ∃ (_ : ∀ e, HasColimit (latchingDiagram (D := D) (M := M) X e)), IsReedyCofibrant X := by
@@ -238,6 +241,7 @@ variable {M : Type u₂} [Category.{v₂} M] [CategoryWithCofibrations M]
 
 open ABCPrecofibrationCategory
 
+omit [Finite D] [∀ x y : D, Finite (x ⟶ y)] [IsDirect D] in
 lemma IsReedyCofibrant.isCofibrant_obj {X : D ⥤ M} [∀ e, HasColimit (latchingDiagram X e)]
     (hX : IsReedyCofibrant X) (e : D) : IsCofibrant (X.obj e) := by
   obtain ⟨_, _⟩ := hX e

@@ -6,15 +6,17 @@ Authors: ABCCofibrations contributors
 module
 
 public import ABCCofibrations.ReedyPointwise
-public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import ABCCofibrations.KanMapComparison
 
 /-!
 # Relative colimits of Reedy cofibrant diagrams (Theorem 9.4.2(1))
 
 For a functor `u : D₁ ⥤ D₂` with `D₁` finite direct, the relative colimit
 `colim^u X` is computed pointwise by colimits over the comma categories
-`(u ↓ d₂)` (Lemma 8.2.1). These comma categories are finite and direct, and the
-restriction of a Reedy cofibrant diagram to them is Reedy cofibrant (their
+`(u ↓ d₂)` (Lemma 8.2.1). Assuming also finite hom-sets in `D₂`, these comma
+categories have finitely many objects; finite hom-sets in `D₁` give finite
+hom-sets in them. They are direct,
+and the restriction of a Reedy cofibrant diagram to them is Reedy cofibrant (their
 latching categories are those of `D₁`), so Theorem 9.3.5 applies.
 -/
 
@@ -162,12 +164,14 @@ variable {D₁ D₂ : Type w} [SmallCategory D₁] [SmallCategory D₂] [Finite 
   {M : Type u₂} [Category.{v₂} M] [CategoryWithCofibrations M]
   [CategoryWithWeakEquivalences M] [HasInitial M] [ABCPrecofibrationCategory M]
 
+omit [∀ x y : D₁, Finite (x ⟶ y)] in
 /-- **Theorem 9.4.2(1)(a)**, for finite direct `D₁`. For a Reedy cofibrant
 `X : D₁ ⥤ M`, the relative colimit `colim^u X` exists (pointwise) and is
 pointwise cofibrant. -/
 theorem reedyCofibrant_leftKanExtension (X : D₁ ⥤ M) [∀ e, HasColimit (latchingDiagram X e)]
     (hX : IsReedyCofibrant X) :
-    ∃ (_ : u.HasPointwiseLeftKanExtension X), ∀ d₂, IsCofibrant ((u.leftKanExtension X).obj d₂) := by
+    ∃ (_ : u.HasPointwiseLeftKanExtension X),
+      ∀ d₂, IsCofibrant ((u.leftKanExtension X).obj d₂) := by
   obtain ⟨deg, hdeg⟩ := IsDirect.exists_deg (D := D₁)
   have key (d₂ : D₂) : ∃ (_ : HasColimit (CostructuredArrow.proj u d₂ ⋙ X)),
       IsCofibrant (colimit (CostructuredArrow.proj u d₂ ⋙ X)) := by
@@ -179,8 +183,9 @@ theorem reedyCofibrant_leftKanExtension (X : D₁ ⥤ M) [∀ e, HasColimit (lat
   have := cofibration_of_isIso (u.leftKanExtensionObjIsoColimit X d₂).inv
   exact cofibrant_target (u.leftKanExtensionObjIsoColimit X d₂).inv
 
-/-- **Theorem 9.4.2(1)(b)**, for finite direct `D₁`. For a Reedy cofibration
-`f`, every component `(colim^u f)_{d₂} = colim_{(u ↓ d₂)} f` is a cofibration. -/
+/-- **Theorem 9.4.2(1)(b)** at the comma-colimit level, under this section's
+finite-source and finite-hom assumptions. See `reedyCofibration_pointwiseLeftKanMap`
+for the induced map between chosen Kan extensions. -/
 theorem reedyCofibration_leftKanExtension {X Y : D₁ ⥤ M} [∀ e, HasColimit (latchingDiagram X e)]
     [∀ e, HasColimit (latchingDiagram Y e)] {f : X ⟶ Y} (hf : IsReedyCofibration f) (d₂ : D₂) :
     ∃ (_ : HasColimit (CostructuredArrow.proj u d₂ ⋙ X))
@@ -191,9 +196,9 @@ theorem reedyCofibration_leftKanExtension {X Y : D₁ ⥤ M} [∀ e, HasColimit 
   have : IsDirect (CostructuredArrow u d₂) := ⟨⟨_, hdeg_comma u deg hdeg⟩⟩
   exact reedyCofibration_colimMap h
 
-/-- **Theorem 9.4.2(1)(c)**, for finite direct `D₁`. For a pointwise weak
-equivalence `f` of Reedy cofibrant diagrams, every component
-`(colim^u f)_{d₂} = colim_{(u ↓ d₂)} f` is a weak equivalence. -/
+/-- **Theorem 9.4.2(1)(c)** at the comma-colimit level, under this section's
+finite-source and finite-hom assumptions. See
+`reedyCofibrant_pointwiseLeftKanMap_weakEquivalence` for the chosen Kan extensions. -/
 theorem reedyCofibrant_leftKanExtension_weakEquivalence {X Y : D₁ ⥤ M}
     [∀ e, HasColimit (latchingDiagram X e)] [∀ e, HasColimit (latchingDiagram Y e)]
     (hX : IsReedyCofibrant X) (hY : IsReedyCofibrant Y) (f : X ⟶ Y)
@@ -206,6 +211,43 @@ theorem reedyCofibrant_leftKanExtension_weakEquivalence {X Y : D₁ ⥤ M}
   obtain ⟨_, hY'⟩ := isReedyCofibrant_comma u deg hdeg Y (d₂ := d₂) hY
   have : IsDirect (CostructuredArrow u d₂) := ⟨⟨_, hdeg_comma u deg hdeg⟩⟩
   exact reedyCofibrant_colimMap_weakEquivalence hX' hY' _ (fun j ↦ hw j.left)
+
+/-- Theorem 9.4.2(1)(b) for the morphism between the chosen pointwise left Kan
+extensions, under the finite-source and finite-hom assumptions of this section. -/
+theorem reedyCofibration_pointwiseLeftKanMap {X Y : D₁ ⥤ M}
+    [∀ e, HasColimit (latchingDiagram X e)] [∀ e, HasColimit (latchingDiagram Y e)]
+    {f : X ⟶ Y} (hf : IsReedyCofibration f) :
+    ∃ (_ : u.HasPointwiseLeftKanExtension X) (_ : u.HasPointwiseLeftKanExtension Y),
+      ∀ d₂, Cofibration ((pointwiseLeftKanMap u f).app d₂) := by
+  obtain ⟨hKX, hX⟩ := reedyCofibrant_leftKanExtension u X hf.1
+  obtain ⟨hKY, hY⟩ := reedyCofibrant_leftKanExtension u Y hf.2.1
+  refine ⟨hKX, hKY, fun d₂ ↦ ?_⟩
+  obtain ⟨_, _, hc⟩ := reedyCofibration_leftKanExtension u hf d₂
+  rw [pointwiseLeftKanMap_app]
+  have := hX d₂
+  have := hY d₂
+  have := cofibration_of_isIso (u.leftKanExtensionObjIsoColimit X d₂).hom
+  have := cofibration_of_isIso (u.leftKanExtensionObjIsoColimit Y d₂).hom
+  have := cofibrant_target (u.leftKanExtensionObjIsoColimit Y d₂).hom
+  have := cofibration_of_isIso (u.leftKanExtensionObjIsoColimit Y d₂).inv
+  infer_instance
+
+/-- Theorem 9.4.2(1)(c) for the morphism between the chosen pointwise left Kan
+extensions, under the finite-source and finite-hom assumptions of this section. -/
+theorem reedyCofibrant_pointwiseLeftKanMap_weakEquivalence {X Y : D₁ ⥤ M}
+    [∀ e, HasColimit (latchingDiagram X e)] [∀ e, HasColimit (latchingDiagram Y e)]
+    (hX : IsReedyCofibrant X) (hY : IsReedyCofibrant Y) (f : X ⟶ Y)
+    (hw : ∀ e, WeakEquivalence (f.app e)) :
+    ∃ (_ : u.HasPointwiseLeftKanExtension X) (_ : u.HasPointwiseLeftKanExtension Y),
+      ∀ d₂, WeakEquivalence ((pointwiseLeftKanMap u f).app d₂) := by
+  obtain ⟨hKX, _⟩ := reedyCofibrant_leftKanExtension u X hX
+  obtain ⟨hKY, _⟩ := reedyCofibrant_leftKanExtension u Y hY
+  refine ⟨hKX, hKY, fun d₂ ↦ ?_⟩
+  obtain ⟨_, _, hc⟩ := reedyCofibrant_leftKanExtension_weakEquivalence u hX hY f hw d₂
+  rw [pointwiseLeftKanMap_app]
+  have := weakEquivalence_of_isIso (u.leftKanExtensionObjIsoColimit X d₂).hom
+  have := weakEquivalence_of_isIso (u.leftKanExtensionObjIsoColimit Y d₂).inv
+  infer_instance
 
 end Main
 

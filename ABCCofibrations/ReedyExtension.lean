@@ -86,7 +86,8 @@ lemma extendMap_comp {e e' e'' : D} (g : e ⟶ e') (g' : e' ⟶ e'') :
     · by_cases he : e = d
       · subst e
         exact absurd (hd _ g).choose.symm he'
-      · rw [extendMap_ne_self hd F c he, extendMap_ne_ne hd F c he he', extendMap_ne_self hd F c he']
+      · rw [extendMap_ne_self hd F c he, extendMap_ne_ne hd F c he he',
+          extendMap_ne_self hd F c he']
         have := c.w (⟨Over.homMk g rfl⟩ : (⟨Over.mk (g ≫ g'), he⟩ : LatchingCategory d) ⟶
           ⟨Over.mk g', he'⟩)
         simp only [Category.assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp]

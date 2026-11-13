@@ -7,6 +7,7 @@ module
 
 public import ABCCofibrations.ReedyColimitMaps
 public import ABCCofibrations.FibrationBasic
+public import ABCCofibrations.LimitComparison
 
 /-!
 # Limits of Reedy fibrant diagrams over finite inverse categories
@@ -53,13 +54,8 @@ omit [CategoryWithFibrations M] [CategoryWithWeakEquivalences M] [HasTerminal M]
   [ABCPrefibrationCategory M] [Finite D] [∀ x y : D, Finite (x ⟶ y)] [IsInverse D] in
 lemma op_limMap' {X Y : D ⥤ M} [HasLimit X] [HasLimit Y] (f : X ⟶ Y) :
     (limMap f).op = (colimitOpIsoOpLimit Y).inv ≫ colimMap (NatTrans.op f) ≫
-      (colimitOpIsoOpLimit X).hom := by
-  rw [Iso.eq_inv_comp]
-  apply colimit.hom_ext
-  intro j
-  rw [ι_comp_colimitOpIsoOpLimit_hom_assoc, ← op_comp, limMap_π, op_comp,
-    ι_colimMap_assoc, ι_comp_colimitOpIsoOpLimit_hom]
-  rfl
+      (colimitOpIsoOpLimit X).hom :=
+  op_limMap_comparison f
 
 omit [∀ x y : D, Finite (x ⟶ y)] in
 /-- **Theorem 9.3.5(2)(a)**, for finite inverse categories. The limit of a Reedy

@@ -6,6 +6,7 @@ Authors: ABCCofibrations contributors
 module
 
 public import ABCCofibrations.ReedyColimits
+public import ABCCofibrations.ReedyOpen
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.Finset.Max
@@ -36,33 +37,20 @@ section Restriction
 variable {D : Type u₁} [Category.{v₁} D] {M : Type u₂} [Category.{v₂} M] {d : D}
   (hd : ∀ (e : D) (g : d ⟶ e), ∃ h : d = e, g = eqToHom h)
 
-/-- The latching category of `D ∖ {d}` at `e` maps to the latching category of
-`D` at `e`. -/
-def latchingRestrict (e : Complement d) : LatchingCategory e ⥤ LatchingCategory e.obj where
-  obj j := ⟨Over.mk (Y := j.obj.left.obj) j.obj.hom.hom, fun h ↦ j.property
-    (ObjectProperty.FullSubcategory.ext h)⟩
-  map g := ⟨Over.homMk g.hom.left.hom (congrArg InducedCategory.Hom.hom (Over.w g.hom))⟩
+include hd in
+/-- The complement of a maximal object is an open full subcategory. -/
+lemma complement_isOpen : IsOpenDiagramSubcategory (complementProp d) := by
+  intro a b f hb h
+  obtain ⟨h', -⟩ := hd b (eqToHom h.symm ≫ f)
+  exact hb h'.symm
 
-instance (e : Complement d) : (latchingRestrict e).Faithful where
-  map_injective {_ _} g g' h := by
-    apply InducedCategory.hom_ext
-    apply Over.OverMorphism.ext
-    apply InducedCategory.hom_ext
-    exact congrArg (fun k ↦ k.hom.left) h
-
-instance (e : Complement d) : (latchingRestrict e).Full where
-  map_surjective {_ _} g := ⟨⟨Over.homMk ⟨g.hom.left⟩ (InducedCategory.hom_ext (Over.w g.hom))⟩,
-    rfl⟩
+/-- The latching-category comparison for the complement of a maximal object. -/
+abbrev latchingRestrict (e : Complement d) : LatchingCategory e ⥤ LatchingCategory e.obj :=
+  OpenDiagramSubcategory.latchingInclusion (complementProp d) e
 
 include hd in
-lemma latchingRestrict_essSurj (e : Complement d) : (latchingRestrict e).EssSurj where
-  mem_essImage k := by
-    have hne : k.obj.left ≠ d := by
-      intro h
-      obtain ⟨h', -⟩ := hd e.obj (eqToHom h.symm ≫ k.obj.hom)
-      exact e.property h'.symm
-    exact ⟨⟨Over.mk (Y := (⟨k.obj.left, hne⟩ : Complement d)) ⟨k.obj.hom⟩,
-      fun h ↦ k.property (congrArg ObjectProperty.FullSubcategory.obj h)⟩, ⟨Iso.refl _⟩⟩
+lemma latchingRestrict_essSurj (e : Complement d) : (latchingRestrict e).EssSurj :=
+  OpenDiagramSubcategory.latchingInclusion_essSurj _ (complement_isOpen hd) e
 
 include hd in
 lemma latchingRestrict_isEquivalence (e : Complement d) : (latchingRestrict e).IsEquivalence := by
@@ -70,71 +58,36 @@ lemma latchingRestrict_isEquivalence (e : Complement d) : (latchingRestrict e).I
   exact { }
 
 include hd in
-lemma latchingRestrict_final (e : Complement d) : (latchingRestrict e).Final := by
-  have := latchingRestrict_isEquivalence hd e
-  exact Functor.final_of_isRightAdjoint _
+lemma latchingRestrict_final (e : Complement d) : (latchingRestrict e).Final :=
+  OpenDiagramSubcategory.latchingInclusion_final _ (complement_isOpen hd) e
 
 variable (X : D ⥤ M)
 
 include hd in
 lemma hasColimit_latching_restrict (e : Complement d) [HasColimit (latchingDiagram X e.obj)] :
-    HasColimit (latchingDiagram ((complementProp d).ι ⋙ X) e) := by
-  have := latchingRestrict_final hd e
-  exact Functor.Final.comp_hasColimit (latchingRestrict e) (G := latchingDiagram X e.obj)
+    HasColimit (latchingDiagram ((complementProp d).ι ⋙ X) e) :=
+  OpenDiagramSubcategory.hasColimit_latching _ (complement_isOpen hd) X e
 
 lemma latchingMap_restrict (e : Complement d) [HasColimit (latchingDiagram X e.obj)]
     [h : HasColimit (latchingRestrict e ⋙ latchingDiagram X e.obj)] :
     @latchingMap _ _ _ _ ((complementProp d).ι ⋙ X) e h =
-      colimit.pre (latchingDiagram X e.obj) (latchingRestrict e) ≫ latchingMap X e.obj := by
-  let : HasColimit (latchingDiagram ((complementProp d).ι ⋙ X) e) := h
-  apply colimit.hom_ext
-  intro j
-  have h₁ := colimit.ι_desc (latchingCocone ((complementProp d).ι ⋙ X) e) j
-  have h₂ := colimit.ι_pre_assoc (latchingDiagram X e.obj) (latchingRestrict e) j
-    (latchingMap X e.obj)
-  rw [ι_latchingMap] at h₂
-  exact h₁.trans h₂.symm
+      colimit.pre (latchingDiagram X e.obj) (latchingRestrict e) ≫ latchingMap X e.obj :=
+  OpenDiagramSubcategory.latchingMap_restrict _ X e
 
-open ABCPrecofibrationCategory in
 include hd in
-/-- The restriction of a Reedy cofibrant diagram to `D ∖ {d}` is Reedy
-cofibrant, when no non-identity map leaves `d`. -/
+/-- Restriction to the complement of a maximal object preserves Reedy cofibrancy. -/
 lemma isReedyCofibrant_restrict [CategoryWithCofibrations M] [CategoryWithWeakEquivalences M]
     [HasInitial M] [ABCPrecofibrationCategory M] [∀ e, HasColimit (latchingDiagram X e)]
     (hX : IsReedyCofibrant X) :
     ∃ (_ : ∀ e, HasColimit (latchingDiagram ((complementProp d).ι ⋙ X) e)),
-      IsReedyCofibrant ((complementProp d).ι ⋙ X) := by
-  have hC (e : Complement d) := hasColimit_latching_restrict hd X e
-  refine ⟨hC, fun e ↦ ?_⟩
-  have := latchingRestrict_final hd e
-  have hh : HasColimit (latchingRestrict e ⋙ latchingDiagram X e.obj) := hC e
-  let φ := colimit.pre (latchingDiagram X e.obj) (latchingRestrict e)
-  have hφ : IsIso φ :=
-    Functor.Final.colimit_pre_isIso (latchingRestrict e) (G := latchingDiagram X e.obj)
-  obtain ⟨hL, hi⟩ := hX e.obj
-  have : Cofibration (inv φ) := cofibration_of_isIso _
-  have hL' : IsCofibrant (colimit (latchingRestrict e ⋙ latchingDiagram X e.obj)) :=
-    cofibrant_target (inv φ)
-  refine ⟨hL', ?_⟩
-  have : Cofibration φ := cofibration_of_isIso _
-  change Cofibration (@latchingMap _ _ _ _ ((complementProp d).ι ⋙ X) e hh)
-  rw [latchingMap_restrict]
-  exact (inferInstance : Cofibration (φ ≫ latchingMap X e.obj))
+      IsReedyCofibrant ((complementProp d).ι ⋙ X) :=
+  OpenDiagramSubcategory.isReedyCofibrant _ (complement_isOpen hd) X hX
 
 end Restriction
 
 /-- `D ∖ {d}` is direct when `D` is. -/
-instance {D : Type u₁} [Category.{v₁} D] [IsDirect D] (d : D) : IsDirect (Complement d) where
-  exists_deg := by
-    obtain ⟨deg, hdeg⟩ := IsDirect.exists_deg (D := D)
-    refine ⟨fun e ↦ deg e.obj, fun {x y} f ↦ ?_⟩
-    rcases hdeg f.hom with h | ⟨h, hf⟩
-    · exact Or.inl h
-    · obtain ⟨x, hx⟩ := x
-      obtain ⟨y, hy⟩ := y
-      dsimp at h
-      subst h
-      exact Or.inr ⟨rfl, InducedCategory.hom_ext (by simpa using hf)⟩
+instance {D : Type u₁} [Category.{v₁} D] [IsDirect D] (d : D) : IsDirect (Complement d) :=
+  isDirect_fullSubcategory (complementProp d)
 
 noncomputable instance {D : Type u₁} [Category.{v₁} D] [Fintype D] [DecidableEq D] (d : D) :
     Fintype (Complement d) :=

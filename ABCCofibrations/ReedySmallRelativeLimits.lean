@@ -6,12 +6,12 @@ Authors: ABCCofibrations contributors
 module
 
 public import ABCCofibrations.ReedyRelativeLimits
-public import ABCCofibrations.ReedySmallRelativeColimits
+public import ABCCofibrations.ReedySmallRelativeMaps
 public import ABCCofibrations.FibrationCategory
 
 /-! # Relative limits for arbitrary small inverse categories
 
-Theorem 9.4.1(2)(a),(c), transported through opposites from the direct side.
+Theorem 9.4.1(2)(a–c), transported through opposites from the direct side.
 -/
 
 @[expose] public section
@@ -84,6 +84,58 @@ lemma reedyFibrant_limit_closed_isFibrant_small (P : ObjectProperty D)
   have := ABCPrecofibrationCategory.cofibration_of_isIso (colimitOpIsoOpLimit (P.ι ⋙ X)).hom
   exact (isFibrant_iff_isCofibrant_op _).2
     (ABCPrecofibrationCategory.cofibrant_target (colimitOpIsoOpLimit (P.ι ⋙ X)).hom)
+
+/-- Theorem 9.4.1(2)(b) for arbitrary small inverse categories, by duality. -/
+theorem reedyFibration_relativeLimMap_small
+    (P : ObjectProperty D) (hP : IsClosedDiagramSubcategory P) {X Y : D ⥤ M}
+    [∀ d, HasColimit (latchingDiagram X.op d)] [∀ d, HasColimit (latchingDiagram Y.op d)]
+    [HasLimit X] [HasLimit Y] [HasLimit (P.ι ⋙ X)] [HasLimit (P.ι ⋙ Y)]
+    {f : X ⟶ Y} (hf : IsReedyFibration f) :
+    ∃ (_ : HasPullback (limit.pre Y P.ι) (limMap (Functor.whiskerLeft P.ι f))),
+      Fibration (relativeLimMap P.ι f) := by
+  obtain ⟨hCX, hX⟩ := reedyFibrant_closed_op_colimit_small P hP X hf.2.1
+  obtain ⟨hCY, hY⟩ := reedyFibrant_closed_op_colimit_small P hP Y hf.1
+  obtain ⟨_, _, hfQ⟩ := OpenDiagramSubcategory.isReedyCofibration P.op hP.op hf
+  obtain ⟨hQY, hQX, hQf⟩ := reedyCofibration_colimMap_of_cofibrationCategory _ hfQ
+  have : HasColimit ((P.opEquivalence).functor ⋙ P.ι.op ⋙ X.op) := hQX
+  have : HasColimit ((P.opEquivalence).functor ⋙ P.ι.op ⋙ Y.op) := hQY
+  have hfi := cofibration_colimMap_of_final (P.opEquivalence).functor
+    (Functor.whiskerLeft P.ι.op (NatTrans.op f)) hY hQf
+  have hopen : ∀ {a : Dᵒᵖ} (e : P.FullSubcategoryᵒᵖ), (a ⟶ P.ι.op.obj e) →
+      ∃ e', P.ι.op.obj e' = a := by
+    intro a e f
+    exact ⟨op ⟨a.unop, hP f.unop e.unop.property⟩, rfl⟩
+  obtain ⟨hpo, hc⟩ := reedyCofibration_relativeColimMap_of_open_small
+    ABCCofibrationCategory.coproductCofibrationAxiom
+    ABCCofibrationCategory.sequentialCofibrationAxiom
+    P.ι.op hopen (NatTrans.op f) hf hY hX
+  obtain ⟨_, hpre⟩ := reedyCofibrant_colimit_pre_small
+    ABCCofibrationCategory.coproductCofibrationAxiom
+    ABCCofibrationCategory.sequentialCofibrationAxiom
+    P.ι.op hopen Y.op hf.1 hY
+  have : IsCofibrant (colimit (P.ι ⋙ X).op) := hX
+  have : IsCofibrant (colimit (P.ι ⋙ Y).op) := hY
+  have := reedyFibrant_limit_closed_isFibrant_small P hP X hf.2.1
+  have := reedyFibrant_limit_closed_isFibrant_small P hP Y hf.1
+  obtain ⟨_, _, hpreY⟩ := reedyFibrant_limit_closed_small P hP Y hf.1
+  have hp : HasPullback (limit.pre Y P.ι) (limMap (Functor.whiskerLeft P.ι f)) :=
+    ABCPrefibrationCategory.hasPullback _ _
+  refine ⟨hp, (cofibration_op_iff _).1 ?_⟩
+  rw [op_relativeLimMap]
+  have : HasPushout (colimit.pre Y.op P.ι.op)
+      (colimMap (NatTrans.op (Functor.whiskerLeft P.ι f))) := hpo
+  let hsq := relativeLimitOp_isPushout P.ι f
+  have := ABCPrecofibrationCategory.cofibration_of_isPushout
+    (IsPushout.of_hasPushout (colimit.pre Y.op P.ι.op)
+      (colimMap (NatTrans.op (Functor.whiskerLeft P.ι f))))
+  have := ABCPrecofibrationCategory.cofibrant_target
+    (pushout.inr (colimit.pre Y.op P.ι.op) (colimMap (NatTrans.op (Functor.whiskerLeft P.ι f))))
+  have := ABCPrecofibrationCategory.cofibration_of_isIso hsq.isoPushout.inv
+  have := ABCPrecofibrationCategory.cofibrant_target hsq.isoPushout.inv
+  have := ABCPrecofibrationCategory.cofibration_of_isIso hsq.isoPushout.hom
+  obtain ⟨_, hXcol⟩ := reedyCofibrant_colimit X.op hf.2.1
+  have := ABCPrecofibrationCategory.cofibration_of_isIso (colimitOpIsoOpLimit X).hom
+  infer_instance
 
 /-- Theorem 9.4.1(2)(c), for closed full subcategories of any small inverse
 category. The map is compared with the opposite relative colimit map. -/

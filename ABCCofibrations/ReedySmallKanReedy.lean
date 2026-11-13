@@ -7,12 +7,11 @@ module
 
 public import ABCCofibrations.KanLatchingComparison
 public import ABCCofibrations.ReedySmallKan
-public import ABCCofibrations.ReedySmallRelativeColimits
+public import ABCCofibrations.ReedySmallRelativeMaps
 
 /-! # Reedy cofibrancy of Kan extensions with arbitrary small source
 
-Theorem 9.4.3(1)(a),(c). Part (b) still needs the unrestricted relative
-cofibration comparison of Theorem 9.4.1(1)(b).
+Theorem 9.4.3(1)(a–c), using the unrestricted relative colimit theorem.
 -/
 
 @[expose] public section
@@ -78,6 +77,54 @@ theorem reedyCofibrant_leftKanExtension_reedy_small (X : D₁ ⥤ M)
     IsColimit.coconePointUniqueUpToIso_inv_desc _ _
   rw [← he]
   exact ⟨(cofibrations M).comp_mem _ _ hInv.mem hc.mem⟩
+
+/-- Theorem 9.4.3(1)(b) for arbitrary small direct source and target. -/
+theorem reedyCofibration_pointwiseLeftKanMap_reedy_small
+    {X Y : D₁ ⥤ M} [∀ e, HasColimit (latchingDiagram X e)]
+    [∀ e, HasColimit (latchingDiagram Y e)] {f : X ⟶ Y} (hf : IsReedyCofibration f) :
+    ∃ (_ : u.HasPointwiseLeftKanExtension X) (_ : u.HasPointwiseLeftKanExtension Y)
+      (_ : ∀ d, HasColimit (latchingDiagram (u.leftKanExtension X) d))
+      (_ : ∀ d, HasColimit (latchingDiagram (u.leftKanExtension Y) d)),
+      IsReedyCofibration (pointwiseLeftKanMap u f) := by
+  obtain ⟨hKX, hLX, hX⟩ := reedyCofibrant_leftKanExtension_reedy_small u X hf.1
+  obtain ⟨hKY, hLY, hY⟩ := reedyCofibrant_leftKanExtension_reedy_small u Y hf.2.1
+  refine ⟨hKX, hKY, hLX, hLY, hX, hY, fun d ↦ ?_⟩
+  obtain ⟨deg, hdeg⟩ := IsDirect.exists_deg (D := D₁)
+  have : IsDirect (CostructuredArrow u d) := ⟨⟨_, hdeg_comma u deg hdeg⟩⟩
+  obtain ⟨_, _, hComma⟩ := isReedyCofibration_comma u deg hdeg (d₂ := d) hf
+  obtain ⟨_, _, hBX, hpreX⟩ := reedyCofibrant_kanBoundary_colimit_small u d X hf.1
+  obtain ⟨_, _, hBY, hpreY⟩ := reedyCofibrant_kanBoundary_colimit_small u d Y hf.2.1
+  obtain ⟨hpo, hrel⟩ := reedyCofibration_relativeColimMap_small
+    ABCCofibrationCategory.coproductCofibrationAxiom
+    ABCCofibrationCategory.sequentialCofibrationAxiom (kanBoundary u d)
+    (kanBoundary_isOpen u d) _ hComma
+  let g := Functor.whiskerLeft (CostructuredArrow.proj u d) f
+  let a := colimit.pre (CostructuredArrow.proj u d ⋙ X) (kanBoundary u d).ι
+  let b := colimMap (Functor.whiskerLeft (kanBoundary u d).ι g)
+  let eX := kanLatchingIso u X d
+  let eY := kanLatchingIso u Y d
+  let oX := u.leftKanExtensionObjIsoColimit X d
+  let oY := u.leftKanExtensionObjIsoColimit Y d
+  let c := relativeColimMap (kanBoundary u d).ι g ≫ oY.inv
+  have hQ : IsPushout (latchingMap (u.leftKanExtension X) d)
+      (latchingObjMap (pointwiseLeftKanMap u f) d)
+      (oX.hom ≫ pushout.inl a b) (eY.inv ≫ pushout.inr a b) := by
+    exact (IsPushout.of_hasPushout a b).of_iso eX oX.symm eY (Iso.refl _)
+      (kanLatchingIso_hom_latchingMap u X d).symm
+      (kanLatchingIso_naturality u d f).symm (by simp [oX]) (by simp [eY])
+  have : IsCofibrant (colimit (CostructuredArrow.proj u d ⋙ Y)) :=
+    cofibrant_target (colimit.pre (CostructuredArrow.proj u d ⋙ Y) (kanBoundary u d).ι)
+  have hOI : Cofibration oY.inv := cofibration_of_isIso _
+  have hc : Cofibration c := ⟨(cofibrations M).comp_mem _ _ hrel.mem hOI.mem⟩
+  refine ⟨_, _, _, c, hQ, ?_, ?_, hc⟩
+  · change (oX.hom ≫ pushout.inl a b) ≫
+      (relativeColimMap (kanBoundary u d).ι g ≫ oY.inv) = _
+    rw [Category.assoc, inl_relativeColimMap_assoc]
+    exact (pointwiseLeftKanMap_app u f d).symm
+  · change (eY.inv ≫ pushout.inr a b) ≫
+      (relativeColimMap (kanBoundary u d).ι g ≫ oY.inv) = _
+    rw [Category.assoc, inr_relativeColimMap_assoc, ← kanLatchingIso_hom_latchingMap u Y d]
+    exact eY.inv_hom_id_assoc _
 
 /-- Theorem 9.4.3(1)(c), packaging Reedy cofibrancy together with the pointwise
 weak equivalence already established in Theorem 9.4.2(1)(c). -/

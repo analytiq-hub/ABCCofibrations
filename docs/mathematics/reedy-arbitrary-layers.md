@@ -1,7 +1,7 @@
 # Arbitrary degree layers and small direct colimits
 
 This note covers Lemma 9.3.2(1), Theorem 9.3.5(1)–(2)(a–c), and
-Theorem 9.4.2(1)–(2)(a–c) of Rădulescu-Banu's
+Theorems 9.4.1–9.4.3(1)–(2)(a–c) of Rădulescu-Banu's
 [*Cofibrations in Homotopy Theory*, v4](https://arxiv.org/abs/math/0610009v4).
 The ambient category is an ABC precofibration category, with the indicated
 parts of CF5 and CF6 supplied separately. The native inverse statements use
@@ -149,12 +149,22 @@ theorem, the restriction cofibration from (a), and excision. The actual
 relative comparison is a weak equivalence; no Reedy cofibration hypothesis
 on the map is added.
 
-`ReedySmallRelativeLimits.lean` transports these results to 9.4.1(2)(a),(c)
+`ReedySmallRelativeLimits.lean` transports these results to 9.4.1(2)(a–c)
 for native limits and pullbacks. It uses the existing opposite comparison
 maps and assumes a full ABC fibration category. The direct statements keep
-the split assumptions: (a) uses CF5(1), CF6(1), and (c) uses both clauses.
+the split assumptions: (a) and (b) use CF5(1), CF6(1), and (c) uses both clauses.
 
-These results also establish 9.4.3(1)–(2)(a),(c) in
+For (b), `ReedyRelativeDegreeMaps.lean` permits a degree that is constant
+on the old zero layer and strict on arrows out of positive-degree objects.
+It proves cofibration comparisons for all successive truncations, handling
+the empty stage separately. `SequenceTails.lean` extends the relative
+sequential comparison to any stage, including stage one, which represents
+$P$. `ReedySmallRelativeMaps.lean` identifies its comparison with the chosen
+whole pushout using the naturality of the reconstruction isomorphisms.
+It also allows an arbitrary fully faithful open presentation of $P$, so
+the native inverse proof can reuse it through opposites.
+
+These results also establish 9.4.3(1)–(2)(a–c) in
 `ReedySmallKanReedy.lean` and `ReedySmallRightKanReedy.lean`. The boundary
 comma colimit is cofibrant and its inclusion is a cofibration by the new
 relative theorem. The existing universal cocone in
@@ -162,7 +172,8 @@ relative theorem. The existing universal cocone in
 latching object. Both source and target are small direct categories,
 or small inverse categories on the dual side. No finiteness condition
 remains. The inverse proof reuses the direct proof and transports Reedy
-cofibrancy across the canonical isomorphism of Kan extensions.
+cofibrancy and Reedy cofibrations across the canonical isomorphisms of Kan
+extensions. Part (b) applies the full relative comparison at the boundary.
 
 ## Differences from the paper and remaining work
 
@@ -183,18 +194,16 @@ of the existing absolute categorical reconstruction. The Kan latching
 comparison uses the already documented cocone proof in place of the
 paper's Grothendieck construction.
 
-The full absolute theorem 9.3.5 and pointwise Kan theorem 9.4.2 are now
-available, as are (a) and (c) of 9.4.1 and 9.4.3 on both sides. This does
-**not** finish their cofibration/fibration map statements (b), or the
-arbitrary-diagram Reedy category structures of 9.2.4. Their existing
-finite specializations remain valid.
+The absolute theorem 9.3.5, relative theorem 9.4.1, pointwise Kan theorem
+9.4.2, and Reedy Kan theorem 9.4.3 are now available in all parts on both
+sides, without finiteness restrictions. Their older finite specializations
+remain useful under weaker ambient axioms.
 
-The next missing proof is 9.4.1(1)(b): identify the relative comparison
-for the whole open inclusion with the relative sequential-colimit
-comparison. The layer squares, the relative filtration used for (a), and
-`cofibration_comparison_colimit_of_reedy` are available. The collapsed
-degree is not strict on the old subcategory, so the existing strict-degree
-`reedyCofibration_degree_step` cannot be applied to it unchanged. Its
-relative stage comparisons and the compatibility with the chosen whole
-pushout still need to be proved. Once this is done, (2)(b) follows by
-duality and the existing boundary-comma argument supplies 9.4.3(b).
+The remaining diagram-category structure theorem is 9.2.4 for infinite
+indexing categories. Corollary 9.3.6 and standalone CF3 are now implemented
+in `ReedySmallStructure.lean`. The categorical layer-extension construction
+and compatible local CF4 step are also implemented. See
+[the layer factorization note](reedy-layer-factorization.md) for their exact
+scope, differences from the paper, and the remaining assembly of the
+infinite factorization. Reedy CF5–CF6 and the complete infinite instances
+are still outstanding.

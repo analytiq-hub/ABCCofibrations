@@ -441,33 +441,45 @@ the inverse proofs reuse the direct proofs through `KanOpposite.lean`.
 See [the arbitrary-layer note](mathematics/reedy-arbitrary-layers.md) for
 precise hypotheses, construction, and differences from the paper.
 
-Theorem **9.4.1(1)–(2)(a),(c)** is now implemented without finiteness
-restrictions in `ReedySmallRelativeColimits.lean` and
-`ReedySmallRelativeLimits.lean`. `ReedyRelativeBounded.lean` first bounds
-only the degrees outside the old open source, allowing that source to be
-unbounded. The full proof collapses its objects to degree zero, reuses
-monotone-degree reconstruction, and applies CF6 from stage one via
-`SequenceTails.lean`. A fully faithful open-source formulation is also
-available. The inverse results use native limits and pullbacks by duality.
+Theorems **9.4.1(1)–(2)(a–c)** and **9.4.3(1)–(2)(a–c)** are now
+implemented without finiteness restrictions. The relative cofibration map
+comparison is in `ReedySmallRelativeMaps.lean`; its fully faithful open-source
+form supports the native inverse theorem. `ReedyRelativeDegreeMaps.lean`
+handles a collapsed zero layer and strict positive layers, and
+`cofibration_comparison_colimit_of_reedy_at` in `SequenceTails.lean` supplies
+the relative comparison from stage one. The chosen whole pushout is compared
+using the naturality of degree-colimit reconstruction. Parts (a) and (b)
+use CF5(1), CF6(1); (c) uses both clauses, and dually F5/F6.
+`ReedySmallKanReedy.lean` and `ReedySmallRightKanReedy.lean` reuse the boundary
+comma comparison for all three parts.
 
-Theorem **9.4.3(1)–(2)(a),(c)** is consequently implemented in
-`ReedySmallKanReedy.lean` and `ReedySmallRightKanReedy.lean`, reusing the
-boundary-comma latching cocone and opposite Kan comparisons.
+**Corollary 9.3.6(1)–(2)** and the standalone **CF3 pushout statements for
+arbitrary small direct diagrams** are implemented in `ReedySmallStructure.lean`.
+Reedy cofibrations are pointwise cofibrations, dually for fibrations;
+pushouts exist, preserve Reedy cofibrations, and preserve triviality.
+No full infinite-diagram category instance is claimed yet.
 
-**Next missing proof:** 9.4.1(1)(b), the relative cofibration comparison for
-an arbitrary open full subcategory. Identify its chosen pushout comparison
-with the sequential relative comparison. The layer gluing theorem, relative
-filtration from (a), and `cofibration_comparison_colimit_of_reedy` are ready.
-The collapsed degree is only monotone on the old subcategory; the strict-degree
-`reedyCofibration_degree_step` therefore needs a relative variant, followed
-by comparison with the chosen whole pushout. Then transport (2)(b) and reuse
-the existing boundary-comma proof of 9.4.3(b).
+**Infinite CF4 construction started:**
+- `ReedyLayerExtension.lean`: extension over an arbitrary maximal layer,
+  compatible maps, recovery of an existing diagram, and the latching-diagram
+  and latching-map comparisons at new objects.
+- `ReedyLayerLatching.lean`: old diagrams and Reedy cofibrations restrict to
+  predecessor diagrams at new objects. The new latching colimits are
+  cofibrant and preserve cofibrations using CF5(1) without CF6, since their
+  degrees are bounded.
+- `ReedyLayerFactorization.lean`: `exists_factorization_at_new_object`
+  constructs the compatible local CF4 step, its weak equivalence, and its
+  relative pushout cofibration, with all assembly equations.
 
-Still finite: (b) of 9.4.1 and 9.4.3, and the CF1–CF4 / F1–F4 diagram
-structures of 9.2.4. Full CF5–CF6 / F5–F6 are established for the finite
-pointwise structures, but Reedy CF5–CF6 and infinite diagram factorization
-remain outstanding. Earlier finite APIs are preserved under their weaker
-ambient axiom assumptions.
+**Next missing proof:** glue these local choices into a whole layer
+factorization using `extensionHom` and `extensionIso`, then prove Reedy
+cofibrancy and the Reedy map condition at both old and new objects. Construct
+compatible layer choices through the truncations and assemble the whole
+infinite diagram factorization. Then establish Reedy CF5–CF6 and the full
+9.2.4 instances; obtain the fibration statements by duality. Full CF5–CF6 /
+F5–F6 remain available for the existing finite pointwise structures.
+See [the factorization note](mathematics/reedy-layer-factorization.md) for
+precise current scope and differences from the paper.
 
 The following records earlier completed milestones:
 
@@ -1225,3 +1237,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-12 | Kan extensions preserve Reedy structures (finite case) | `ReedyKanBoundary.lean` constructs the open boundary comma category. `KanLatchingComparison.lean` constructs its colimit cocone, proves universality, identifies the latching map, and proves naturality. `ReedyKanReedy.lean` proves 9.4.3(1)(a)–(c); `ReedyRightKanReedy.lean` proves 9.4.3(2)(a)–(c) by duality for native chosen right extensions. Full build passed (3142 jobs), without warnings; seven comparison and preservation theorem audits use only `propext`, `Classical.choice`, and `Quot.sound`. Next dependency: simultaneous degree-layer attachments using CF5, then sequential degree truncations using CF6; infinite/Reedy CF5–CF6 work remains. |
 | 2026-11-13 | Unbounded diagrams with finite degree truncations | `DegreeColimits.lean` constructs the truncation-colimit sequence, proves reconstruction of the whole colimit, and proves naturality. `ReedyDegreeColimits.lean` proves 9.3.5(1)(a)–(c) when each bounded-degree full subcategory has finitely many objects; `ReedyDegreeLimits.lean` proves 9.3.5(2)(a)–(c) by duality for native limits. Parts (b)–(c) require finite hom-sets; (a)–(b) use only CF6(1) / F6(1), and (c) adds the trivial-composite clause. The shared sequential cofibration lemma now lives in `SequentialColimits.lean`, replacing its duplicate in `SequencePushoutComposition.lean`. Full build passed (3148 jobs), without warnings; the reconstruction, sequential cofibration, and six unbounded theorem axiom audits use only `propext`, `Classical.choice`, and `Quot.sound`. The general arbitrary-layer CF5 construction, Reedy CF5–CF6, and infinite relative/Kan results remain. |
 | 2026-11-13 | Arbitrary layers, small colimits, and Kan extensions | `ReedyLayer.lean` proves Lemma 9.3.2(1); bounded layer induction and CF6 prove 9.3.5(1)–(2)(a–c) for every small direct/inverse category. `ReedySmallKan.lean` and `ReedySmallRightKan.lean` prove full 9.4.2(a–c). The complementary-degree induction and collapsed-degree filtration prove 9.4.1(a),(c), unlocking 9.4.3(a),(c), all without finite-object or finite-hom assumptions. Native inverse results reuse direct proofs by duality. Full build passed (3182 jobs), without warnings; 31 theorem axiom audits list only `propext`, `Classical.choice`, and `Quot.sound`. Next: the relative map comparison 9.4.1(b), then 9.4.3(b); infinite diagram structures remain. |
+| 2026-11-13 | Full relative and Reedy Kan comparisons; infinite CF4 construction | `ReedyRelativeDegreeMaps.lean`, `ReedySmallRelativeMaps.lean`, and the any-stage sequential comparison complete 9.4.1(b) and 9.4.3(b), including native duals. `ReedySmallStructure.lean` proves full Corollary 9.3.6 and standalone arbitrary-small CF3. Three layer modules construct extensions, transfer predecessor Reedy data, and prove the compatible local CF4 step using CF5(1) without CF6. Full build passed (3194 jobs), without warnings; 26 declaration axiom audits list only `propext`, `Classical.choice`, and `Quot.sound`. Next: prove the assembled layer factorization Reedy and construct the coherent degree recursion; infinite Reedy CF5–CF6 remain. |

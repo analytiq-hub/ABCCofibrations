@@ -156,6 +156,7 @@ remain appropriate for those APIs. The new
 9.3.5(1)–(2)(a–c) and 9.4.2(1)–(2)(a–c), using CF5/CF6 and their duals.
 `ReedySmallKan.lean` and `ReedySmallRightKan.lean` impose no finite-object
 or finite-hom assumptions. Their target indexing category is arbitrary
-small. The relative filtration now proves 9.4.1(a),(c), and the same boundary
-comparison gives 9.4.3(a),(c), on both sides. Their map statement (b)
-still needs the relative sequential comparison described in that note.
+small. The relative filtration and its sequential comparison now prove
+all parts of 9.4.1, and the same boundary comparison gives all parts of
+9.4.3, on both sides. The remaining infinite diagram-category structure
+work is described in the [layer factorization note](reedy-layer-factorization.md).

@@ -11,7 +11,7 @@ public import ABCCofibrations.ReedySmallRightKan
 /-!
 # Reedy fibrancy of right Kan extensions
 
-The arbitrary small case of Theorem 9.4.3(2)(a),(c), by duality. The results concern
+The arbitrary small case of Theorem 9.4.3(2)(a–c), by duality. The results concern
 mathlib's chosen right Kan extension, through the canonical comparison
 with the opposite left Kan extension.
 -/
@@ -40,6 +40,26 @@ theorem reedyFibrant_rightKanExtension_reedy_small (X : D₁ ⥤ M)
     leftKanExtensionIsoOpRight u
   obtain ⟨hN, hIso⟩ := isReedyCofibration_of_isIso e.hom hLeft
   exact ⟨hR, hN, hIso.2.1⟩
+
+/-- Theorem 9.4.3(2)(b) for arbitrary small inverse source and target, by duality. -/
+theorem reedyFibration_pointwiseRightKanMap_reedy_small
+    {X Y : D₁ ⥤ M} [∀ e, HasColimit (latchingDiagram X.op e)]
+    [∀ e, HasColimit (latchingDiagram Y.op e)] {f : X ⟶ Y} (hf : IsReedyFibration f) :
+    ∃ (_ : u.HasPointwiseRightKanExtension X) (_ : u.HasPointwiseRightKanExtension Y)
+      (_ : ∀ d, HasColimit (latchingDiagram (u.rightKanExtension X).op d))
+      (_ : ∀ d, HasColimit (latchingDiagram (u.rightKanExtension Y).op d)),
+      IsReedyFibration (pointwiseRightKanMap u f) := by
+  obtain ⟨hKY, hKX, hLY, hLX, hLeft⟩ := reedyCofibration_pointwiseLeftKanMap_reedy_small u.op hf
+  obtain ⟨hRX, hNX, hX⟩ := reedyFibrant_rightKanExtension_reedy_small u X hf.2.1
+  obtain ⟨hRY, hNY, hY⟩ := reedyFibrant_rightKanExtension_reedy_small u Y hf.1
+  refine ⟨hRX, hRY, hNX, hNY, ?_⟩
+  change IsReedyCofibration (NatTrans.op (pointwiseRightKanMap u f))
+  obtain ⟨_, hpre⟩ := isReedyCofibration_of_isIso
+    (leftKanExtensionIsoOpRight u (X := Y)).inv hY
+  obtain ⟨_, hpost⟩ := isReedyCofibration_of_isIso
+    (leftKanExtensionIsoOpRight u (X := X)).hom hLeft.2.1
+  rw [leftKanExtensionIsoOpRight_naturality]
+  exact hpre.comp (hLeft.comp hpost)
 
 /-- Theorem 9.4.3(2)(c), packaging Reedy fibrancy with the pointwise weak
 equivalence transported in Theorem 9.4.2(2)(c). -/

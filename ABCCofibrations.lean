@@ -133,3 +133,9 @@ import ABCCofibrations.ReedySmallRelativeColimits
 import ABCCofibrations.ReedySmallRelativeLimits
 import ABCCofibrations.ReedySmallKanReedy
 import ABCCofibrations.ReedySmallRightKanReedy
+import ABCCofibrations.ReedyRelativeDegreeMaps
+import ABCCofibrations.ReedySmallRelativeMaps
+import ABCCofibrations.ReedySmallStructure
+import ABCCofibrations.ReedyLayerExtension
+import ABCCofibrations.ReedyLayerLatching
+import ABCCofibrations.ReedyLayerFactorization

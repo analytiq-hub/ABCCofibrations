@@ -497,11 +497,108 @@ CF5–CF6 theorem now assumes only an existing pointwise precofibration structur
 See [the diagram-category note](mathematics/reedy-diagram-categories.md) for
 precise scope and differences from the paper.
 
-**Resume here:** select and check the next homotopy-colimit statements in §9.5
-against the existing derived-functor and approximation APIs. The diagram
-structures and unrestricted results of §§9.3–9.4 are available as prerequisites.
-Do not duplicate the native inverse mathematics: continue to transport it by
-duality, and expose native statements where needed.
+**§9.5 foundation is now implemented:** `SemisimplicialResolution.lean` gives
+Δ′D, its degree, terminal projection, naturality, constant simplices, and the
+native inverse resolution by duality. `SemisimplexCounterexample.lean` refutes
+the initial-object assertion in Lemma 9.5.2(1)(a), including the terminal-category
+counterexample. `SemisimplexContraction.lean` supplies the categorical zigzag
+id → shift ← const [0], following Szumiło's vertex-insertion method.
+`ResolutionTerminalVertex.lean` gives a separate category with maps preserving
+the marked terminal vertex, and proves that its singleton is initial.
+
+**Both repairs are authorized and under development.** The marked category is
+now checked to be direct and to have the expected terminal label. Its markings
+supply a natural map from the constant singleton diagram. `ReedyConstantInitial.lean`
+checks the required constant-diagram Reedy lemma under CF1–CF4.
+`ResolutionVertexInsertion.lean` checks appending an explicit terminal vertex
+to a finite chain, using mathlib's `WithTerminal`.
+
+**New obstruction:** `terminalVertexForget_not_final` proves that forgetting the
+marking is not final, even for the terminal input category. The two endpoint
+maps into a constant edge are separated by a morphism-invariant predicate in
+the singleton comma category. Thus marking repairs the initial-object step but
+does not justify naive ordinary cofinal reindexing. A comparison on restricted
+homotopical diagrams is still possible in principle, but is not proved.
+
+**Resume here:** extend vertex insertion to a natural labelled contraction and
+prove the comma comparison of Lemma 9.5.1; develop the homotopical/Reedy
+comparison without assuming an initial object in the original fiber. Continue
+the marked-vertex route with its checked nonfinality limitation, rather than
+asserting a cofinal inclusion. No proof of Proposition 9.5.4 is claimed yet.
+The [dedicated survey](mathematics/direct-and-filtered-replacements.md) collects
+seven relevant constructions and distinctions between direct, filtered, and
+directed-poset indices. The [resolution note](mathematics/semisimplicial-resolution.md)
+records the correction and reference chain. Native inverse results should
+continue to follow by duality.
+
+### Saved stopping point and ordered next steps (2026-11-20)
+
+The current increment is finished and verified as infrastructure and obstruction
+results. Full `lake build` passed **3326 jobs without warnings**; the 26 audited
+declarations depend only on `propext`, `Classical.choice`, and `Quot.sound`.
+All seven new Lean modules are exported by `ABCCofibrations.lean`. There are no
+placeholder proofs. The changes and the two mathematical notes are **uncommitted**.
+Do not include the unrelated `.claude/`, `.tmp-rb/`, or `.tmp-rb.tar.gz` artifacts
+in a future commit. No further implementation is needed to preserve this checkpoint.
+
+Resume in this order:
+
+1. **Finish labelled vertex insertion.** Build an endofunctor on the resolution
+   of a category with a specified terminal object, using `appendTerminal` from
+   `ResolutionVertexInsertion.lean`. Extend ordinal embeddings by sending the
+   new terminal vertex to the new terminal vertex. Prove the two natural
+   transformations from the identity and the constant singleton functor.
+   The existing `appendTerminal_obj_cast` and `appendTerminal_obj_last` supply
+   the object formulas; compatibility with embeddings and naturality remain.
+   Retain `SemisimplexContraction.lean` as the already checked unlabelled case.
+
+2. **Prove Lemma 9.5.1(1)'s comma comparison.** Compare
+   `CostructuredArrow (resolutionTerminal D₁ ⋙ u) d₂` with the direct resolution
+   of `CostructuredArrow u d₂`. Construct the inverse by assigning to each
+   vertex the composite of its remaining chain with the given terminal arrow.
+   Check the projection formulas needed to transport diagrams and colimits.
+   Obtain the inverse-side result by duality. State whether the Lean interface
+   gives a strict isomorphism or an equivalence and explain that distinction
+   from the paper.
+
+3. **State the corrected contraction claim precisely.** Apply labelled insertion
+   to the relevant comma categories and identify the natural-transformation
+   zigzag. Supply the bridge to the particular homotopical/cofinality notion
+   actually needed. Keep the direction of the comma category explicit.
+   Neither a categorical zigzag nor a classifying-space equivalence alone is
+   the desired arbitrary-diagram homotopy-colimit comparison.
+
+4. **Continue the marked-terminal route with its limitation.** Its initial
+   singleton, degree, terminal label, natural singleton map, latching-colimit
+   existence, and constant-diagram Reedy cofibrancy are checked. Next examine
+   restriction of Reedy cofibrant diagrams to this category (the analogue of
+   Lemma 9.5.3), then formulate a comparison restricted to homotopical diagrams
+   or their localizations. Do **not** attempt to prove the forgetful functor
+   final: `terminalVertexForget_not_final` disproves it. This route may need
+   additional intermediate diagrams or a different comparison functor.
+
+5. **Repair Proposition 9.5.4 before advancing.** Define the exact restricted
+   diagram condition and prove the singleton-to-relative-colimit weak
+   equivalence without using an initial object in the original fiber.
+   Then prove the adjoint-map and weak-equivalence-detection clauses. Reuse the
+   existing arbitrary-small Reedy colimit/Kan results and approximation APIs;
+   separate CF1–CF4 uses from CF5/CF6 and track indexing universes. Only after
+   this comparison is checked, continue to arbitrary-index diagram structures
+   and the homotopy-colimit construction of §9.6.
+
+6. **Keep alternative constructions as a parallel mathematical backlog.** The
+   [survey](mathematics/direct-and-filtered-replacements.md) records categorical
+   subdivision, simplicial replacement/bar constructions, bounded diagrams on
+   the nerve, and directed-poset replacements for already filtered categories.
+   Audit Chachólski–Scherer Theorem 15.1 and Corollary 23.6 for an independent
+   terminal comparison, and del Hoyo's subdivision augmentation for the precise
+   diagram-sensitive comparison it supports. Do not infer homotopy-colimit
+   invariance merely from a weak equivalence of nerves. Do not assume an
+   arbitrary small category has a homotopy-final filtered replacement.
+
+After each substantive increment, update the correction note with the exact
+statement proved and its differences from the paper, run the full build, audit
+the new public comparison declarations, and update this resume checklist.
 
 The following records earlier completed milestones:
 
@@ -1262,3 +1359,5 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-13 | Full relative and Reedy Kan comparisons; infinite CF4 construction | `ReedyRelativeDegreeMaps.lean`, `ReedySmallRelativeMaps.lean`, and the any-stage sequential comparison complete 9.4.1(b) and 9.4.3(b), including native duals. `ReedySmallStructure.lean` proves full Corollary 9.3.6 and standalone arbitrary-small CF3. Three layer modules construct extensions, transfer predecessor Reedy data, and prove the compatible local CF4 step using CF5(1) without CF6. Full build passed (3194 jobs), without warnings; 26 declaration axiom audits list only `propext`, `Classical.choice`, and `Quot.sound`. Next: prove the assembled layer factorization Reedy and construct the coherent degree recursion; infinite Reedy CF5–CF6 remain. |
 | 2026-11-13 | Unrestricted Reedy factorization and direct diagram CF1–CF4 | Whole-layer Reedy assembly, compatible truncation extensions, a chosen tower, and categorical gluing prove `reedy_factorization_small` using CF5(1) without CF6; the native inverse theorem follows by duality. Bounded variants retain arbitrary object and hom-set sizes. `SmallDiagramPrecategory.lean` gives CF1–CF4 for small direct Reedy and pointwise diagram structures with an ambient ABC cofibration category. Full build passed (3216 jobs), without warnings; 28 declaration axiom audits list only `propext`, `Classical.choice`, and `Quot.sound`. Stopping point: transport the new instances to inverse diagrams, then Reedy CF5–CF6 and unrestricted pointwise CF5–CF6. |
 | 2026-11-20 | Full small diagram structures | Theorem 9.2.4(1)–(2)(a),(b) now has all six axioms for arbitrary small direct/inverse indexing categories. Restricted latching-colimit interchange, coproducts of relative pushouts, and the sequential relative comparison prove Reedy CF5–CF6; pointwise CF5–CF6 reuse the existing proof without finiteness assumptions. Native inverse structures follow by duality. New full structures use the indexing universe for coproducts/products; finite pointwise APIs retain their separate universe. Full build passed (3232 jobs), without warnings; 20 declaration axiom audits list only `propext`, `Classical.choice`, and `Quot.sound`. Next: select §9.5 homotopy-colimit statements against the existing derived-functor APIs. |
+| 2026-11-20 | Direct resolution and §9.5 obstruction | `SemisimplicialResolution.lean` constructs Δ′D, its degree, terminal projection and naturality, constant simplices, and the inverse resolution by duality. `SemisimplexCounterexample.lean` disproves the initial-object assertion of 9.5.2(1)(a); the terminal-category resolution has no initial object. `SemisimplexContraction.lean` checks id → shift ← const [0], using the literature's vertex-insertion method. `ResolutionTerminalVertex.lean` checks initiality for a separate marked-terminal category. Literature search found no explicit correction; Cisinski 6.15 cites 9.5.4, so the reference chain in Lenz 3.1 is not an independent repair. Full build passed (3320 jobs), without warnings; 17 declaration audits use only the standard three axioms. Next: settle the fiber correction and prove its Reedy/cofinality comparisons before 9.5.4. |
+| 2026-11-20 | Both resolution-repair routes and replacement survey | `ResolutionVertexInsertion.lean` checks terminal-labelled chain insertion using `WithTerminal`. The marked category is direct and has a natural singleton map. `ReedyConstantInitial.lean` checks the constant Reedy diagram step using CF1–CF4. `TerminalVertexCofinalityObstruction.lean` proves that forgetting the marking is not final, so the naive cofinality continuation fails. The dedicated direct/filtered replacement survey records seven routes, precise limitations, references, and Lean status. Full build passed (3326 jobs), without warnings; 26 audits use only `propext`, `Classical.choice`, and `Quot.sound`. The general labelled contraction, comma comparison, and restricted homotopical comparison remain; no completed repair of 9.5.4 is claimed. |

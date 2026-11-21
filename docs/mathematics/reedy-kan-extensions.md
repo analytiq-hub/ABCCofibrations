@@ -158,5 +158,5 @@ remain appropriate for those APIs. The new
 or finite-hom assumptions. Their target indexing category is arbitrary
 small. The relative filtration and its sequential comparison now prove
 all parts of 9.4.1, and the same boundary comparison gives all parts of
-9.4.3, on both sides. The remaining infinite diagram-category structure
-work is described in the [layer factorization note](reedy-layer-factorization.md).
+9.4.3, on both sides. The full infinite diagram-category structures are now implemented as well;
+see the [diagram-category note](reedy-diagram-categories.md).

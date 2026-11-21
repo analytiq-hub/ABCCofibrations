@@ -417,7 +417,7 @@ statements.
 
 ## Immediate next increment
 
-### Resume point (2026-11-13)
+### Resume point (2026-11-20)
 
 Theorem **9.3.5(1)–(2)(a–c) is now implemented for every small direct or
 inverse indexing category**, with no finite-object or finite-hom assumption.
@@ -457,7 +457,7 @@ comma comparison for all three parts.
 arbitrary small direct diagrams** are implemented in `ReedySmallStructure.lean`.
 Reedy cofibrations are pointwise cofibrations, dually for fibrations;
 pushouts exist, preserve Reedy cofibrations, and preserve triviality.
-No full infinite-diagram category instance is claimed yet.
+The full diagram-category structures are now implemented below.
 
 **Infinite CF4 is now proved:** `reedy_factorization_small` in
 `ReedySmallFactorization.lean` works for every small direct indexing category,
@@ -479,13 +479,29 @@ ambient `ABCCofibrationCategory` in the indexing universe. The new instances
 have lower priority than the finite instances. The standalone factorization
 uses weaker split assumptions than these structure instances.
 
-**Resume here:** transport these new instances to native inverse diagram
-structures by duality. Prove Reedy CF5–CF6 and the full infinite diagram-category
-instances. Extend the existing pointwise CF5–CF6 construction beyond finite
-indexing categories by separating its pointwise colimit proof from the
-precofibration-category hypothesis; track the coproduct universe explicitly.
-See [the factorization note](mathematics/reedy-layer-factorization.md) for
-precise current scope and differences from the paper.
+**Theorem 9.2.4(1)–(2)(a),(b) is now complete for arbitrary small
+indexing categories:** `ReedyCofibrationCategory.lean` packages CF1–CF6 for
+Reedy diagrams, and `SmallDiagramCategories.lean` packages the pointwise
+structure. `SmallReedyFibrationCategory.lean` and `SmallDiagramCategories.lean`
+provide native inverse Reedy and pointwise structures by duality.
+
+`PointwiseColimitInterchange.lean` and `ReedyColimitInterchange.lean` construct
+the restricted latching-colimit comparison and its naturality.
+`ReedyCoproducts.lean` proves CF5 using coproducts of relative pushouts;
+`ReedySequentialColimits.lean` proves CF6 using the sequential relative
+comparison. Triviality follows pointwise. No finite-object or finite-hom
+assumption remains. New full structures use ambient and diagram coproducts
+in the indexing category's universe `w`. The finite pointwise instances
+retain their separate arbitrary coproduct universe; the shared pointwise
+CF5–CF6 theorem now assumes only an existing pointwise precofibration structure.
+See [the diagram-category note](mathematics/reedy-diagram-categories.md) for
+precise scope and differences from the paper.
+
+**Resume here:** select and check the next homotopy-colimit statements in §9.5
+against the existing derived-functor and approximation APIs. The diagram
+structures and unrestricted results of §§9.3–9.4 are available as prerequisites.
+Do not duplicate the native inverse mathematics: continue to transport it by
+duality, and expose native statements where needed.
 
 The following records earlier completed milestones:
 
@@ -1245,3 +1261,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-13 | Arbitrary layers, small colimits, and Kan extensions | `ReedyLayer.lean` proves Lemma 9.3.2(1); bounded layer induction and CF6 prove 9.3.5(1)–(2)(a–c) for every small direct/inverse category. `ReedySmallKan.lean` and `ReedySmallRightKan.lean` prove full 9.4.2(a–c). The complementary-degree induction and collapsed-degree filtration prove 9.4.1(a),(c), unlocking 9.4.3(a),(c), all without finite-object or finite-hom assumptions. Native inverse results reuse direct proofs by duality. Full build passed (3182 jobs), without warnings; 31 theorem axiom audits list only `propext`, `Classical.choice`, and `Quot.sound`. Next: the relative map comparison 9.4.1(b), then 9.4.3(b); infinite diagram structures remain. |
 | 2026-11-13 | Full relative and Reedy Kan comparisons; infinite CF4 construction | `ReedyRelativeDegreeMaps.lean`, `ReedySmallRelativeMaps.lean`, and the any-stage sequential comparison complete 9.4.1(b) and 9.4.3(b), including native duals. `ReedySmallStructure.lean` proves full Corollary 9.3.6 and standalone arbitrary-small CF3. Three layer modules construct extensions, transfer predecessor Reedy data, and prove the compatible local CF4 step using CF5(1) without CF6. Full build passed (3194 jobs), without warnings; 26 declaration axiom audits list only `propext`, `Classical.choice`, and `Quot.sound`. Next: prove the assembled layer factorization Reedy and construct the coherent degree recursion; infinite Reedy CF5–CF6 remain. |
 | 2026-11-13 | Unrestricted Reedy factorization and direct diagram CF1–CF4 | Whole-layer Reedy assembly, compatible truncation extensions, a chosen tower, and categorical gluing prove `reedy_factorization_small` using CF5(1) without CF6; the native inverse theorem follows by duality. Bounded variants retain arbitrary object and hom-set sizes. `SmallDiagramPrecategory.lean` gives CF1–CF4 for small direct Reedy and pointwise diagram structures with an ambient ABC cofibration category. Full build passed (3216 jobs), without warnings; 28 declaration axiom audits list only `propext`, `Classical.choice`, and `Quot.sound`. Stopping point: transport the new instances to inverse diagrams, then Reedy CF5–CF6 and unrestricted pointwise CF5–CF6. |
+| 2026-11-20 | Full small diagram structures | Theorem 9.2.4(1)–(2)(a),(b) now has all six axioms for arbitrary small direct/inverse indexing categories. Restricted latching-colimit interchange, coproducts of relative pushouts, and the sequential relative comparison prove Reedy CF5–CF6; pointwise CF5–CF6 reuse the existing proof without finiteness assumptions. Native inverse structures follow by duality. New full structures use the indexing universe for coproducts/products; finite pointwise APIs retain their separate universe. Full build passed (3232 jobs), without warnings; 20 declaration axiom audits list only `propext`, `Classical.choice`, and `Quot.sound`. Next: select §9.5 homotopy-colimit statements against the existing derived-functor APIs. |

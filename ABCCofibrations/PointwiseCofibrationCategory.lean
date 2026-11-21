@@ -55,10 +55,12 @@ lemma hasSequentialColimit_evaluations (F : ℕ ⥤ PointwiseDiagram D M)
   ABCCofibrationCategory.hasSequentialColimit _ ((isCofibrant_iff _).1 h0 e)
     (fun n ↦ (hf n).mem e)
 
-variable [Finite D] [∀ x y : D, Finite (x ⟶ y)] [IsDirect D]
-
-/-- Theorem 9.2.4(1)(b), CF1–CF6, for finite direct indexing categories. -/
-instance cofibrationCategory : ABCCofibrationCategory.{s} (PointwiseDiagram D M) where
+/-- CF5–CF6 for pointwise diagrams, given the precofibration structure.
+The indexing category is arbitrary; only the individual pointwise colimits
+required by the ambient axioms are used. -/
+theorem cofibrationCategory_of_precofibrationCategory
+    [ABCPrecofibrationCategory (PointwiseDiagram D M)] :
+    ABCCofibrationCategory.{s} (PointwiseDiagram D M) where
   hasCoproductOfCofibrant A hA := by
     let hEvalA : ∀ e, HasColimit ((Discrete.functor (fun i ↦ (A i : D ⥤ M))).flip.obj e) :=
       hasCoproduct_evaluations A hA
@@ -167,6 +169,12 @@ instance cofibrationCategory : ABCCofibrationCategory.{s} (PointwiseDiagram D M)
     change WeakEquivalence (U.map (colimit.ι F 0))
     rw [← ι_preservesColimitIso_inv]
     infer_instance
+
+variable [Finite D] [∀ x y : D, Finite (x ⟶ y)] [IsDirect D]
+
+/-- Theorem 9.2.4(1)(b), CF1–CF6, for finite direct indexing categories. -/
+instance cofibrationCategory : ABCCofibrationCategory.{s} (PointwiseDiagram D M) :=
+  cofibrationCategory_of_precofibrationCategory
 
 end PointwiseDiagram
 

@@ -181,8 +181,8 @@ CF6 is unnecessary. The diagram-category instances currently assume the full
 ambient ABC cofibration category, as in the paper. No functorial factorization,
 unrestricted ambient cocompleteness, or additional axioms are assumed.
 
-Still required: transport the new diagram-category instances to native inverse
-diagram structures; prove Reedy CF5 and CF6; and extend the existing finite
-pointwise CF5–CF6 instances to arbitrary small diagrams, keeping the coproduct
-indexing universe separate from the indexing category's universe where needed.
-The native inverse factorization theorem itself is already implemented.
+The subsequent diagram-category step is now complete: all four structures
+of Theorem 9.2.4 have CF1–CF6 or F1–F6 for arbitrary small indexing categories.
+The native inverse structures reuse the direct proofs by duality. See
+[the diagram-category note](reedy-diagram-categories.md) for the CF5–CF6
+construction, universe assumptions, and differences from the paper.

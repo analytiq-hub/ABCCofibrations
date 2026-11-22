@@ -588,10 +588,22 @@ Resume in this order:
    `ResolutionCommaComparisonDual.lean`: `resolutionCoslicePrepend`, with maps
    to the identity and to the constant at `d →1 (d)`. It has no explicit object
    formulas, because the dual equivalence uses choice.
-   **Remaining:** the bridge from this zigzag to the homotopical/cofinality
-   notion that 9.5.2(1)(c) and 9.5.4 actually use. 9.5.2(1)(c) as written uses
-   the false initial object in p_t⁻¹(d). A categorical zigzag alone is not the
-   arbitrary-diagram homotopy-colimit comparison.
+   **9.5.2(1)(c) repaired (2026-11-21).** `ResolutionFiberCounterexample.lean`
+   shows that the paper's proof step "(aᵈx, α_x) is initial in (x ↓ i_d)" is
+   false (D = {0 → 1}, d = 1, x = (0) → 1). `ResolutionFiberFinal.lean` instead
+   proves that `i_d : pₜ⁻¹(d) → (pₜ ↓ d)` is **final**
+   (`resolutionFiber_final`). Every object (y, g) of x ↓ i_d is joined to
+   (aᵈx, α_x) through (aᵈy, g ≫ α_y), via α_y and aᵈg. The colimit consequence
+   used in 9.5.4 is `resolutionFiberColimitIso`. The fiber is
+   `ResolutionStrictFiber d`, the full subcategory of (pₜ ↓ d) on identity
+   structure maps. This is isomorphic to, but not literally, the paper's
+   subcategory of Δ′D.
+   **Remaining for 9.5.4:** the step that uses the nonexistent initial object
+   e(d) of pₜ⁻¹(d), namely the constant diagram c X_{e(d)} → X|pₜ⁻¹(d) and its Reedy
+   cofibrancy. Lemma 9.5.3 (restriction to the fiber is Reedy cofibrant) is
+   also unformalized. A replacement could compare X|pₜ⁻¹(d) with the constant
+   diagram along the zigzag aᵈ, α, β, but this needs a homotopical argument
+   and is not yet designed.
 
 4. **Continue the marked-terminal route with its limitation.** Its initial
    singleton, degree, terminal label, natural singleton map, latching-colimit
@@ -1389,3 +1401,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-21 | Labelled terminal-vertex insertion | `ResolutionLabelledInsertion.lean` constructs `resolutionAppend ht : Δ′D ⥤ Δ′D` for a terminal object `t`, with natural maps from the identity and from the constant singleton at `t`, over the ordinal functor `semisimplexAppend`; label compatibility is reduced to `WithTerminal` functor identities. The inverse-side prepend functor follows by duality. Full build passed (3328 jobs), without warnings; 14 declaration audits use only `propext`, `Classical.choice`, and `Quot.sound`. Next: the comma comparison of Lemma 9.5.1(1). |
 | 2026-11-21 | Lemma 9.5.1(1) and the contraction of 9.5.2(1)(b) | `ResolutionCommaComparison.lean` proves the comparison Δ′(u ↓ d₂) ⥤ (u pₜ ↓ d₂) fully faithful and bijective on objects, with explicit inverse and equivalence, strictly over Δ′D₁; `resolutionMap` now allows different universes. `ResolutionSliceContraction.lean` builds aᵈ, α, β for (pₜ ↓ d) from the terminal object of D/d. Full build passed (3332 jobs), without warnings; 15 declaration audits use only `propext`, `Classical.choice`, and `Quot.sound`. Next: inverse-side 9.5.1(2) (needs a strict isomorphism, since Δ′ is not equivalence-invariant), then the homotopical bridge for 9.5.2(1)(c). |
 | 2026-11-21 | Inverse-side 9.5.1(2) and dual contraction | `ResolutionCommaComparisonDual.lean` proves Δ′ᵒᵖ(d₂ ↓ u) ≌ (d₂ ↓ u pᵢ) by duality. Since Δ′ is not equivalence-invariant, it uses the strict (`rfl`) inverse pair (d₂ ↓ u)ᵒᵖ ⇄ (u.op ↓ op d₂) via `resolutionMapEquivOfInverse`. It also transports the prepend zigzag to (d ↓ pᵢ). Full build passed (3334 jobs), without warnings; 9 declaration audits use only `propext`, `Classical.choice`, and `Quot.sound`. Next: the homotopical bridge for 9.5.2(1)(c)/(2)(c) and Proposition 9.5.4. |
+| 2026-11-21 | Repaired 9.5.2(1)(c): fiber inclusion is final | `ResolutionFiberCounterexample.lean` disproves the initial-object step in the paper's proof of 9.5.2(1)(c). `ResolutionFiberFinal.lean` proves `i_d : pₜ⁻¹(d) → (pₜ ↓ d)` final via a uniform length-two zigzag through aᵈ, and records the colimit isomorphism used in 9.5.4. Full build passed (3338 jobs), without warnings; 6 declaration audits use only `propext`, `Classical.choice`, and `Quot.sound`. Next: replace the e(d) constant-diagram step of 9.5.4, and Lemma 9.5.3. |

@@ -201,6 +201,44 @@ between $(d_2\downarrow u)^{op}$ and $(u^{op}\downarrow d_2)$ are strictly
 inverse to each other. The dual contraction of $d\downarrow p_i$ is transported
 the same way.
 
+## Lemma 9.5.2(1)(c): a second initial-object gap, and its repair
+
+The paper proves that $i_d\colon p_t^{-1}(d)\to(p_t\downarrow d)$ is homotopy
+right cofinal by claiming that, when the structure map of $x$ is not an
+identity, $(a^d x,\alpha_x)$ is initial in $x\downarrow i_d$. That claim fails.
+Take $D=\{0\to1\}$, $d=1$, $x=((0)\to 1)$, so that $a^d x=((0\to1)\xrightarrow{1}1)$.
+For $y=((0\to1\xrightarrow{1}1)\xrightarrow{1}1)$ and $g$ selecting vertex 0, the new
+vertex may go to either copy of 1:
+
+$$
+\begin{array}{ccc}
+ & x=(0) & \\
+{\scriptstyle\alpha_x}\swarrow & & \searrow{\scriptstyle g}\\
+(0\to 1) & \overset{1\mapsto 1}{\underset{1\mapsto 2}{\rightrightarrows}} & (0\to1\xrightarrow{1}1)
+\end{array}
+$$
+
+Both maps lie under $x$. `ResolutionFiberCounterexample.lean` checks this
+(`FiberCounterexample.not_isInitial`).
+
+What 9.5.4 actually uses is that colimits over $p_t^{-1}(d)$ and over
+$p_t\downarrow d$ agree, i.e. that $i_d$ is *final*. This holds for a uniform
+reason. Every object $(y,g)$ of $x\downarrow i_d$ is joined to $(a^d x,\alpha_x)$:
+
+$$
+(y,g)\xrightarrow{\ \alpha_y\ }(a^d y,\ \alpha_y g)\xleftarrow{\ a^d g\ }(a^d x,\ \alpha_x).
+$$
+
+The right-hand map lies under $x$ by naturality of $\alpha$, and $a^d$ lands in
+the fiber. `ResolutionFiberFinal.lean` proves `resolutionFiber_final` and the
+colimit isomorphism `resolutionFiberColimitIso`. There the fiber is the full
+subcategory of $p_t\downarrow d$ on objects with identity structure map, which is
+isomorphic to the paper's subcategory of $\Delta'D$.
+
+The remaining gap in 9.5.4 is the use of an initial object $e(d)$ of
+$p_t^{-1}(d)$. It is used to build the constant diagram $cX_{e(d)}\to X|_{p_t^{-1}(d)}$
+and to prove that this diagram is Reedy cofibrant.
+
 ## Literature check (2026-11-20)
 
 A search for the lemma number, the proposition number, and errata did not locate

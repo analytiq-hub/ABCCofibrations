@@ -508,6 +508,11 @@ along $C\cong C^{op\,op}$. The results are
 `unop` of relative colimits in $M^{op}$, and "restricted" is imposed on
 `X.rightOp`.
 
+**Theorem 9.5.5 follows.** `PointwiseArbitraryCofibrationCategory.lean`
+proves Cisinski's pointwise cofibration (and, by duality, fibration) structure
+on $M^D$ for every small $D$. CF4 uses only the repaired 9.5.4(1)(a), so 9.5.5
+does not depend on Lemma 9.5.3.
+
 **Conventions.** The statements assume that "restricted
 Reedy cofibrant" means Reedy cofibrant on $\Delta'D$ and inverting maps with
 identity terminal component. The paper's restricted cofibration category of

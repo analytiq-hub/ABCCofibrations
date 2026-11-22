@@ -239,6 +239,86 @@ The remaining gap in 9.5.4 is the use of an initial object $e(d)$ of
 $p_t^{-1}(d)$. It is used to build the constant diagram $cX_{e(d)}\to X|_{p_t^{-1}(d)}$
 and to prove that this diagram is Reedy cofibrant.
 
+## Replacing the $e(d)$ step: a contraction lemma (proposed, not yet formalized)
+
+The paper uses $e(d)$ only to conclude that
+
+$$
+X_{(d)}\xrightarrow{\ \iota\ }\operatorname{colim}_{p_t^{-1}(d)}X
+$$
+
+is a weak equivalence. The following lemma gives this without an initial object.
+It uses only the contraction $a^d,\alpha,\beta$, which restricts to the fiber
+(each $\alpha_y$ and $\beta_y$ has identity terminal component).
+
+**Lemma K.** Let $M$ be a cofibration category, $F$ a small direct category,
+$e\in F$, $A\colon F\to F$ a functor, and $\alpha\colon 1\Rightarrow A$,
+$\beta\colon c_e\Rightarrow A$ natural transformations. Let $Y\colon F\to M$ be
+Reedy cofibrant, with $Y(\alpha_j)$ and $Y(\beta_j)$ weak equivalences for all $j$.
+Then $\iota_e\colon Y_e\to\operatorname{colim}_F Y$ is a weak equivalence.
+
+*Proof.*
+
+1. Factor $\varnothing\to c\,Y_e$ in the Reedy structure. This gives a Reedy
+   cofibrant $Q$ and a levelwise weak equivalence $q\colon Q\to cY_e$. The map $q$
+   is a cocone, so it induces $\kappa\colon\operatorname{colim}Q\to Y_e$ with
+   $\kappa\,\iota^Q_e=q_e$.
+2. The coproduct $Y\sqcup Q$ is Reedy cofibrant. Factor
+   $[\,Y\alpha,\ Y\beta\circ q\,]\colon Y\sqcup Q\to A^*Y$ as a Reedy cofibration
+   $Y\sqcup Q\rightarrowtail W$ followed by a levelwise weak equivalence
+   $w\colon W\to A^*Y$. Let $a\colon Y\to W$ and $b\colon Q\to W$ be the components.
+   By 2-out-of-3, $a$ and $b$ are levelwise weak equivalences, since $wa=Y\alpha$
+   and $wb=Y\beta\circ q$ are.
+3. The maps $W_j\xrightarrow{w_j}Y_{Aj}\xrightarrow{\iota_{Aj}}\operatorname{colim}Y$ form a
+   cocone and induce $\rho\colon\operatorname{colim}W\to\operatorname{colim}Y$. On components:
+
+$$
+\rho\circ\operatorname{colim}a=\mathrm{id},
+\qquad
+\rho\circ\operatorname{colim}b=\iota_e\circ\kappa ,
+$$
+
+   because $\iota_{Aj}\,Y(\alpha_j)=\iota_j$ and $\iota_{Aj}\,Y(\beta_j)=\iota_e$.
+4. A colimit of a levelwise weak equivalence between Reedy cofibrant diagrams is
+   a weak equivalence. Hence $\operatorname{colim}a$ and $\operatorname{colim}b$
+   are weak equivalences. Then $\rho$ is one by 2-out-of-3, and so is
+   $\iota_e\kappa$.
+5. In the composable triple
+
+$$
+Q_e\xrightarrow{\ \iota^Q_e\ }\operatorname{colim}Q\xrightarrow{\ \kappa\ }Y_e\xrightarrow{\ \iota_e\ }\operatorname{colim}Y ,
+$$
+
+   the composites $\kappa\iota^Q_e=q_e$ and $\iota_e\kappa$ are weak equivalences.
+   By 2-out-of-6, $\iota_e$ is a weak equivalence. ∎
+
+No connectedness, finiteness or initial object is used. $Y$ need only invert
+the components of $\alpha$ and $\beta$. The lemma isolates the homotopical
+content of "the fiber is contractible", in the elementary form available in a
+cofibration category. It is the colimit counterpart of Szumiło's Lemma 1.17,
+which shows that a homotopy equivalence of homotopical categories induces a
+weak equivalence of diagram categories. That route would need derived
+adjunctions, and this one avoids them.
+
+**Ingredients available in the library.** Reedy factorization
+(`reedy_factorization_small`), Reedy coproducts, homotopy invariance of Reedy
+colimits (`reedyCofibrant_colimMap_weakEquivalence_small`, using CF5–CF6), and
+saturation (`weakEquivalence_iff_isIso_map`, which gives 2-out-of-6).
+
+**Applying it to 9.5.4.** Take $F=p_t^{-1}(d)$ (`ResolutionStrictFiber d`) and
+$e=((d)\xrightarrow{1}d)$. Take $A$, $\alpha$, $\beta$ to be the restrictions of
+$a^d,\alpha,\beta$, and $Y=X|_F$. A restricted diagram $X$ inverts maps with
+identity terminal component, so $Y$ inverts $\alpha_y$ and $\beta_y$. Lemma K
+then gives the weak equivalence $X_{(d)}\to\operatorname{colim}_F X$. Finality
+(`resolutionFiberColimitIso`) identifies this colimit with the colimit over
+$p_t\downarrow d$, which is $(\operatorname{colim}_{p_t}X)_d$.
+
+**What remains.** The direct-category structure on $F$, universe bookkeeping,
+and Lemma 9.5.3: $Y=X|_F$ must be Reedy cofibrant. The fiber is *not*
+downward closed in $p_t\downarrow d$, so this does not follow formally from
+Reedy cofibrancy on $p_t\downarrow d$. The paper's combinatorial induction is
+still needed.
+
 ## Literature check (2026-11-20)
 
 A search for the lemma number, the proposition number, and errata did not locate

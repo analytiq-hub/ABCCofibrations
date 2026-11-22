@@ -326,6 +326,80 @@ downward closed in $p_t\downarrow d$, so this does not follow formally from
 Reedy cofibrancy on $p_t\downarrow d$. The paper's combinatorial induction is
 still needed.
 
+## Lemma 9.5.3 fails (informal counterexample, 2026-11-21)
+
+Lemma 9.5.3(1) asserts that for every Reedy cofibrant $X$ on $\Delta'D$, the
+restriction $X|_{p_t^{-1}(d)}$ is Reedy cofibrant. The following example
+contradicts this. It is checked by hand and not yet in Lean.
+
+**The fiber latching category.** Faces of a chain $y=(y_0\to\cdots\to y_m)$
+correspond to nonempty subsets $S\subseteq\{0,\dots,m\}$. The face for $S$ is a
+map of the fiber exactly when its last vertex $k=\max S$ satisfies $y_k=d$ and
+$y_{k\to m}=1_d$. So the fiber latching category at $y$ is the poset of proper
+subsets $S$ whose maximum lies in
+
+$$
+G=\{\,k : y_k=d,\ y_{k\to m}=1_d\,\}\ni m .
+$$
+
+The paper's proof takes $\mathbf i=\{n\}$ and $\mathbf j=\varnothing$, which treats
+this as the poset of faces *containing $m$*. That agrees with the above only
+when $G=\{m\}$.
+
+**The example.** Let $D=\{a\to d\}$ and $y=(a\xrightarrow{u}d\xrightarrow{1}d)$, so
+$G=\{1,2\}$. The fiber latching category at $y$ is
+
+$$
+\{1\},\ \{2\},\ \{0,1\},\ \{0,2\},\ \{1,2\},
+$$
+
+and $\{0\}$ is missing (its label is $a$). The two edges $\{0,1\}$ and $\{0,2\}$
+are therefore **not** glued along vertex $0$:
+
+$$
+\begin{array}{ccccc}
+ & \{0,1\} & & \{0,2\} & \\
+ \nearrow & & \nwarrow\ \ \nearrow & & \nwarrow\\
+\{1\} & & \{1,2\} & & \{2\}
+\end{array}
+\qquad(\text{no } \{0\}).
+$$
+
+Let $M$ be the category of sets, with injections as cofibrations and all maps
+as weak equivalences. This is a cofibration category: CF4 factors $f\colon A\to B$
+as $A\hookrightarrow A\sqcup B\to B$. Let $X$ send a chain to its set of vertices.
+Its latching maps are bijections in positive degrees, so $X$ is Reedy cofibrant,
+and it is trivially restricted. But the fiber latching object at $y$ has two
+distinct copies of vertex $0$, coming from $\{0,1\}$ and from $\{0,2\}$. A cocone
+to $\{\mathrm{true},\mathrm{false}\}$ separates them. So the latching map to the
+three vertices of $y$ is not injective, and $X|_{p_t^{-1}(d)}$ is not Reedy
+cofibrant.
+
+**Consequences.** The paper's proof of 9.5.4 restricts $X$ to the fiber and
+takes its colimit, and that step is not justified as written. The results
+checked here remain valid, but their hypotheses must be read accordingly:
+
+- `weakEquivalence_resolutionFiber_colimit` and
+  `weakEquivalence_resolutionComma_colimit` keep the Reedy cofibrancy of the
+  fiber restriction as an explicit hypothesis;
+- Lemma K and finality of the fiber inclusion are unaffected.
+
+**Possible repairs.**
+1. Use the marked-terminal category $T_d$ (maps preserve the last vertex). Its
+   latching categories *are* the faces containing the last vertex, so
+   restriction preserves Reedy cofibrancy by the classical upper-face pushout
+   argument, and $T_d$ has an initial object. What is missing is a homotopy
+   comparison $\operatorname{colim}_{T_d}X\to\operatorname{colim}_{p_t\downarrow d}X$.
+   Ordinary finality fails (`terminalVertexForget_not_final`), so this needs a
+   homotopy-cofinality theorem for Reedy colimits.
+2. Work on $p_t\downarrow d\cong\Delta'(D/d)$, where restriction of a Reedy
+   cofibrant diagram *is* Reedy cofibrant (a discrete fibration; see
+   `ReedyKan.lean`). There a restricted $X$ does not invert the components
+   $\alpha_y$, so Lemma K does not apply directly.
+3. Change the definition of "restricted" diagrams, or the indexing category,
+   in the way the later literature does (Szumiło's homotopical categories
+   $D[m]$, Cisinski's derivator approach).
+
 ## Literature check (2026-11-20)
 
 A search for the lemma number, the proposition number, and errata did not locate

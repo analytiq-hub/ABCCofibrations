@@ -454,6 +454,41 @@ homotopy localization, but the paper's proof does not establish it.
   has the initial object $(d)$. The paper's argument then goes through
   verbatim. This gives a correct but restricted version of 9.5.4 for posets.
 
+## The key step of 9.5.4, repaired (2026-11-21)
+
+None of the routes above is needed. The key step holds directly on
+$p_t\downarrow d$:
+
+$$
+X_{(d)}\longrightarrow\operatorname{colim}_{p_t\downarrow d}X
+\quad\text{is a weak equivalence}
+$$
+
+for every Reedy cofibrant restricted $X$ on $\Delta'D$ (`weakEquivalence_resolutionComma_colimit_ι`
+in `ResolutionCommaColimit.lean`, for `D : Type`). The two ingredients are:
+
+1. **Restriction to the comma category preserves Reedy cofibrancy.** The
+   projection $p_t\downarrow d\to\Delta'D$ identifies latching categories
+   (`isReedyCofibrant_comma`). The *fiber*, by contrast, does not
+   (Lemma 9.5.3 fails).
+2. **Lemma K′** (`weakEquivalence_colimit_ι_of_weakContraction`; see
+   [contractible colimits](contractible-colimits.md)). It strengthens Lemma K:
+   the diagram need only invert the maps $A\alpha_x$, $A\beta_x$, $\alpha_e$ and
+   $\alpha_{Ae}$, not the components $\alpha_x$. For $A=a^d$ on
+   $p_t\downarrow d$, all four kinds of maps go between objects with identity
+   structure map. Such maps have identity terminal component, so a restricted
+   diagram inverts them.
+
+So the fiber $p_t^{-1}(d)$, Lemma 9.5.3, the initial object $e(d)$ and the
+cofinality of $i_d$ all drop out of the argument. The earlier results about
+them remain correct, but are no longer on the critical path.
+
+**Remaining for 9.5.4(1).** Identify $\operatorname{colim}_{p_t\downarrow d}X$
+with $(\operatorname{colim}_{p_t}X)_d$ (the pointwise left Kan extension). Then
+deduce (a) and (b) as in the paper: for restricted $X$, the selection of the
+last vertex $(x_n)\to x$ has identity terminal component, so
+$X_{(x_n)}\to X_x$ is a weak equivalence. Part (2) follows by duality.
+
 ## Literature check (2026-11-20)
 
 A search for the lemma number, the proposition number, and errata did not locate

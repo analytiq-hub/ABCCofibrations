@@ -224,6 +224,38 @@ The first two-step composite is $\kappa\circ\iota^Q_e=q_e$, a weak equivalence b
 Step 1. The second is $\iota_e\circ\kappa$, a weak equivalence by Step 4. By
 2-out-of-6, $\iota_e$ is a weak equivalence. $\blacksquare$
 
+## A stronger version: Lemma K′
+
+In the application to $p_t\downarrow d$, the diagram does **not** invert the
+components $\alpha_x\colon x\to a^dx$. The terminal component of $\alpha_x$ is
+the structure map $x_n\to d$. It does invert the maps $A\alpha_x$, $A\beta_x$,
+$\alpha_e$ and $\alpha_{Ae}$. Lemma K′ needs only these
+(`weakEquivalence_colimit_ι_of_weakContraction`).
+
+*Proof.* Factor $Y\alpha\colon Y\to A^*Y$ as $a\colon Y\rightarrowtail W$ followed by
+a levelwise weak equivalence $w\colon W\to A^*Y$. Naturality of $w$ shows that
+$W$ inverts $\alpha_x$ and $\beta_x$, because $A^*Y$ does. So **Lemma K applies
+to $W$**, and $\iota^W_e$ is a weak equivalence. Define
+$\rho\colon\operatorname{colim}W\to\operatorname{colim}Y$ as before. Then:
+
+$$
+\rho\circ\operatorname{colim}a=\mathrm{id},
+\qquad
+\operatorname{colim}a\circ\rho\circ\iota^W_e=\iota^W_{Ae}\circ a_{Ae}\circ w_e .
+$$
+
+The right-hand side is a weak equivalence: $\iota^W_{Ae}$ because
+$\iota^W_{Ae}\circ W(\beta_e)=\iota^W_e$, and $a_{Ae}$ because
+$w_{Ae}a_{Ae}=Y(\alpha_{Ae})$. Hence $\operatorname{colim}a\circ\rho$ is a weak
+equivalence. With $\rho\circ\operatorname{colim}a=\mathrm{id}$, 2-out-of-6 makes
+$\operatorname{colim}a$ a weak equivalence. Finally
+$\operatorname{colim}a\circ\iota^Y_e=\iota^W_e\circ a_e$, where $a_e$ is a weak
+equivalence because $w_ea_e=Y(\alpha_e)$. By 2-out-of-3, $\iota^Y_e$ is a weak
+equivalence. $\blacksquare$
+
+This version is what proves the key step of 9.5.4 directly on
+$p_t\downarrow d$, with no fiber and no Lemma 9.5.3.
+
 ## Remarks
 
 - **Where contractibility enters.** It is used exactly twice, in the two
@@ -238,8 +270,6 @@ Step 1. The second is $\iota_e\circ\kappa$, a weak equivalence by Step 4. By
   categories induces a weak equivalence of diagram categories. Deducing the
   colimit statement from that lemma would need derived adjunctions. The
   argument above avoids them.
-- **What is still needed for 9.5.4.** To apply the lemma to the fiber, the
-  restriction $X|_{p_t^{-1}(d)}$ must be Reedy cofibrant (Lemma 9.5.3), and the
-  fiber must be a small direct category. See the
-  [resolution note](semisimplicial-resolution.md) and the
-  [formalization plan](../formalization-plan.md).
+- **Status for 9.5.4.** Applying Lemma K to the fiber would need Lemma 9.5.3,
+  which turned out to be false. Lemma K′ on $p_t\downarrow d$ avoids the fiber
+  altogether. See the [resolution note](semisimplicial-resolution.md).

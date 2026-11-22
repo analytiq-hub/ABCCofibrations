@@ -151,4 +151,110 @@ theorem weakEquivalence_colimit_ι_of_contraction (A : F ⥤ F) (e : F)
     exact hq' e
   exact weakEquivalence_of_twoOutOfSix _ _ _ hικ hκι
 
+/-- **Lemma K′.** A weaker hypothesis than Lemma K: `Y` need only invert the
+images `A(α_x)`, `A(β_x)` and the two components `α_e`, `α_{A e}`. The
+components `α_x` themselves need not be inverted.
+
+Factor `Yα : Y ⟶ A ⋙ Y` as `a : Y ⟶ W` followed by a levelwise weak equivalence
+`w`. Lemma K applies to `W`. The comparison `ρ : colim W ⟶ colim Y` satisfies
+`colim a ≫ ρ = 𝟙`, and `ρ ≫ colim a` is a weak equivalence, as one checks at
+`ι^W_e`. By 2-out-of-6, `colim a` is a weak equivalence, and hence so is `ι_e`. -/
+theorem weakEquivalence_colimit_ι_of_weakContraction (A : F ⥤ F) (e : F)
+    (α : 𝟭 F ⟶ A) (β : (Functor.const F).obj e ⟶ A)
+    (Y : F ⥤ M) [∀ j, HasColimit (latchingDiagram Y j)] (hY : IsReedyCofibrant Y)
+    (hAα : ∀ j, WeakEquivalence (Y.map (A.map (α.app j))))
+    (hAβ : ∀ j, WeakEquivalence (Y.map (A.map (β.app j))))
+    (hαe : WeakEquivalence (Y.map (α.app e)))
+    (hαAe : WeakEquivalence (Y.map (α.app (A.obj e)))) :
+    ∃ _ : HasColimit Y, WeakEquivalence (colimit.ι Y e) := by
+  have h5 : CoproductCofibrationAxiom.{w} M := ABCCofibrationCategory.coproductCofibrationAxiom
+  have h5t : TrivialCoproductAxiom.{w} M := ABCCofibrationCategory.trivialCoproductAxiom
+  have h6 : SequentialCofibrationAxiom M := ABCCofibrationCategory.sequentialCofibrationAxiom
+  have h6t : TrivialSequentialAxiom M := ABCCofibrationCategory.trivialSequentialAxiom
+  let R := ReedyDiagram F M
+  let Y' : R := Y
+  have hY' : IsCofibrant Y' := ReedyDiagram.isCofibrant_of_isReedyCofibrant hY
+  let AY : R := A ⋙ Y
+  let φα : Y' ⟶ AY := Functor.whiskerRight α Y
+  obtain ⟨W, a, wmap, ha, hw, hfac⟩ := factorization φα
+  have hw' := (ReedyDiagram.weakEquivalence_iff wmap).1 hw
+  have hW : IsCofibrant W := cofibrant_target a
+  obtain ⟨hLW, hWR⟩ := ReedyDiagram.isReedyCofibrant_of_isCofibrant hW
+  have haw (j : F) : NatTrans.app a j ≫ NatTrans.app wmap j = Y.map (α.app j) := by
+    rw [← NatTrans.comp_app, hfac]
+    rfl
+  -- `W` inverts the contraction, so Lemma K applies to it.
+  have hWα (j : F) : WeakEquivalence ((W : F ⥤ M).map (α.app j)) := by
+    have : WeakEquivalence ((W : F ⥤ M).map (α.app j) ≫ NatTrans.app wmap (A.obj j)) := by
+      rw [wmap.naturality]
+      have := hw' j
+      have := hAα j
+      change WeakEquivalence (NatTrans.app wmap j ≫ Y.map (A.map (α.app j)))
+      infer_instance
+    exact weakEquivalence_of_postcomp _ (NatTrans.app wmap (A.obj j))
+  have hWβ (j : F) : WeakEquivalence ((W : F ⥤ M).map (β.app j)) := by
+    have : WeakEquivalence ((W : F ⥤ M).map (β.app j) ≫ NatTrans.app wmap (A.obj j)) := by
+      rw [wmap.naturality]
+      have := hw' e
+      have := hAβ j
+      change WeakEquivalence (NatTrans.app wmap e ≫ Y.map (A.map (β.app j)))
+      infer_instance
+    exact weakEquivalence_of_postcomp _ (NatTrans.app wmap (A.obj j))
+  obtain ⟨hcW, hιW⟩ :=
+    weakEquivalence_colimit_ι_of_contraction A e α β (W : F ⥤ M) hWR hWα hWβ
+  -- The colimit of `Y` exists.
+  obtain ⟨hcY, -, -⟩ := reedyCofibrant_colimMap_weakEquivalence_small h5 h5t h6 h6t hY hY
+    (𝟙 Y) (fun j ↦ ABCPrecofibrationCategory.weakEquivalence_of_isIso _)
+  refine ⟨hcY, ?_⟩
+  let ρ : colimit (W : F ⥤ M) ⟶ colimit Y :=
+    colimit.desc (W : F ⥤ M)
+      ⟨colimit Y, wmap ≫ Functor.whiskerLeft A (colimit.cocone Y).ι⟩
+  have hρa : colimMap a ≫ ρ = 𝟙 _ := by
+    apply colimit.hom_ext
+    intro j
+    simp only [ι_colimMap_assoc, colimit.ι_desc, Category.comp_id, ρ]
+    change NatTrans.app a j ≫ NatTrans.app wmap j ≫ colimit.ι Y (A.obj j) = colimit.ι Y j
+    rw [← Category.assoc, haw]
+    exact colimit.w Y (α.app j)
+  -- `ρ ≫ colim a` is a weak equivalence, checked at `ι^W_e`.
+  have hιWAe : WeakEquivalence (colimit.ι (W : F ⥤ M) (A.obj e)) := by
+    have : WeakEquivalence ((W : F ⥤ M).map (β.app e) ≫ colimit.ι (W : F ⥤ M) (A.obj e)) := by
+      rw [colimit.w]
+      exact hιW
+    have := hWβ e
+    exact weakEquivalence_of_precomp ((W : F ⥤ M).map (β.app e)) _
+  have haAe : WeakEquivalence (NatTrans.app a (A.obj e)) := by
+    have : WeakEquivalence (NatTrans.app a (A.obj e) ≫ NatTrans.app wmap (A.obj e)) := by
+      rw [haw]
+      exact hαAe
+    have := hw' (A.obj e)
+    exact weakEquivalence_of_postcomp _ (NatTrans.app wmap (A.obj e))
+  have hcomp : colimit.ι (W : F ⥤ M) e ≫ ρ ≫ colimMap a =
+      NatTrans.app wmap e ≫ NatTrans.app a (A.obj e) ≫ colimit.ι (W : F ⥤ M) (A.obj e) := by
+    simp only [colimit.ι_desc_assoc, ρ]
+    change (NatTrans.app wmap e ≫ colimit.ι Y (A.obj e)) ≫ colimMap a = _
+    rw [Category.assoc, ι_colimMap]
+  have hρa' : WeakEquivalence (ρ ≫ colimMap a) := by
+    have : WeakEquivalence (colimit.ι (W : F ⥤ M) e ≫ ρ ≫ colimMap a) := by
+      rw [hcomp]
+      have := hw' e
+      infer_instance
+    exact weakEquivalence_of_precomp (colimit.ι (W : F ⥤ M) e) _
+  have hid : WeakEquivalence (colimMap a ≫ ρ) := by
+    rw [hρa]
+    exact ABCPrecofibrationCategory.weakEquivalence_of_isIso _
+  have hcolima : WeakEquivalence (colimMap a) :=
+    weakEquivalence_of_twoOutOfSix _ _ _ hid hρa'
+  -- Finally `ι_e`.
+  have hae : WeakEquivalence (NatTrans.app a e) := by
+    have : WeakEquivalence (NatTrans.app a e ≫ NatTrans.app wmap e) := by
+      rw [haw]
+      exact hαe
+    have := hw' e
+    exact weakEquivalence_of_postcomp _ (NatTrans.app wmap e)
+  have : WeakEquivalence (colimit.ι Y e ≫ colimMap a) := by
+    rw [ι_colimMap]
+    infer_instance
+  exact weakEquivalence_of_postcomp _ (colimMap a)
+
 end ABCCofibrations

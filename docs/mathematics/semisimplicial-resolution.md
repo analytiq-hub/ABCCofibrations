@@ -483,11 +483,24 @@ So the fiber $p_t^{-1}(d)$, Lemma 9.5.3, the initial object $e(d)$ and the
 cofinality of $i_d$ all drop out of the argument. The earlier results about
 them remain correct, but are no longer on the critical path.
 
-**Remaining for 9.5.4(1).** Identify $\operatorname{colim}_{p_t\downarrow d}X$
-with $(\operatorname{colim}_{p_t}X)_d$ (the pointwise left Kan extension). Then
-deduce (a) and (b) as in the paper: for restricted $X$, the selection of the
-last vertex $(x_n)\to x$ has identity terminal component, so
-$X_{(x_n)}\to X_x$ is a weak equivalence. Part (2) follows by duality.
+**9.5.4(1) is proved** in `ResolutionColimitEquivalences.lean`, for `D : Type`:
+
+- `weakEquivalence_resolution_leftKanExtensionUnit`: the pointwise left Kan
+  extension $\operatorname{colim}_{p_t}X$ exists, and its unit
+  $X_{(d)}\to(\operatorname{colim}_{p_t}X)_d$ is a weak equivalence;
+- `resolution_adjoint_weakEquivalence_iff`: part (a), with the adjoint map
+  computed pointwise on $\operatorname{colim}_{p_t\downarrow d}X$;
+- `resolution_colimMap_weakEquivalence_iff`: part (b).
+
+The step from singletons to all simplices uses the selection of the last
+vertex $(x_n)\to x$ (`resolutionLastVertex`). Its terminal component is an
+identity (`resolutionTerminal_map_lastVertex`), so a restricted diagram
+inverts it.
+
+**Remaining.** Part (2), by duality. The statements also assume that "restricted
+Reedy cofibrant" means Reedy cofibrant on $\Delta'D$ and inverting maps with
+identity terminal component. The paper's restricted cofibration category of
+Theorem 9.3.8 is not used.
 
 ## Literature check (2026-11-20)
 

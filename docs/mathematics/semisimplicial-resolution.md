@@ -194,9 +194,12 @@ bijective on objects. Its explicit inverse sends
 $(x_0\to\cdots\to x_n,\ a\colon u x_n\to d_2)$ to the chain whose $i$-th
 structure map is $u(x_i\to x_n)\,a$. `ResolutionSliceContraction.lean`
 transports the zigzag along it, giving the paper's $a^d$, $\alpha$, $\beta$ on
-$p_t\downarrow d$. The inverse-side 9.5.1(2) remains. Because $\Delta'$ is not
-invariant under equivalences of categories, deriving it by duality needs a
-strict isomorphism $(d_2\downarrow u)^{op}\cong(u^{op}\downarrow d_2)$.
+$p_t\downarrow d$. The inverse-side 9.5.1(2) is derived by duality in
+`ResolutionCommaComparisonDual.lean`. $\Delta'$ is not invariant under
+equivalences of categories, so the derivation uses that the two functors
+between $(d_2\downarrow u)^{op}$ and $(u^{op}\downarrow d_2)$ are strictly
+inverse to each other. The dual contraction of $d\downarrow p_i$ is transported
+the same way.
 
 ## Literature check (2026-11-20)
 

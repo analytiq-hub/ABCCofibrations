@@ -27,10 +27,8 @@ result is packaged as `resolutionCommaEquivalence`. Its counit has identity
 components in Δ′D₁, and its unit is given by `eqToIso` of label equalities;
 strict functor equalities are avoided.
 
-The inverse-side Lemma 9.5.1(2) is not yet formalized. Δ′ is not invariant
-under equivalences of categories (its maps commute with labels strictly), so
-the duality route needs a strict isomorphism (d₂ ↓ u)ᵒᵖ ≅ (u.op ↓ op d₂),
-not mathlib's equivalence.
+The inverse-side Lemma 9.5.1(2) is derived by duality in
+`ResolutionCommaComparisonDual.lean`.
 
 The comparison commutes strictly with the projections to Δ′D₁
 (`resolutionCommaCompare_proj`).

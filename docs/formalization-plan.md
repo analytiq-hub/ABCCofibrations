@@ -566,12 +566,16 @@ Resume in this order:
    `xₙ → d₂`, and the package is `resolutionCommaEquivalence`. The comparison
    commutes strictly with the projections to Δ′D₁ (`resolutionCommaCompare_proj`,
    by `rfl`). `resolutionMap` was generalized to functors between categories in
-   different universes, as `u ↓ d₂` requires. **Remaining:** the inverse side
-   9.5.1(2). Δ′ is not invariant under equivalences, because its maps commute
-   with labels strictly. So duality needs a strict isomorphism
-   (d₂ ↓ u)ᵒᵖ ≅ (u.op ↓ op d₂) together with a lemma that `resolutionMap`
-   preserves isomorphisms of categories. Alternatively, mirror the direct
-   proof.
+   different universes, as `u ↓ d₂` requires. **Inverse side 9.5.1(2): done.**
+   `ResolutionCommaComparisonDual.lean` gives
+   `resolutionStructuredCommaEquivalence : Δ′ᵒᵖ(d₂ ↓ u) ≌ (d₂ ↓ u pᵢ)` by duality.
+   Δ′ is not invariant under equivalences, because its maps commute with labels
+   strictly. The proof therefore uses that mathlib's functors
+   (d₂ ↓ u)ᵒᵖ ⇄ (u.op ↓ op d₂) are strictly inverse, which holds by `rfl`.
+   `resolutionMapEquivOfInverse` turns that strict pair into an equivalence of
+   resolutions. The rest of the chain uses ordinary op/`post` equivalences.
+   Unlike the direct side, this equivalence is not explicit on objects:
+   `StructuredArrow.post …).asEquivalence` uses choice.
 
 3. **Contraction of (pₜ ↓ d) — categorical part done (2026-11-21).**
    `ResolutionSliceContraction.lean` uses the terminal object (d, 1_d) of
@@ -580,6 +584,10 @@ Resume in this order:
    (`resolutionSliceAppend`), α : 𝟭 ⟶ aᵈ (`resolutionSliceToAppend`) and
    β : cᵈ ⟶ aᵈ (`resolutionSliceCenterToAppend`) of 9.5.2(1)(b), with explicit
    object formulas: old vertices kept, last vertex d, structure map 1_d.
+   The dual zigzag for (d ↓ pᵢ) (9.5.2(2)(b)) is in
+   `ResolutionCommaComparisonDual.lean`: `resolutionCoslicePrepend`, with maps
+   to the identity and to the constant at `d →1 (d)`. It has no explicit object
+   formulas, because the dual equivalence uses choice.
    **Remaining:** the bridge from this zigzag to the homotopical/cofinality
    notion that 9.5.2(1)(c) and 9.5.4 actually use. 9.5.2(1)(c) as written uses
    the false initial object in p_t⁻¹(d). A categorical zigzag alone is not the
@@ -1380,3 +1388,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-20 | Both resolution-repair routes and replacement survey | `ResolutionVertexInsertion.lean` checks terminal-labelled chain insertion using `WithTerminal`. The marked category is direct and has a natural singleton map. `ReedyConstantInitial.lean` checks the constant Reedy diagram step using CF1–CF4. `TerminalVertexCofinalityObstruction.lean` proves that forgetting the marking is not final, so the naive cofinality continuation fails. The dedicated direct/filtered replacement survey records seven routes, precise limitations, references, and Lean status. Full build passed (3326 jobs), without warnings; 26 audits use only `propext`, `Classical.choice`, and `Quot.sound`. The general labelled contraction, comma comparison, and restricted homotopical comparison remain; no completed repair of 9.5.4 is claimed. |
 | 2026-11-21 | Labelled terminal-vertex insertion | `ResolutionLabelledInsertion.lean` constructs `resolutionAppend ht : Δ′D ⥤ Δ′D` for a terminal object `t`, with natural maps from the identity and from the constant singleton at `t`, over the ordinal functor `semisimplexAppend`; label compatibility is reduced to `WithTerminal` functor identities. The inverse-side prepend functor follows by duality. Full build passed (3328 jobs), without warnings; 14 declaration audits use only `propext`, `Classical.choice`, and `Quot.sound`. Next: the comma comparison of Lemma 9.5.1(1). |
 | 2026-11-21 | Lemma 9.5.1(1) and the contraction of 9.5.2(1)(b) | `ResolutionCommaComparison.lean` proves the comparison Δ′(u ↓ d₂) ⥤ (u pₜ ↓ d₂) fully faithful and bijective on objects, with explicit inverse and equivalence, strictly over Δ′D₁; `resolutionMap` now allows different universes. `ResolutionSliceContraction.lean` builds aᵈ, α, β for (pₜ ↓ d) from the terminal object of D/d. Full build passed (3332 jobs), without warnings; 15 declaration audits use only `propext`, `Classical.choice`, and `Quot.sound`. Next: inverse-side 9.5.1(2) (needs a strict isomorphism, since Δ′ is not equivalence-invariant), then the homotopical bridge for 9.5.2(1)(c). |
+| 2026-11-21 | Inverse-side 9.5.1(2) and dual contraction | `ResolutionCommaComparisonDual.lean` proves Δ′ᵒᵖ(d₂ ↓ u) ≌ (d₂ ↓ u pᵢ) by duality. Since Δ′ is not equivalence-invariant, it uses the strict (`rfl`) inverse pair (d₂ ↓ u)ᵒᵖ ⇄ (u.op ↓ op d₂) via `resolutionMapEquivOfInverse`. It also transports the prepend zigzag to (d ↓ pᵢ). Full build passed (3334 jobs), without warnings; 9 declaration audits use only `propext`, `Classical.choice`, and `Quot.sound`. Next: the homotopical bridge for 9.5.2(1)(c)/(2)(c) and Proposition 9.5.4. |

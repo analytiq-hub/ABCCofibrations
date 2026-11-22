@@ -167,5 +167,6 @@ import ABCCofibrations.ResolutionVertexInsertion
 import ABCCofibrations.ResolutionLabelledInsertion
 import ABCCofibrations.ResolutionCommaComparison
 import ABCCofibrations.ResolutionSliceContraction
+import ABCCofibrations.ResolutionCommaComparisonDual
 import ABCCofibrations.ReedyConstantInitial
 import ABCCofibrations.TerminalVertexCofinalityObstruction

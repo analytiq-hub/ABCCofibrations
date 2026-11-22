@@ -172,5 +172,7 @@ import ABCCofibrations.ResolutionFiberFinal
 import ABCCofibrations.ResolutionFiberCounterexample
 import ABCCofibrations.ContractibleColimits
 import ABCCofibrations.ResolutionFiberColimit
+import ABCCofibrations.InjectiveSets
+import ABCCofibrations.ResolutionFiberReedyCounterexample
 import ABCCofibrations.ReedyConstantInitial
 import ABCCofibrations.TerminalVertexCofinalityObstruction

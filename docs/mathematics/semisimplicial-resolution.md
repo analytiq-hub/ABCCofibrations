@@ -326,11 +326,15 @@ downward closed in $p_t\downarrow d$, so this does not follow formally from
 Reedy cofibrancy on $p_t\downarrow d$. The paper's combinatorial induction is
 still needed.
 
-## Lemma 9.5.3 fails (informal counterexample, 2026-11-21)
+## Lemma 9.5.3 fails (2026-11-21)
 
 Lemma 9.5.3(1) asserts that for every Reedy cofibrant $X$ on $\Delta'D$, the
 restriction $X|_{p_t^{-1}(d)}$ is Reedy cofibrant. The following example
-contradicts this. It is checked by hand and not yet in Lean.
+contradicts this. It is checked in Lean in
+`ResolutionFiberReedyCounterexample.lean`: `FiberReedyCounterexample.not_isReedyCofibrant`,
+with `resolutionVertices_isReedyCofibrant` and
+`FiberReedyCounterexample.isResolutionRestricted`. The cofibration category is
+`InjSet` (`InjectiveSets.lean`).
 
 **The fiber latching category.** Faces of a chain $y=(y_0\to\cdots\to y_m)$
 correspond to nonempty subsets $S\subseteq\{0,\dots,m\}$. The face for $S$ is a
@@ -385,7 +389,13 @@ checked here remain valid, but their hypotheses must be read accordingly:
 - Lemma K and finality of the fiber inclusion are unaffected.
 
 **Possible repairs.**
-1. Use the marked-terminal category $T_d$ (maps preserve the last vertex). Its
+1. Use the marked-terminal category $T_d$ (maps preserve the last vertex).
+   By a hand check (not yet in Lean), $T_d$ is isomorphic to $\Delta'(D/d)$
+   with the empty simplex adjoined as an initial object. Equivalently, it is
+   the category of simplices of the augmented semisimplicial nerve of $D/d$.
+   The singleton $(d)$ corresponds to the empty chain. There is no standard
+   name for this category. "Marked" should not be read in the sense of marked
+   simplicial sets. Its
    latching categories *are* the faces containing the last vertex, so
    restriction preserves Reedy cofibrancy by the classical upper-face pushout
    argument, and $T_d$ has an initial object. What is missing is a homotopy

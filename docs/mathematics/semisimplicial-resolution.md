@@ -300,6 +300,9 @@ which shows that a homotopy equivalence of homotopical categories induces a
 weak equivalence of diagram categories. That route would need derived
 adjunctions, and this one avoids them.
 
+A standalone explanation with diagrams is in
+[contractible colimits](contractible-colimits.md).
+
 **Formalized** as `weakEquivalence_colimit_ι_of_contraction` in
 `ContractibleColimits.lean`, for any small direct $F$. The 2-out-of-6 step is
 `weakEquivalence_of_twoOutOfSix`, derived from saturation.

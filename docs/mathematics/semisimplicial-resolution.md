@@ -497,7 +497,18 @@ vertex $(x_n)\to x$ (`resolutionLastVertex`). Its terminal component is an
 identity (`resolutionTerminal_map_lastVertex`), so a restricted diagram
 inverts it.
 
-**Remaining.** Part (2), by duality. The statements also assume that "restricted
+**9.5.4(2) is proved by duality** in `ResolutionLimitEquivalences.lean`. A
+fibration category is a cofibration category on $M^{op}$. A Reedy fibrant $X$
+on $\Delta'^{op}D=(\Delta'D^{op})^{op}$ gives the Reedy cofibrant diagram
+`X.rightOp` on $\Delta'(D^{op})$, via the transport `isReedyCofibrant_opOp_comp`
+along $C\cong C^{op\,op}$. The results are
+`weakEquivalence_coresolution_limit_π` (the key step),
+`coresolution_adjoint_weakEquivalence_iff` (a) and
+`coresolution_limMap_weakEquivalence_iff` (b). Relative limits appear as the
+`unop` of relative colimits in $M^{op}$, and "restricted" is imposed on
+`X.rightOp`.
+
+**Conventions.** The statements assume that "restricted
 Reedy cofibrant" means Reedy cofibrant on $\Delta'D$ and inverting maps with
 identity terminal component. The paper's restricted cofibration category of
 Theorem 9.3.8 is not used.

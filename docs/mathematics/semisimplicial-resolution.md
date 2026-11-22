@@ -187,8 +187,16 @@ $$
 and the zigzag above contracts $\Delta'(D/d)$. The singleton $((d),1_d)$ is still
 not initial in $p_t\downarrow d$, since both $\delta^0$ and $\delta^1$ above lie
 over $1_d$. The contraction does not need it to be. The comparison
-$p_t\downarrow d\cong\Delta'(D/d)$ is Lemma 9.5.1(1). It is the next step of the
-formalization and is not yet proved.
+$p_t\downarrow d\cong\Delta'(D/d)$ is Lemma 9.5.1(1). It is now checked in
+`ResolutionCommaComparison.lean` for general $u\colon D_1\to D_2$, as a functor
+$\Delta'(u\downarrow d_2)\to(u\,p_t\downarrow d_2)$ that is fully faithful and
+bijective on objects. Its explicit inverse sends
+$(x_0\to\cdots\to x_n,\ a\colon u x_n\to d_2)$ to the chain whose $i$-th
+structure map is $u(x_i\to x_n)\,a$. `ResolutionSliceContraction.lean`
+transports the zigzag along it, giving the paper's $a^d$, $\alpha$, $\beta$ on
+$p_t\downarrow d$. The inverse-side 9.5.1(2) remains. Because $\Delta'$ is not
+invariant under equivalences of categories, deriving it by duality needs a
+strict isomorphism $(d_2\downarrow u)^{op}\cong(u^{op}\downarrow d_2)$.
 
 ## Literature check (2026-11-20)
 

@@ -165,5 +165,7 @@ import ABCCofibrations.ResolutionTerminalVertex
 import ABCCofibrations.SemisimplexContraction
 import ABCCofibrations.ResolutionVertexInsertion
 import ABCCofibrations.ResolutionLabelledInsertion
+import ABCCofibrations.ResolutionCommaComparison
+import ABCCofibrations.ResolutionSliceContraction
 import ABCCofibrations.ReedyConstantInitial
 import ABCCofibrations.TerminalVertexCofinalityObstruction

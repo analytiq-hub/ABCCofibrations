@@ -20,7 +20,7 @@ ones, are retained. Its degree is the length of the underlying simplex.
 
 @[expose] public section
 set_option backward.isDefEq.respectTransparency false
-universe v u
+universe v u v' u'
 open CategoryTheory Limits Opposite
 namespace ABCCofibrations
 
@@ -147,14 +147,16 @@ def resolutionTerminal (D : Type u) [Category.{v} D] : SemisimplicialResolution 
   obj := resolutionTerminalObject
   map := resolutionTerminalMap
 
-/-- A functor acts on the labels of all simplices of the direct resolution. -/
-def resolutionMap {D E : Type u} [Category.{v} D] [Category.{v} E] (F : D ⥤ E) :
-    SemisimplicialResolution D ⥤ SemisimplicialResolution E :=
-  (NatTrans.mapElements (Functor.whiskerLeft SemiSimplexCategory.toSimplexCategory.op
-    (nerveMap F))).op
+/-- A functor acts on the labels of all simplices of the direct resolution.
+The two categories may live in different universes. -/
+def resolutionMap {D : Type u} [Category.{v} D] {E : Type u'} [Category.{v'} E] (F : D ⥤ E) :
+    SemisimplicialResolution D ⥤ SemisimplicialResolution E where
+  obj x := op ((semisimplicialNerve E).elementsMk x.unop.obj
+    ((x.unop.val : Fin (x.unop.obj.unop.len + 1) ⥤ D) ⋙ F))
+  map f := Quiver.Hom.op ⟨f.unop.hom, congrArg (· ⋙ F) f.unop.map_val⟩
 
 /-- The terminal projection is natural in the category being resolved. -/
-theorem resolutionMap_terminal {D E : Type u} [Category.{v} D] [Category.{v} E]
+theorem resolutionMap_terminal {D : Type u} [Category.{v} D] {E : Type u'} [Category.{v'} E]
     (F : D ⥤ E) : resolutionMap F ⋙ resolutionTerminal E = resolutionTerminal D ⋙ F := by
   refine CategoryTheory.Functor.ext (F := resolutionMap F ⋙ resolutionTerminal E)
     (G := resolutionTerminal D ⋙ F) (fun _ ↦ rfl) ?_

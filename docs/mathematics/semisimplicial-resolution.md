@@ -239,7 +239,7 @@ The remaining gap in 9.5.4 is the use of an initial object $e(d)$ of
 $p_t^{-1}(d)$. It is used to build the constant diagram $cX_{e(d)}\to X|_{p_t^{-1}(d)}$
 and to prove that this diagram is Reedy cofibrant.
 
-## Replacing the $e(d)$ step: a contraction lemma (proposed, not yet formalized)
+## Replacing the $e(d)$ step: a contraction lemma
 
 The paper uses $e(d)$ only to conclude that
 
@@ -299,6 +299,10 @@ cofibration category. It is the colimit counterpart of Szumiło's Lemma 1.17,
 which shows that a homotopy equivalence of homotopical categories induces a
 weak equivalence of diagram categories. That route would need derived
 adjunctions, and this one avoids them.
+
+**Formalized** as `weakEquivalence_colimit_ι_of_contraction` in
+`ContractibleColimits.lean`, for any small direct $F$. The 2-out-of-6 step is
+`weakEquivalence_of_twoOutOfSix`, derived from saturation.
 
 **Ingredients available in the library.** Reedy factorization
 (`reedy_factorization_small`), Reedy coproducts, homotopy invariance of Reedy

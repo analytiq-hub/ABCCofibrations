@@ -170,5 +170,6 @@ import ABCCofibrations.ResolutionSliceContraction
 import ABCCofibrations.ResolutionCommaComparisonDual
 import ABCCofibrations.ResolutionFiberFinal
 import ABCCofibrations.ResolutionFiberCounterexample
+import ABCCofibrations.ContractibleColimits
 import ABCCofibrations.ReedyConstantInitial
 import ABCCofibrations.TerminalVertexCofinalityObstruction

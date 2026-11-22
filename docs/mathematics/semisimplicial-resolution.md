@@ -29,15 +29,28 @@ For `D : Type u` with morphisms in `Type v`, the resolution objects lie in
 
 The paper claims that the fiber of pₜ over d has initial object the singleton
 (d). Take D to be the terminal category. Its resolution is Δ′, the category of
-all finite nonempty ordinals and injective order-preserving maps. There are two
-maps from the one-vertex simplex to the two-vertex simplex:
+all finite nonempty ordinals and injective order-preserving maps. In low
+degrees it looks like this:
 
-```mermaid
-flowchart LR
-  a["(d)"] -->|"select vertex 0"| b["(d → d), with arrow id"]
-  a -->|"select vertex 1"| b
-```
+$$
+[0]\;\rightrightarrows\;[1]\;\mathrel{\substack{\longrightarrow\\ \longrightarrow\\ \longrightarrow}}\;[2]\;\mathrel{\substack{\longrightarrow\\ \longrightarrow\\ \longrightarrow\\ \longrightarrow}}\;[3]\;\cdots
+$$
 
+The $n+2$ arrows $[n]\to[n+1]$ are the coface maps $\delta^0,\dots,\delta^{n+1}$,
+where $\delta^i$ skips the vertex $i$. Every morphism is a composite of cofaces.
+There are no degeneracies, since only injective maps are allowed.
+
+For a general $D$, an object of $\Delta' D$ is a labelled chain
+$(x_0\to x_1\to\cdots\to x_n)$, which may include identity arrows. Applying
+$\delta^1$ and $\delta^0$ to the one-vertex simplex gives two maps
+
+$$
+(d)\;\overset{\delta^1}{\underset{\delta^0}{\rightrightarrows}}\;(d\xrightarrow{\ 1_d\ }d),
+\qquad
+p_t(\delta^1)=p_t(\delta^0)=1_d .
+$$
+
+$\delta^1$ sends the vertex to vertex 0, and $\delta^0$ sends it to vertex 1.
 Both maps project to the identity of d. Thus the problem occurs both for a
 strict functor fiber (maps projecting to an identity) and for the full
 subcategory on objects whose terminal label is d.
@@ -71,6 +84,19 @@ mark the terminal vertex of a simplex by a map from the singleton (d), and
 require maps to preserve this marking. It is a full subcategory of the under
 category of the singleton, rather than a full subcategory of Δ′D.
 
+For the terminal input category, the marked objects are ordinals $[n]_\ast$
+whose last vertex is marked. The morphisms are the injective monotone maps
+that preserve the last vertex:
+
+$$
+[0]_\ast\;\longrightarrow\;[1]_\ast\;\rightrightarrows\;[2]_\ast\;\mathrel{\substack{\longrightarrow\\ \longrightarrow\\ \longrightarrow}}\;[3]_\ast\;\cdots
+$$
+
+Now only $\delta^0,\dots,\delta^{n}$ go from $[n]_\ast$ to $[n+1]_\ast$, because
+$\delta^{n+1}$ would move the last vertex. In particular $[0]_\ast$ has exactly one
+map to each $[m]_\ast$, the one onto the last vertex. Compare this with the two
+arrows $[0]\rightrightarrows[1]$ in $\Delta'$.
+
 `terminalVertexSingletonIsInitial` proves that the marked singleton is initial.
 The marked category is now also checked to be direct, its terminal label is d,
 and its markings give a natural map from the constant singleton diagram.
@@ -82,11 +108,87 @@ However, `terminalVertexForget_not_final` in
 `TerminalVertexCofinalityObstruction.lean` now proves that forgetting the marking
 is not final: in the comma category under the singleton, whether a map equals
 the marked inclusion is invariant under morphisms, and the two endpoint maps
-into a constant edge give different values. This rules out the naive ordinary
+into a constant edge give different values:
+
+$$
+\begin{array}{ccc}
+ & (d) & \\
+{\scriptstyle\delta^1}\swarrow & & \searrow{\scriptstyle\delta^0\,=\,\text{marking}}\\
+(d\xrightarrow{1_d}d)_\ast & & (d\xrightarrow{1_d}d)_\ast
+\end{array}
+$$
+
+No zigzag of objects under $(d)$ connects the left object to the right one.
+So the comma category is disconnected. This rules out the naive ordinary
 cofinality continuation, including for the terminal input category.
 A restricted homotopical comparison and the Reedy restriction theorem remain
 unproved. The construction is therefore a partial repair with a checked
 limitation, not a completed corrected proof of §9.5.
+
+## Contractibility without an initial object, pictured
+
+Suppose D has a terminal object t. Then the zigzag below replaces the missing
+initial object. Instead of a unique map from a singleton *into* every simplex,
+each simplex $x$ maps *into* a common enlargement, which also receives the
+singleton:
+
+$$
+\begin{array}{ccccc}
+(x_0\to\cdots\to x_n) & \xrightarrow{\ \ \iota_x\ \ } & (x_0\to\cdots\to x_n\to t) & \xleftarrow{\ \ \tau_x\ \ } & (t).
+\end{array}
+$$
+
+Here $\iota_x$ includes the old vertices $0,\dots,n$, and $\tau_x$ selects the new
+vertex $n+1$. Both are natural. For any $f\colon x\to y$, write $f\ast t$ for $f$
+extended by sending the new vertex to the new vertex. Then
+
+$$
+\begin{array}{ccccc}
+x & \xrightarrow{\ \iota_x\ } & x\ast t & \xleftarrow{\ \tau_x\ } & (t)\\
+{\scriptstyle f}\big\downarrow & & \big\downarrow{\scriptstyle f\ast t} & & \big\|\\
+y & \xrightarrow{\ \iota_y\ } & y\ast t & \xleftarrow{\ \tau_y\ } & (t)
+\end{array}
+$$
+
+commutes. The labels match because each arrow into $t$ is unique, and this is
+the only place where terminality is used. In Lean these are `resolutionAppend`
+($x\mapsto x\ast t$), `resolutionToAppend` ($\iota$) and
+`resolutionSingletonToAppend` ($\tau$) in `ResolutionLabelledInsertion.lean`.
+They are checked as functors and natural transformations.
+
+For the terminal category, so that $\Delta' D=\Delta'$, the component at $[1]$ is
+
+$$
+[1]\;\xrightarrow{\ 0\mapsto 0,\ 1\mapsto 1\ }\;[2]\;\xleftarrow{\ 0\mapsto 2\ }\;[0].
+$$
+
+*Why this means "contractible".* A natural transformation $F\Rightarrow G$ is a
+functor $\mathcal C\times[1]\to\mathcal C'$, so its nerve gives a homotopy
+$|NF|\simeq|NG|$. The zigzag therefore gives
+$\mathrm{id}\simeq\mathrm{const}_{(t)}$ on $|N\Delta' D|$. This is the standard
+argument of Quillen (*Higher algebraic K-theory I*, §1). It is not formalized
+here, and the formalization only needs the categorical zigzag.
+
+*Application to the fibers.* The relevant homotopy fiber of $p_t$ over $d$ is
+the comma category $p_t\downarrow d$. Its objects are chains with a map from the
+last vertex to $d$:
+
+$$
+(x_0\to\cdots\to x_n\xrightarrow{\ a\ }d).
+$$
+
+This is the same data as a chain in the slice category $D/d$, which has the
+terminal object $(d,1_d)$. Appending it is just "write $d$ at the end":
+
+$$
+(x_0\to\cdots\to x_n)\;\longmapsto\;(x_0\to\cdots\to x_n\xrightarrow{\ a\ }d),
+$$
+
+and the zigzag above contracts $\Delta'(D/d)$. The singleton $((d),1_d)$ is still
+not initial in $p_t\downarrow d$, since both $\delta^0$ and $\delta^1$ above lie
+over $1_d$. The contraction does not need it to be. The comparison
+$p_t\downarrow d\cong\Delta'(D/d)$ is Lemma 9.5.1(1). It is the next step of the
+formalization and is not yet proved.
 
 ## Literature check (2026-11-20)
 
@@ -137,9 +239,16 @@ category is explicitly a different category, and its initial object is a
 separate checked result. No replacement for the full proof of Proposition 9.5.4
 is claimed. `ResolutionVertexInsertion.lean` now checks the operation of appending an
 explicit terminal label to a finite chain, using mathlib's `WithTerminal`.
-The source correspondence for Lemma 9.5.1, the general labelled contraction,
-and the restricted Reedy comparisons must be checked before advancing to the
-arbitrary-indexing diagram-category theorem.
+`ResolutionLabelledInsertion.lean` extends this to the whole resolution. For a
+chosen terminal object t of D, `resolutionAppend` is an endofunctor of Δ′D, and
+there is a natural zigzag 𝟭 ⟶ resolutionAppend ⟵ const (singleton t). The dual
+statement holds for an initial object on the inverse resolution. This zigzag
+is purely categorical: it applies only when the category being resolved has a
+terminal object, for example a slice $D/d$, as pictured above. By itself it is not
+a homotopy-colimit comparison for arbitrary diagrams.
+The source correspondence for Lemma 9.5.1, its application to comma
+categories, and the restricted Reedy comparisons must be checked before
+advancing to the arbitrary-indexing diagram-category theorem.
 
 The dedicated survey [direct and filtered replacements](direct-and-filtered-replacements.md)
 collects both routes, their limitations, and alternatives from subdivision,

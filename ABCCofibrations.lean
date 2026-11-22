@@ -164,5 +164,6 @@ import ABCCofibrations.SemisimplexCounterexample
 import ABCCofibrations.ResolutionTerminalVertex
 import ABCCofibrations.SemisimplexContraction
 import ABCCofibrations.ResolutionVertexInsertion
+import ABCCofibrations.ResolutionLabelledInsertion
 import ABCCofibrations.ReedyConstantInitial
 import ABCCofibrations.TerminalVertexCofinalityObstruction

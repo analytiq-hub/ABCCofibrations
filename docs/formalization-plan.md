@@ -537,20 +537,25 @@ The current increment is finished and verified as infrastructure and obstruction
 results. Full `lake build` passed **3326 jobs without warnings**; the 26 audited
 declarations depend only on `propext`, `Classical.choice`, and `Quot.sound`.
 All seven new Lean modules are exported by `ABCCofibrations.lean`. There are no
-placeholder proofs. The changes and the two mathematical notes are **uncommitted**.
+placeholder proofs. That increment was committed as `1efe48b`.
 Do not include the unrelated `.claude/`, `.tmp-rb/`, or `.tmp-rb.tar.gz` artifacts
 in a future commit. No further implementation is needed to preserve this checkpoint.
 
 Resume in this order:
 
-1. **Finish labelled vertex insertion.** Build an endofunctor on the resolution
-   of a category with a specified terminal object, using `appendTerminal` from
-   `ResolutionVertexInsertion.lean`. Extend ordinal embeddings by sending the
-   new terminal vertex to the new terminal vertex. Prove the two natural
-   transformations from the identity and the constant singleton functor.
-   The existing `appendTerminal_obj_cast` and `appendTerminal_obj_last` supply
-   the object formulas; compatibility with embeddings and naturality remain.
-   Retain `SemisimplexContraction.lean` as the already checked unlabelled case.
+1. **Labelled vertex insertion — done (2026-11-21).**
+   `ResolutionLabelledInsertion.lean` defines `semisimplexAppend` (a new final
+   vertex on Δ′, with `semisimplexToAppend` and `semisimplexPointToAppend`) and,
+   for `ht : IsTerminal t`, the endofunctor `resolutionAppend ht` of Δ′D with
+   natural maps `resolutionToAppend : 𝟭 ⟶ resolutionAppend ht` and
+   `resolutionSingletonToAppend : const (resolutionSingleton t) ⟶ resolutionAppend ht`.
+   Label compatibility is `appendTerminal_nerve_map`; over Δ′ the functor is
+   ordinal insertion (`resolutionAppend_ordinal`), and every appended simplex
+   ends at `t` (`resolutionTerminal_append`). The inverse side
+   (`coresolutionPrepend` and its two maps, for an initial object) is obtained by
+   duality. Insertion is at the end, unlike the unlabelled
+   `SemisimplexContraction.lean`, so the new label receives maps from the others.
+   No initial object of Δ′D is asserted or used.
 
 2. **Prove Lemma 9.5.1(1)'s comma comparison.** Compare
    `CostructuredArrow (resolutionTerminal D₁ ⋙ u) d₂` with the direct resolution
@@ -1361,3 +1366,4 @@ Treat that documentation update as part of completing the increment.
 | 2026-11-20 | Full small diagram structures | Theorem 9.2.4(1)–(2)(a),(b) now has all six axioms for arbitrary small direct/inverse indexing categories. Restricted latching-colimit interchange, coproducts of relative pushouts, and the sequential relative comparison prove Reedy CF5–CF6; pointwise CF5–CF6 reuse the existing proof without finiteness assumptions. Native inverse structures follow by duality. New full structures use the indexing universe for coproducts/products; finite pointwise APIs retain their separate universe. Full build passed (3232 jobs), without warnings; 20 declaration axiom audits list only `propext`, `Classical.choice`, and `Quot.sound`. Next: select §9.5 homotopy-colimit statements against the existing derived-functor APIs. |
 | 2026-11-20 | Direct resolution and §9.5 obstruction | `SemisimplicialResolution.lean` constructs Δ′D, its degree, terminal projection and naturality, constant simplices, and the inverse resolution by duality. `SemisimplexCounterexample.lean` disproves the initial-object assertion of 9.5.2(1)(a); the terminal-category resolution has no initial object. `SemisimplexContraction.lean` checks id → shift ← const [0], using the literature's vertex-insertion method. `ResolutionTerminalVertex.lean` checks initiality for a separate marked-terminal category. Literature search found no explicit correction; Cisinski 6.15 cites 9.5.4, so the reference chain in Lenz 3.1 is not an independent repair. Full build passed (3320 jobs), without warnings; 17 declaration audits use only the standard three axioms. Next: settle the fiber correction and prove its Reedy/cofinality comparisons before 9.5.4. |
 | 2026-11-20 | Both resolution-repair routes and replacement survey | `ResolutionVertexInsertion.lean` checks terminal-labelled chain insertion using `WithTerminal`. The marked category is direct and has a natural singleton map. `ReedyConstantInitial.lean` checks the constant Reedy diagram step using CF1–CF4. `TerminalVertexCofinalityObstruction.lean` proves that forgetting the marking is not final, so the naive cofinality continuation fails. The dedicated direct/filtered replacement survey records seven routes, precise limitations, references, and Lean status. Full build passed (3326 jobs), without warnings; 26 audits use only `propext`, `Classical.choice`, and `Quot.sound`. The general labelled contraction, comma comparison, and restricted homotopical comparison remain; no completed repair of 9.5.4 is claimed. |
+| 2026-11-21 | Labelled terminal-vertex insertion | `ResolutionLabelledInsertion.lean` constructs `resolutionAppend ht : Δ′D ⥤ Δ′D` for a terminal object `t`, with natural maps from the identity and from the constant singleton at `t`, over the ordinal functor `semisimplexAppend`; label compatibility is reduced to `WithTerminal` functor identities. The inverse-side prepend functor follows by duality. Full build passed (3328 jobs), without warnings; 14 declaration audits use only `propext`, `Classical.choice`, and `Quot.sound`. Next: the comma comparison of Lemma 9.5.1(1). |

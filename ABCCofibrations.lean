@@ -178,5 +178,7 @@ import ABCCofibrations.ResolutionCommaColimit
 import ABCCofibrations.ResolutionColimitEquivalences
 import ABCCofibrations.ResolutionLimitEquivalences
 import ABCCofibrations.PointwiseArbitraryCofibrationCategory
+import ABCCofibrations.ClosedSubcategory
+import ABCCofibrations.RestrictedDiagrams
 import ABCCofibrations.ReedyConstantInitial
 import ABCCofibrations.TerminalVertexCofinalityObstruction

@@ -410,6 +410,50 @@ checked here remain valid, but their hypotheses must be read accordingly:
    in the way the later literature does (Szumiło's homotopical categories
    $D[m]$, Cisinski's derivator approach).
 
+## Why the marked-terminal route needs a *relative* cofinality theorem (2026-11-21)
+
+Let $\psi\colon T_d\to p_t\downarrow d$ be the forgetful functor. Take $c$ in the
+fiber, so $c$ ends at $d$ with identity structure map. Split the objects
+$(t,\ g\colon c\to\psi t)$ of $c\downarrow\psi$ according to whether $g$ sends the
+last vertex of $c$ to the last vertex of $t$. Maps of $T_d$ preserve last
+vertices and are strictly monotone, so every map of $c\downarrow\psi$ preserves
+and reflects this property. Both kinds occur: $(c,\mathrm{id})$ has it, and
+$(a^dc,\alpha_c)$ does not. Hence
+
+$$
+c\downarrow\psi\ \text{is disconnected},\qquad\text{so }\psi\text{ is not final, and not homotopy final.}
+$$
+
+The two components are joined in $p_t\downarrow d$ by $\alpha_c$, which a
+restricted diagram inverts. So a comparison of
+$\operatorname{colim}_{T_d}X$ with $\operatorname{colim}_{p_t\downarrow d}X$ can
+only hold *relative to* the weak equivalences of the indexing categories, as in
+Szumiło's homotopical categories. A plain homotopy-cofinality theorem does
+not suffice.
+
+**Literature status.** The downstream sources available here (Szumiło
+arXiv:1411.0303, Lenz arXiv:1712.07845, Cisinski 2010 Lemma 6.15) cite
+9.5.8 or 9.5.4 rather than reprove them, so they give no independent repair.
+The statement of 9.5.4 is still expected to be true, since $p_t$ should be a
+homotopy localization, but the paper's proof does not establish it.
+
+**Remaining routes.**
+- *Relative cofinality.* Develop homotopical direct categories and a
+  cofinality theorem relative to weak equivalences. This is the most general
+  route, and a substantial project.
+- *Fiber plus replacement.* Reedy-replace $X|_{p_t^{-1}(d)}$ by $Q$. Lemma K
+  gives $Q_{(d)}\simeq\operatorname{colim}Q$. It remains to show that
+  $\operatorname{colim}Q\to\operatorname{colim}_{p_t\downarrow d}X$ is a weak
+  equivalence. Here $i_d$ is a *plain* homotopy-final functor: each comma
+  category $x\downarrow i_d$ has the natural contraction
+  $(y,g)\mapsto(a^dy,\alpha_y g)$. So a non-relative homotopy-finality theorem
+  for Reedy colimits would suffice, but it is not in the library.
+- *Subdivision (scoped).* Over the nondegenerate chains of a poset, the
+  barycentric subdivision, no identity arrows occur. Then $G=\{m\}$, the fiber
+  latching categories are the faces containing the last vertex, and the fiber
+  has the initial object $(d)$. The paper's argument then goes through
+  verbatim. This gives a correct but restricted version of 9.5.4 for posets.
+
 ## Literature check (2026-11-20)
 
 A search for the lemma number, the proposition number, and errata did not locate
